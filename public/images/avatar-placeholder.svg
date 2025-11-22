@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="160" height="160" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Avatar placeholder">
+  <rect width="160" height="160" rx="20" fill="#E6EEF8"/>
+  <g transform="translate(40,32)">
+    <circle cx="40" cy="32" r="28" fill="#CFE6FF" />
+    <path d="M8 118c0-22 24-40 48-40s48 18 48 40" fill="#CFE6FF"/>
+    <circle cx="40" cy="32" r="20" fill="#6DA8FF" opacity="0.9"/>
+    <path d="M40 48c-12 0-22 10-22 22v6h44v-6c0-12-10-22-22-22z" fill="#6DA8FF" opacity="0.9"/>
+  </g>
+</svg>

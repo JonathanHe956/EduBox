@@ -1,0 +1,158 @@
+@import 'tailwindcss';
+@import '../../vendor/livewire/flux/dist/flux.css';
+
+@source '../views';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../vendor/livewire/flux-pro/stubs/**/*.blade.php';
+@source '../../vendor/livewire/flux/stubs/**/*.blade.php';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Blue Color Palette - Primary Colors (Based on #002349) */
+    --color-blue-50: #f0f4f8;
+    --color-blue-100: #d9e2ec;
+    --color-blue-200: #bcccdc;
+    --color-blue-300: #9fb3c8;
+    --color-blue-400: #829ab1;
+    --color-blue-500: #627d98;
+    --color-blue-600: #486581;
+    --color-blue-700: #334e68;
+    --color-blue-800: #243b53;
+    --color-blue-900: #002349;
+    /* User specified Blue */
+    --color-blue-950: #001225;
+
+    /* Gold Accent Color (Based on #957C3D) */
+    --color-gold-50: #fbf7ef;
+    --color-gold-100: #f5ecd6;
+    --color-gold-200: #ebdcb0;
+    --color-gold-300: #dec683;
+    --color-gold-400: #d0b05e;
+    --color-gold-500: #957C3D;
+    /* User specified Gold */
+    --color-gold-600: #7a6532;
+    --color-gold-700: #615028;
+    --color-gold-800: #4a3d1f;
+    --color-gold-900: #362c17;
+    --color-gold-950: #1f190d;
+
+    /* Bronze Accent Color */
+    --color-bronze-400: #e89b6c;
+    --color-bronze-500: #cd7f32;
+    --color-bronze-600: #b36b28;
+    --color-bronze-700: #99581e;
+
+    /* Zinc colors for neutral elements */
+    --color-zinc-50: #fafafa;
+    --color-zinc-100: #f5f5f5;
+    --color-zinc-200: #e5e5e5;
+    --color-zinc-300: #d4d4d4;
+    --color-zinc-400: #a3a3a3;
+    --color-zinc-500: #737373;
+    --color-zinc-600: #525252;
+    --color-zinc-700: #404040;
+    --color-zinc-800: #262626;
+    --color-zinc-900: #171717;
+    --color-zinc-950: #0a0a0a;
+
+    /* Theme accent colors - using blue as primary */
+    --color-accent: var(--color-blue-900);
+    --color-accent-content: var(--color-gold-500);
+    --color-accent-foreground: var(--color-white);
+}
+
+@layer theme {
+    .dark {
+        --color-accent: var(--color-blue-500);
+        --color-accent-content: var(--color-blue-500);
+        --color-accent-foreground: var(--color-blue-950);
+    }
+}
+
+@layer base {
+
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-blue-200, currentColor);
+    }
+
+    /* Background image for authenticated pages */
+    body.authenticated {
+        background-image: url('/images/background.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+    }
+
+    body.authenticated::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(30, 58, 138, 0.95) 0%, rgba(30, 64, 175, 0.92) 50%, rgba(37, 99, 235, 0.88) 100%);
+        z-index: -1;
+        pointer-events: none;
+    }
+}
+
+@layer components {
+
+    /* Card styles with glassmorphism */
+    .glass-card {
+        @apply bg-white/90 dark:bg-blue-950/80 backdrop-blur-md border border-blue-200/50 dark:border-blue-700/50 rounded-lg shadow-xl;
+    }
+
+    /* Button styles with gold accent */
+    .btn-primary {
+        @apply bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-white font-semibold px-4 py-2 rounded-md transition-all duration-300 shadow-lg hover:shadow-xl;
+    }
+
+    .btn-secondary {
+        @apply bg-gradient-to-r from-bronze-500 to-bronze-600 hover:from-bronze-600 hover:to-bronze-700 text-white font-semibold px-4 py-2 rounded-md transition-all duration-300 shadow-lg hover:shadow-xl;
+    }
+
+    .btn-blue {
+        @apply bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-4 py-2 rounded-md transition-all duration-300 shadow-lg hover:shadow-xl;
+    }
+
+    /* Input styles */
+    .input-modern {
+        @apply bg-white/80 dark:bg-blue-950/60 border-2 border-blue-300 dark:border-blue-600 rounded-md px-4 py-2 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/50 transition-all duration-200;
+    }
+
+    /* Table styles */
+    .table-modern {
+        @apply w-full bg-white/90 dark:bg-blue-950/80 backdrop-blur-md rounded-lg overflow-hidden shadow-xl;
+    }
+
+    .table-modern thead {
+        @apply bg-gradient-to-r from-blue-700 to-blue-800 text-white;
+    }
+
+    .table-modern tbody tr {
+        @apply border-b border-blue-200/50 dark:border-blue-700/50 hover:bg-blue-50/50 dark:hover:bg-blue-900/30 transition-colors duration-150;
+    }
+}
+
+[data-flux-field]:not(ui-radio, ui-checkbox) {
+    @apply grid gap-2;
+}
+
+[data-flux-label] {
+    @apply !mb-0 !leading-tight;
+}
+
+input:focus[data-flux-control],
+textarea:focus[data-flux-control],
+select:focus[data-flux-control] {
+    @apply outline-hidden ring-2 ring-gold-500 ring-offset-2 ring-offset-blue-50 dark:ring-offset-blue-950;
+}
