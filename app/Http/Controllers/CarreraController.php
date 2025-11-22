@@ -31,7 +31,10 @@ class CarreraController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:255|unique:carreras,nombre',
-            'creditos' => 'required|integer|min:1',
+            'creditos' => 'required|integer|min:250|max:300',
+        ], [
+            'creditos.min' => 'La carrera debe tener un mínimo de 250 créditos.',
+            'creditos.max' => 'La carrera no puede exceder los 300 créditos.',
         ]);
 
         Carrera::create($request->all());
@@ -70,7 +73,10 @@ class CarreraController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:255|unique:carreras,nombre,' . $carrera->id,
-            'creditos' => 'required|integer|min:1',
+            'creditos' => 'required|integer|min:250|max:300',
+        ], [
+            'creditos.min' => 'La carrera debe tener un mínimo de 250 créditos.',
+            'creditos.max' => 'La carrera no puede exceder los 300 créditos.',
         ]);
 
         $carrera->update($request->all());

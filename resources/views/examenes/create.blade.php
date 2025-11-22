@@ -1,14 +1,21 @@
 <x-layouts.app :title="__('Crear Examen')">
-    <div class="px-4 py-6">
-        <h1 class="text-2xl font-bold text-white drop-shadow-lg">Crear examen para la materia: {{ $materia->nombre ?? $materia->name ?? 'Materia' }}</h1>
+    <div class="flex h-full w-full flex-1 flex-col gap-6 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-blue-900 dark:text-white">Crear examen para la materia: {{ $materia->nombre ?? $materia->name ?? 'Materia' }}</h1>
+                <p class="mt-1 text-blue-700 dark:text-blue-200">Crea un nuevo examen para tus estudiantes</p>
+            </div>
+        </div>
 
         @if(session('success'))
-            <div class="mt-4 text-green-600">{{ session('success') }}</div>
+            <div class="glass-card p-4 bg-green-50 border-green-200 dark:bg-green-900/20">
+                <p class="text-green-600 dark:text-green-400">{{ session('success') }}</p>
+            </div>
         @endif
 
         @if($errors->any())
-            <div class="mt-4 p-4 bg-red-50 border border-red-200 rounded-md">
-                <ul class="list-disc list-inside text-red-600">
+            <div class="glass-card p-4 bg-red-50 border-red-200 dark:bg-red-900/20">
+                <ul class="list-disc list-inside text-red-600 dark:text-red-400">
                     @foreach($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -16,40 +23,48 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('examenes.store', $materia) }}" class="mt-6" id="exam-form">
+        <form method="POST" action="{{ route('examenes.store', $materia) }}" id="exam-form">
             @csrf
-            <div class="mb-4">
-                <label for="title" class="block font-medium text-white">Título</label>
-                <input id="title" name="title" type="text" required maxlength="255" class="input-modern w-full" value="{{ old('title') }}">
-            </div>
+            
+            <div class="glass-card p-6 space-y-6">
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div>
+                        <label for="title" class="block text-sm font-medium text-gray-500 dark:text-gray-400">Título</label>
+                        <input id="title" name="title" type="text" required maxlength="255" class="input-modern w-full" value="{{ old('title') }}">
+                    </div>
 
-            <div class="mb-4">
-                <label for="description" class="block font-medium text-white">Descripción</label>
-                <textarea id="description" name="description" class="input-modern w-full">{{ old('description') }}</textarea>
-            </div>
-
-            <hr class="my-6 border-gray-300 dark:border-gray-700">
-
-            <div class="mb-6">
-                <div class="mb-4">
-                    <h2 class="text-xl font-semibold text-white">Preguntas</h2>
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-500 dark:text-gray-400">Descripción</label>
+                        <textarea id="description" name="description" class="input-modern w-full" rows="3">{{ old('description') }}</textarea>
+                    </div>
                 </div>
 
-                <div id="questions-container" class="space-y-6">
-                    {{-- Questions will be added here dynamically --}}
+                <hr class="border-gray-300 dark:border-gray-700">
+
+                <div>
+                    <div class="mb-4">
+                        <h2 class="text-xl font-semibold text-blue-900 dark:text-white">Preguntas</h2>
+                    </div>
+
+                    <div id="questions-container" class="space-y-6">
+                        {{-- Questions will be added here dynamically --}}
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="button" id="add-question-btn" class="w-full py-2 border-2 border-dashed border-blue-300/50 text-blue-900 dark:text-white rounded hover:border-gold-500 hover:text-gold-400 font-medium transition-colors">
+                            + Agregar Pregunta
+                        </button>
+                    </div>
                 </div>
 
-                <div class="mt-4">
-                    <button type="button" id="add-question-btn" class="w-full py-2 border-2 border-dashed border-blue-300/50 text-white rounded hover:border-gold-500 hover:text-gold-400 font-medium transition-colors">
-                        + Agregar Pregunta
+                <div class="flex justify-end space-x-3">
+                    <a href="{{ route('examenes.materia', $materia) }}" class="btn-secondary">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="btn-primary">
+                        Guardar Examen
                     </button>
                 </div>
-            </div>
-
-            <div class="flex justify-end">
-                <button type="submit" class="btn-primary">
-                    Guardar Examen
-                </button>
             </div>
         </form>
 
@@ -333,7 +348,5 @@
                 });
             });
         </script>
-
-        <p class="mt-6"><a href="{{ route('examenes.materia', $materia) }}">Volver a Exámenes</a></p>
     </div>
 </x-layouts.app>

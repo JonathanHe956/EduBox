@@ -182,7 +182,7 @@ Route::get('/mis-materias', function () {
     if ($user->hasRole('docente')) {
         $docente = \App\Models\docente::where('email', $user->email)->first();
         $materias = $docente ? $docente->materias()->with('carrera')->get() : collect();
-        return view('docente.materias', compact('materias'));
+        return view('docente.materias', compact('materias', 'docente'));
     }
 
     if ($user->hasRole('estudiante') || $user->hasRole('student')) {

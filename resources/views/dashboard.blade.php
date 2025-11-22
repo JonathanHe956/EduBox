@@ -8,7 +8,7 @@
         @if(auth()->user()->hasRole('admin'))
         <div class="glass-card p-6">
                 <h3 class="text-lg font-semibold text-blue-900 dark:text-white">Estadísticas Rápidas</h3>
-                <div class="mt-4 grid gap-4 md:grid-cols-3">
+                <div class="mt-4 grid gap-4 md:grid-cols-4">
                     <div class="text-center p-4 bg-blue-800/30 rounded-lg border border-blue-700/30">
                         <div class="text-3xl font-bold text-gold-500">{{ \App\Models\carrera::count() }}</div>
                         <div class="text-blue-700 dark:text-blue-200 font-medium">Total Carreras</div>

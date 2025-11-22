@@ -1,14 +1,21 @@
 <x-layouts.app :title="__('Editar Examen')">
-    <div class="px-4 py-6">
-        <h1 class="text-2xl font-semibold">Editar examen: {{ $examen->titulo }}</h1>
+    <div class="flex h-full w-full flex-1 flex-col gap-6 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-blue-900 dark:text-white">Editar examen: {{ $examen->titulo }}</h1>
+                <p class="mt-1 text-blue-700 dark:text-blue-200">Actualiza la información del examen</p>
+            </div>
+        </div>
 
         @if(session('success'))
-            <div class="mt-4 text-green-600">{{ session('success') }}</div>
+            <div class="glass-card p-4 bg-green-50 border-green-200 dark:bg-green-900/20">
+                <p class="text-green-600 dark:text-green-400">{{ session('success') }}</p>
+            </div>
         @endif
 
         @if($errors->any())
-            <div class="mt-4 p-4 bg-red-50 border border-red-200 rounded-md">
-                <ul class="list-disc list-inside text-red-600">
+            <div class="glass-card p-4 bg-red-50 border-red-200 dark:bg-red-900/20">
+                <ul class="list-disc list-inside text-red-600 dark:text-red-400">
                     @foreach($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -16,120 +23,130 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('examenes.update', $examen) }}" class="mt-6" id="exam-form">
+        <form method="POST" action="{{ route('examenes.update', $examen) }}" id="exam-form">
             @csrf
             @method('PUT')
-            <div class="mb-4">
-                <label for="title" class="block font-medium">Título</label>
-                <input id="title" name="title" type="text" required maxlength="255" class="border rounded px-2 py-1 w-full" value="{{ old('title', $examen->titulo) }}">
-            </div>
+            
+            <div class="glass-card p-6 space-y-6">
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div>
+                        <label for="title" class="block text-sm font-medium text-gray-500 dark:text-gray-400">Título</label>
+                        <input id="title" name="title" type="text" required maxlength="255" class="input-modern w-full" value="{{ old('title', $examen->titulo) }}">
+                    </div>
 
-            <div class="mb-4">
-                <label for="description" class="block font-medium">Descripción</label>
-                <textarea id="description" name="description" class="border rounded px-2 py-1 w-full">{{ old('description', $examen->descripcion) }}</textarea>
-            </div>
-
-            <hr class="my-6 border-gray-300 dark:border-gray-700">
-
-            <div class="mb-6">
-                <div class="mb-4">
-                    <h2 class="text-xl font-semibold">Preguntas</h2>
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-500 dark:text-gray-400">Descripción</label>
+                        <textarea id="description" name="description" class="input-modern w-full" rows="3">{{ old('description', $examen->descripcion) }}</textarea>
+                    </div>
                 </div>
 
-                <div id="questions-container" class="space-y-6">
-                    {{-- Existing questions --}}
-                    @foreach($examen->preguntas as $index => $pregunta)
-                        <div class="question-block border rounded p-4 bg-gray-50 dark:bg-zinc-800 relative" data-index="{{ $index }}">
-                            <button type="button" class="remove-question-btn absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl">
-                                &times;
-                            </button>
-                            <input type="hidden" name="questions[{{ $index }}][id]" value="{{ $pregunta->id }}">
-                            <div class="mb-3">
-                                <label class="block font-medium text-sm mb-1">Pregunta <span class="question-number">{{ $index + 1 }}</span></label>
-                                <textarea name="questions[{{ $index }}][text]" required class="border rounded w-full px-2 py-1">{{ $pregunta->pregunta }}</textarea>
-                            </div>
-                            
-                            <!-- Selector de tipo de pregunta -->
-                            <div class="mb-3">
-                                <label class="block font-medium text-sm mb-2">Tipo de pregunta</label>
-                                <div class="flex gap-4">
-                                    <label class="flex items-center cursor-pointer">
-                                        <input type="radio" name="questions[{{ $index }}][tipo]" value="multiple" class="question-type-radio mr-2" {{ $pregunta->tipo === 'multiple' ? 'checked' : '' }}>
-                                        <span class="text-sm">Opción múltiple</span>
-                                    </label>
-                                    <label class="flex items-center cursor-pointer">
-                                        <input type="radio" name="questions[{{ $index }}][tipo]" value="verdadero_falso" class="question-type-radio mr-2" {{ $pregunta->tipo === 'verdadero_falso' ? 'checked' : '' }}>
-                                        <span class="text-sm">Verdadero/Falso</span>
-                                    </label>
-                                    <label class="flex items-center cursor-pointer">
-                                        <input type="radio" name="questions[{{ $index }}][tipo]" value="abierta" class="question-type-radio mr-2" {{ $pregunta->tipo === 'abierta' ? 'checked' : '' }}>
-                                        <span class="text-sm">Pregunta abierta</span>
-                                    </label>
-                                </div>
-                            </div>
+                <hr class="border-gray-300 dark:border-gray-700">
 
-                            <!-- Contenedor para opción múltiple -->
-                            <div class="options-container tipo-multiple-content" style="display: {{ $pregunta->tipo === 'multiple' ? 'block' : 'none' }};">
-                                <div class="flex items-center justify-between mb-2">
-                                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Opciones (mínimo 2)</label>
-                                    <button type="button" class="add-option-btn text-sm text-indigo-600 hover:text-indigo-800 font-medium" data-question-index="{{ $index }}">
-                                        + Agregar opción
-                                    </button>
-                                </div>
-                                <div class="options-list space-y-2 pl-4 border-l-2 border-blue-200/50 dark:border-blue-700/50">
-                                    @foreach($pregunta->opciones as $optIndex => $opcion)
-                                        <div class="flex items-center gap-2 option-item" data-option-index="{{ $optIndex }}">
-                                            <input type="hidden" name="questions[{{ $index }}][options][{{ $optIndex }}][id]" value="{{ $opcion->id }}">
-                                            <input type="checkbox" name="questions[{{ $index }}][options][{{ $optIndex }}][is_correct]" value="1" {{ $opcion->es_correcta ? 'checked' : '' }} class="w-4 h-4">
-                                            <input type="text" name="questions[{{ $index }}][options][{{ $optIndex }}][text]" value="{{ $opcion->opcion }}" class="border rounded px-2 py-1 flex-1 text-sm">
-                                            <button type="button" class="remove-option-btn text-red-500 hover:text-red-700 font-bold text-lg" data-question-index="{{ $index }}">&times;</button>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
+                <div>
+                    <div class="mb-4">
+                        <h2 class="text-xl font-semibold text-blue-900 dark:text-white">Preguntas</h2>
+                    </div>
 
-                            <!-- Contenedor para verdadero/falso -->
-                            <div class="tipo-verdadero-falso-content" style="display: {{ $pregunta->tipo === 'verdadero_falso' ? 'block' : 'none' }};">
-                                <label class="block font-medium text-sm mb-2">Respuesta correcta</label>
-                                <div class="space-y-2">
-                                    @php
-                                        $vfCorrecta = $pregunta->opciones->firstWhere('opcion', 'Verdadero')?->es_correcta ? 'verdadero' : 'falso';
-                                    @endphp
-                                    <label class="flex items-center cursor-pointer p-2 border rounded hover:bg-gray-50 dark:hover:bg-zinc-700">
-                                        <input type="radio" name="questions[{{ $index }}][vf_correcta]" value="verdadero" class="mr-2" {{ $vfCorrecta === 'verdadero' ? 'checked' : '' }}>
-                                        <span>Verdadero</span>
-                                    </label>
-                                    <label class="flex items-center cursor-pointer p-2 border rounded hover:bg-gray-50 dark:hover:bg-zinc-700">
-                                        <input type="radio" name="questions[{{ $index }}][vf_correcta]" value="falso" class="mr-2" {{ $vfCorrecta === 'falso' ? 'checked' : '' }}>
-                                        <span>Falso</span>
-                                    </label>
+                    <div id="questions-container" class="space-y-6">
+                        {{-- Existing questions --}}
+                        @foreach($examen->preguntas as $index => $pregunta)
+                            <div class="question-block glass-card p-4 relative" data-index="{{ $index }}">
+                                <button type="button" class="remove-question-btn absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl">
+                                    &times;
+                                </button>
+                                <input type="hidden" name="questions[{{ $index }}][id]" value="{{ $pregunta->id }}">
+                                <div class="mb-3">
+                                    <label class="block font-medium text-sm mb-1">Pregunta <span class="question-number">{{ $index + 1 }}</span></label>
+                                    <textarea name="questions[{{ $index }}][text]" required class="border rounded w-full px-2 py-1">{{ $pregunta->pregunta }}</textarea>
+                                </div>
+                                
+                                <!-- Selector de tipo de pregunta -->
+                                <div class="mb-3">
+                                    <label class="block font-medium text-sm mb-2">Tipo de pregunta</label>
+                                    <div class="flex gap-4">
+                                        <label class="flex items-center cursor-pointer">
+                                            <input type="radio" name="questions[{{ $index }}][tipo]" value="multiple" class="question-type-radio mr-2" {{ $pregunta->tipo === 'multiple' ? 'checked' : '' }}>
+                                            <span class="text-sm">Opción múltiple</span>
+                                        </label>
+                                        <label class="flex items-center cursor-pointer">
+                                            <input type="radio" name="questions[{{ $index }}][tipo]" value="verdadero_falso" class="question-type-radio mr-2" {{ $pregunta->tipo === 'verdadero_falso' ? 'checked' : '' }}>
+                                            <span class="text-sm">Verdadero/Falso</span>
+                                        </label>
+                                        <label class="flex items-center cursor-pointer">
+                                            <input type="radio" name="questions[{{ $index }}][tipo]" value="abierta" class="question-type-radio mr-2" {{ $pregunta->tipo === 'abierta' ? 'checked' : '' }}>
+                                            <span class="text-sm">Pregunta abierta</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Contenedor para opción múltiple -->
+                                <div class="options-container tipo-multiple-content" style="display: {{ $pregunta->tipo === 'multiple' ? 'block' : 'none' }};">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Opciones</label>
+                                        <button type="button" class="add-option-btn text-sm text-indigo-600 hover:text-indigo-800 font-medium" data-question-index="{{ $index }}">
+                                            + Agregar opción
+                                        </button>
+                                    </div>
+                                    <div class="options-list space-y-2 pl-4 border-l-2 border-blue-200/50 dark:border-blue-700/50">
+                                        @foreach($pregunta->opciones as $optIndex => $opcion)
+                                            <div class="flex items-center gap-2 option-item" data-option-index="{{ $optIndex }}">
+                                                <input type="hidden" name="questions[{{ $index }}][options][{{ $optIndex }}][id]" value="{{ $opcion->id }}">
+                                                <input type="checkbox" name="questions[{{ $index }}][options][{{ $optIndex }}][is_correct]" value="1" {{ $opcion->es_correcta ? 'checked' : '' }} class="w-4 h-4">
+                                                <input type="text" name="questions[{{ $index }}][options][{{ $optIndex }}][text]" value="{{ $opcion->opcion }}" class="border rounded px-2 py-1 flex-1 text-sm">
+                                                <button type="button" class="remove-option-btn text-red-500 hover:text-red-700 font-bold text-lg" data-question-index="{{ $index }}">&times;</button>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                                <!-- Contenedor para verdadero/falso -->
+                                <div class="tipo-verdadero-falso-content" style="display: {{ $pregunta->tipo === 'verdadero_falso' ? 'block' : 'none' }};">
+                                    <label class="block font-medium text-sm mb-2">Respuesta correcta</label>
+                                    <div class="space-y-2">
+                                        @php
+                                            $vfCorrecta = $pregunta->opciones->firstWhere('opcion', 'Verdadero')?->es_correcta ? 'verdadero' : 'falso';
+                                        @endphp
+                                        <label class="flex items-center cursor-pointer p-2 border rounded hover:bg-gray-50 dark:hover:bg-zinc-700">
+                                            <input type="radio" name="questions[{{ $index }}][vf_correcta]" value="verdadero" class="mr-2" {{ $vfCorrecta === 'verdadero' ? 'checked' : '' }}>
+                                            <span>Verdadero</span>
+                                        </label>
+                                        <label class="flex items-center cursor-pointer p-2 border rounded hover:bg-gray-50 dark:hover:bg-zinc-700">
+                                            <input type="radio" name="questions[{{ $index }}][vf_correcta]" value="falso" class="mr-2" {{ $vfCorrecta === 'falso' ? 'checked' : '' }}>
+                                            <span>Falso</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Contenedor para pregunta abierta -->
+                                <div class="tipo-abierta-content" style="display: {{ $pregunta->tipo === 'abierta' ? 'block' : 'none' }};">
+                                    <label class="block font-medium text-sm mb-2">Respuesta esperada / Criterios de evaluación (opcional)</label>
+                                    <textarea name="questions[{{ $index }}][respuesta_esperada]" class="border rounded w-full px-2 py-1 text-sm" rows="3" placeholder="Describe la respuesta esperada o los criterios para calificar esta pregunta...">{{ $pregunta->respuesta_correcta_abierta }}</textarea>
+                                    <p class="text-xs text-gray-500 mt-1">Esta información te ayudará al momento de revisar las respuestas de los estudiantes.</p>
                                 </div>
                             </div>
+                        @endforeach
+                    </div>
 
-                            <!-- Contenedor para pregunta abierta -->
-                            <div class="tipo-abierta-content" style="display: {{ $pregunta->tipo === 'abierta' ? 'block' : 'none' }};">
-                                <label class="block font-medium text-sm mb-2">Respuesta esperada / Criterios de evaluación (opcional)</label>
-                                <textarea name="questions[{{ $index }}][respuesta_esperada]" class="border rounded w-full px-2 py-1 text-sm" rows="3" placeholder="Describe la respuesta esperada o los criterios para calificar esta pregunta...">{{ $pregunta->respuesta_correcta_abierta }}</textarea>
-                                <p class="text-xs text-gray-500 mt-1">Esta información te ayudará al momento de revisar las respuestas de los estudiantes.</p>
-                            </div>
-                        </div>
-                    @endforeach
+                    <div class="mt-4">
+                        <button type="button" id="add-question-btn" class="w-full py-2 border-2 border-dashed border-blue-300/50 text-blue-900 dark:text-white rounded hover:border-gold-500 hover:text-gold-400 font-medium transition-colors">
+                            + Agregar Pregunta
+                        </button>
+                    </div>
                 </div>
 
-                <div class="mt-4">
-                    <button type="button" id="add-question-btn" class="w-full py-2 border-2 border-dashed border-gray-300 text-gray-600 rounded hover:border-indigo-500 hover:text-indigo-600 font-medium transition-colors">
-                        + Agregar Pregunta
+                <div class="flex justify-end space-x-3">
+                    <a href="{{ route('examenes.materia', $examen->materia_id) }}" class="btn-secondary">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="btn-primary">
+                        Guardar Cambios
                     </button>
                 </div>
-            </div>
-
-            <div class="flex justify-end">
-                <button class="bg-blue-600 text-white px-4 py-2 rounded">Guardar cambios</button>
             </div>
         </form>
 
         <template id="question-template">
-            <div class="question-block border rounded p-4 bg-gray-50 dark:bg-zinc-800 relative">
+            <div class="question-block glass-card p-4 relative">
                 <button type="button" class="remove-question-btn absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl">
                     &times;
                 </button>
@@ -160,7 +177,7 @@
                 <!-- Contenedor para opción múltiple -->
                 <div class="options-container tipo-multiple-content">
                     <div class="flex items-center justify-between mb-2">
-                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Opciones (mínimo 2)</label>
+                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Opciones</label>
                         <button type="button" class="add-option-btn text-sm text-indigo-600 hover:text-indigo-800 font-medium">
                             + Agregar opción
                         </button>
@@ -466,7 +483,5 @@
                 });
             });
         </script>
-
-        <p class="mt-6"><a href="{{ route('examenes.materia', $examen->materia_id) }}">Volver a Exámenes</a></p>
     </div>
 </x-layouts.app>

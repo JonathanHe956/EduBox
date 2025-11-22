@@ -3,8 +3,8 @@
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-blue-600 authenticated">
-        <flux:header container class="border-b border-blue-300/30 bg-blue-900/80 backdrop-blur-md dark:border-blue-700/50 dark:bg-blue-950/90">
+    <body class="min-h-screen bg-blue-900 authenticated">
+        <flux:header container class="border-b border-gold-500/30 bg-blue-900/95 backdrop-blur-md dark:border-gold-500/30 dark:bg-blue-900/95">
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
             <a href="{{ route('dashboard') }}" class="ms-2 me-5 flex items-center space-x-2 rtl:space-x-reverse lg:ms-0" wire:navigate>
@@ -64,7 +64,7 @@
         </flux:header>
 
         <!-- Mobile Menu -->
-        <flux:sidebar stashable sticky class="lg:hidden border-e border-blue-300/30 bg-blue-900/80 backdrop-blur-md dark:border-blue-700/50 dark:bg-blue-950/90">
+        <flux:sidebar stashable sticky class="lg:hidden border-e border-gold-500/30 bg-blue-900/95 backdrop-blur-md dark:border-gold-500/30 dark:bg-blue-900/95">
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
             <a href="{{ route('dashboard') }}" class="ms-1 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
@@ -97,7 +97,6 @@
         </flux:sidebar>
 
         {{ $slot }}
-        </x-layouts.app>
 
         @fluxScripts
     </body>

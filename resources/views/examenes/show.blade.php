@@ -97,11 +97,11 @@
                         @endforeach
 
                         <div class="flex justify-end gap-3">
-                            <a href="{{ route('examenes.materia.alumno', $examen->materia_id) }}" class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-zinc-800">
+                            <a href="{{ route('examenes.materia.alumno', $examen->materia_id) }}" class="btn-secondary px-4 py-2">
                                 Cancelar
                             </a>
-                            <button type="submit" class="rounded-lg bg-green-600 px-6 py-2 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" onclick="return validateForm()">
-                                Enviar respuestas
+                            <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-green-600 px-6 py-2 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500" onclick="return validateForm()">
+                                Enviar Respuestas
                             </button>
                         </div>
 
@@ -393,15 +393,15 @@
         <div class="mt-6">
             @auth
                 @if(auth()->user()->hasRole('docente'))
-                    <a href="{{ route('examenes.materia', $examen->materia_id) }}" class="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                    <a href="{{ route('examenes.materia', $examen->materia_id) }}" class="inline-flex items-center gap-2 btn-secondary px-4 py-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                         </svg>
                         Volver a Exámenes
                     </a>
                 @else
-                    <a href="{{ route('examenes.materia.alumno', $examen->materia_id) }}" class="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                    <a href="{{ route('examenes.materia.alumno', $examen->materia_id) }}" class="inline-flex items-center gap-2 btn-secondary px-4 py-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                         </svg>
                         Volver a Exámenes
