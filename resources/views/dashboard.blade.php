@@ -2,7 +2,7 @@
     <div class="flex h-full w-full flex-1 flex-col gap-6 p-6">
         <div class="text-center">
             <h1 class="text-3xl font-bold text-white drop-shadow-lg">Bienvenido a EduBox</h1>
-            <p class="mt-2 text-blue-100">Administra tus recursos académicos de manera eficiente.</p>
+            <p class="mt-2 text-blue-100">Administra tus recursos académicos de manera muy eficiente.</p>
         </div>
 
         @if(auth()->user()->hasRole('admin'))
