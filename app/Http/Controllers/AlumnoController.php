@@ -107,8 +107,10 @@ class AlumnoController extends Controller
         // Obtener los IDs de las materias en las que el alumno ya está inscrito
         $materiasInscritasIds = $alumno->materias()->pluck('materias.id')->toArray();
 
-        // Obtener todas las materias que no están en la lista de materias inscritas
-        $materiasDisponibles = Materia::whereNotIn('id', $materiasInscritasIds)->get();
+        // Obtener solo las materias de la misma carrera del alumno que no están inscritas
+        $materiasDisponibles = Materia::where('carrera_id', $alumno->carrera_id)
+            ->whereNotIn('id', $materiasInscritasIds)
+            ->get();
 
         return view("alumno.show", compact('alumno', 'materiasDisponibles'));
     }
