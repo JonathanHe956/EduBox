@@ -91,7 +91,7 @@
                                         </div>
                                         @if($respuesta && $respuesta->puntos_obtenidos !== null)
                                             <p class="mt-2 text-sm font-medium text-indigo-600 dark:text-indigo-400">
-                                                Puntos obtenidos: {{ $respuesta->puntos_obtenidos }}/1
+                                                Puntos obtenidos: {{ intval($respuesta->puntos_obtenidos) }}/1
                                             </p>
                                         @endif
                                     @else
