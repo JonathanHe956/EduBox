@@ -166,17 +166,17 @@ class DocenteController extends Controller
         return view('docente.index', compact('docentes'));
     }
 
-    public function assignMateria(Request $request, docente $docente)
+    public function asignarMateria(Request $request, docente $docente)
     {
         $request->validate(['materia_id' => 'required|exists:materias,id']);
         $materia = materia::find($request->materia_id);
 
-        $result = $this->performAssign($docente, $materia);
+        $result = $this->realizarAsignacion($docente, $materia);
 
         return back()->with($result['success'] ? 'mensaje' : 'error', $result['message']);
     }
 
-    public function unassignMateria(docente $docente, materia $materia)
+    public function desasignarMateria(docente $docente, materia $materia)
     {
         if ($materia->docente_id === $docente->id) {
             $materia->docente_id = null;
@@ -186,12 +186,12 @@ class DocenteController extends Controller
         return back()->with('mensaje', 'Materia desasignada correctamente.');
     }
 
-    public function assignMateriaFromMateria(Request $request, materia $materia)
+    public function asignarMateriaDesdeMateria(Request $request, materia $materia)
     {
         $request->validate(['docente_id' => 'required|exists:docentes,id']);
         $docente = docente::find($request->docente_id);
 
-        $result = $this->performAssign($docente, $materia);
+        $result = $this->realizarAsignacion($docente, $materia);
 
         return back()->with($result['success'] ? 'mensaje' : 'error', $result['message']);
     }
@@ -200,7 +200,7 @@ class DocenteController extends Controller
      * Lógica común para asignar una materia a un docente.
      * Devuelve array ['success' => bool, 'message' => string]
      */
-    protected function performAssign(docente $docente, materia $materia): array
+    protected function realizarAsignacion(docente $docente, materia $materia): array
     {
         if (! $docente || ! $materia) {
             return ['success' => false, 'message' => 'Docente o materia no encontrados.'];

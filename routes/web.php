@@ -6,7 +6,7 @@ use Livewire\Volt\Volt;
 use App\Http\Controllers\CarreraController;
 use App\Http\Controllers\MateriaController;
 use App\Http\Controllers\AlumnoController;
-use App\Http\Controllers\InscripcionController;
+use App\Http\Controllers\AlumnoMateriaController;
 use App\Http\Controllers\DocenteController;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -32,7 +32,7 @@ Route::post('/materia/buscar', [MateriaController::class, 'buscar'])
     ->middleware(['auth', 'verified', 'role:admin'])
     ->name('materia.buscar');
 
-Route::post('/materia/{materia}/assign-docente', [DocenteController::class, 'assignMateriaFromMateria'])
+Route::post('/materia/{materia}/assign-docente', [DocenteController::class, 'asignarMateriaDesdeMateria'])
     ->middleware(['auth', 'verified', 'role:admin'])
     ->name('materia.assignDocente');
 
@@ -52,11 +52,11 @@ Route::post('/docente/buscar', [DocenteController::class, 'buscar'])
     ->middleware(['auth', 'verified', 'role:admin'])
     ->name('docente.buscar');
 
-Route::post('/docente/{docente}/assign-materia', [DocenteController::class, 'assignMateria'])
+Route::post('/docente/{docente}/assign-materia', [DocenteController::class, 'asignarMateria'])
     ->middleware(['auth', 'verified', 'role:admin'])
     ->name('docente.assignMateria');
 
-Route::delete('/docente/{docente}/unassign-materia/{materia}', [DocenteController::class, 'unassignMateria'])
+Route::delete('/docente/{docente}/unassign-materia/{materia}', [DocenteController::class, 'desasignarMateria'])
     ->middleware(['auth', 'verified', 'role:admin'])
     ->name('docente.unassignMateria');
 
@@ -64,19 +64,19 @@ Route::get('/docente/create', [DocenteController::class, 'create'])
     ->middleware(['auth', 'verified', 'role:admin'])
     ->name('docente.create');
 
-Route::post('/inscripcion', [InscripcionController::class, 'store'])
+Route::post('/inscripcion', [AlumnoMateriaController::class, 'inscribir'])
     ->middleware(['auth', 'verified', 'role:admin'])
     ->name('inscripcion.store');
 
-Route::delete('/inscripcion', [InscripcionController::class, 'destroy'])
+Route::delete('/inscripcion', [AlumnoMateriaController::class, 'desinscribir'])
     ->middleware(['auth', 'verified', 'role:admin'])
     ->name('inscripcion.destroy');
 
-Route::post('/alumno/{alumno}/enroll', [InscripcionController::class, 'enrollAlumno'])
+Route::post('/alumno/{alumno}/enroll', [AlumnoMateriaController::class, 'inscribirDesdeAlumno'])
     ->middleware(['auth', 'verified', 'role:admin'])
     ->name('alumno.enroll');
 
-Route::post('/materia/{materia}/enroll', [InscripcionController::class, 'enrollMateria'])
+Route::post('/materia/{materia}/enroll', [AlumnoMateriaController::class, 'inscribirDesdeMateria'])
     ->middleware(['auth', 'verified', 'role:admin'])
     ->name('materia.enroll');
 
@@ -104,7 +104,7 @@ Route::get('/alumno/materias', [AlumnoController::class, 'materias'])
     ->name('alumno.materias');
 
 // Rutas para exámenes
-Route::get('/materia/{materia}/examen/create', [App\Http\Controllers\ExamenController::class, 'createForMateria'])
+Route::get('/materia/{materia}/examen/create', [App\Http\Controllers\ExamenController::class, 'crearParaMateria'])
     ->middleware(['auth', 'verified', 'role:docente'])
     ->name('examenes.create');
 
@@ -112,7 +112,7 @@ Route::post('/materia/{materia}/examen', [App\Http\Controllers\ExamenController:
     ->middleware(['auth', 'verified', 'role:docente'])
     ->name('examenes.store');
 
-Route::post('/examen/{examen}/pregunta', [App\Http\Controllers\ExamenController::class, 'addQuestion'])
+Route::post('/examen/{examen}/pregunta', [App\Http\Controllers\ExamenController::class, 'agregarPregunta'])
     ->middleware(['auth', 'verified', 'role:docente'])
     ->name('examenes.addQuestion');
 
@@ -120,7 +120,7 @@ Route::get('/examen/{examen}', [App\Http\Controllers\ExamenController::class, 's
     ->middleware(['auth', 'verified'])
     ->name('examenes.show');
 
-Route::post('/examen/{examen}/intentar', [App\Http\Controllers\ExamenController::class, 'attempt'])
+Route::post('/examen/{examen}/intentar', [App\Http\Controllers\ExamenController::class, 'intentar'])
     ->middleware(['auth', 'verified', 'role:estudiante'])
     ->name('examenes.attempt');
 
@@ -134,12 +134,12 @@ Route::get('/alumno/examenes', [App\Http\Controllers\ExamenController::class, 'a
     ->name('examenes.pending');
 
 // Lista de exámenes por materia (docente)
-Route::get('/materia/{materia}/examenes', [App\Http\Controllers\ExamenController::class, 'indexForMateria'])
+Route::get('/materia/{materia}/examenes', [App\Http\Controllers\ExamenController::class, 'indiceParaMateria'])
     ->middleware(['auth', 'verified', 'role:docente'])
     ->name('examenes.materia');
 
 // Lista de exámenes por materia (alumno)
-Route::get('/alumno/materia/{materia}/examenes', [App\Http\Controllers\ExamenController::class, 'indexForMateriaAlumno'])
+Route::get('/alumno/materia/{materia}/examenes', [App\Http\Controllers\ExamenController::class, 'indiceParaMateriaAlumno'])
     ->middleware(['auth', 'verified', 'role:estudiante'])
     ->name('examenes.materia.alumno');
 
@@ -162,11 +162,11 @@ Route::delete('/examen/{examen}', [App\Http\Controllers\ExamenController::class,
     ->name('examenes.destroy');
 
 // Rutas de calificación
-Route::post('/respuesta/{respuesta}/calificar', [App\Http\Controllers\ExamenController::class, 'gradeAnswer'])
+Route::post('/respuesta/{respuesta}/calificar', [App\Http\Controllers\ExamenController::class, 'calificarRespuesta'])
     ->middleware(['auth', 'verified', 'role:docente'])
     ->name('examenes.grade-answer');
 
-Route::post('/intento/{intento}/publicar', [App\Http\Controllers\ExamenController::class, 'publishGrade'])
+Route::post('/intento/{intento}/publicar', [App\Http\Controllers\ExamenController::class, 'publicarCalificacion'])
     ->middleware(['auth', 'verified', 'role:docente'])
     ->name('examenes.publish-grade');
 

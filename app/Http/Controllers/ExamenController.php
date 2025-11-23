@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Log;
 class ExamenController extends Controller
 {
     // Formulario para crear un examen dentro de una materia (docente)
-    public function createForMateria(materia $materia)
+    public function crearParaMateria(materia $materia)
     {
         return view('examenes.create', compact('materia'));
     }
@@ -112,7 +112,7 @@ class ExamenController extends Controller
     }
 
     // Añadir pregunta y sus opciones a un examen
-    public function addQuestion(StoreQuestionRequest $request, Examen $examen)
+    public function agregarPregunta(StoreQuestionRequest $request, Examen $examen)
     {
         // Obsoleto por formulario dinámico, mantenido por compatibilidad
         return back();
@@ -151,7 +151,7 @@ class ExamenController extends Controller
     }
 
     // Lista de exámenes por materia (docente)
-    public function indexForMateria(materia $materia)
+    public function indiceParaMateria(materia $materia)
     {
         $docente = auth()->user()->docente;
         if (!$docente) {
@@ -170,7 +170,7 @@ class ExamenController extends Controller
     }
 
     // Lista de exámenes por materia (alumno)
-    public function indexForMateriaAlumno(materia $materia)
+    public function indiceParaMateriaAlumno(materia $materia)
     {
         $alumno = auth()->user()->alumno;
         if (!$alumno) {
@@ -383,7 +383,7 @@ class ExamenController extends Controller
 
             // Recalcular calificación para cada alumno inscrito
             foreach ($alumnoIds as $alumnoId) {
-                $this->updateSubjectGrade($alumnoId, $materiaId);
+                $this->actualizarCalificacionMateria($alumnoId, $materiaId);
             }
         });
 
@@ -398,7 +398,7 @@ class ExamenController extends Controller
     }
 
     // Alumno realiza intento
-    public function attempt(Request $request, Examen $examen)
+    public function intentar(Request $request, Examen $examen)
     {
         $request->validate([
             'answers' => 'required|array',
@@ -439,7 +439,7 @@ class ExamenController extends Controller
         $score = 0;
         $total = 0;
         
-        \Log::info('Starting score calculation', ['answers' => $answers]);
+        \Log::info('Iniciando cálculo de puntuación', ['answers' => $answers]);
         
         // Iterar sobre TODAS las preguntas del examen
         foreach ($examen->preguntas as $preg) {
@@ -476,7 +476,7 @@ class ExamenController extends Controller
                 // Comparación flexible para arrays
                 $isCorrect = $selectedOptions == $correctOptions;
                 
-                \Log::info('Processing answer', [
+                \Log::info('Procesando respuesta', [
                     'question_id' => $preg->id,
                     'selected_options' => $selectedOptions,
                     'correct_options' => $correctOptions,
@@ -497,7 +497,7 @@ class ExamenController extends Controller
             }
         }
         
-        \Log::info('Final score', ['score' => $score, 'total' => $total]);
+        \Log::info('Puntuación final', ['score' => $score, 'total' => $total]);
 
         $intento->puntuacion = $score;
         $intento->total = $total;
@@ -505,7 +505,7 @@ class ExamenController extends Controller
 
         // Solo actualizar calificación de materia si el examen está calificado (no tiene preguntas abiertas)
         if (!$tieneAbiertas) {
-            $this->updateSubjectGrade($alumnoId, $examen->materia_id);
+            $this->actualizarCalificacionMateria($alumnoId, $examen->materia_id);
         }
 
         $mensaje = $tieneAbiertas 
@@ -518,9 +518,9 @@ class ExamenController extends Controller
     /**
      * Calcular promedio de la materia y actualizar calificación del alumno
      */
-    private function updateSubjectGrade($alumnoId, $materiaId)
+    private function actualizarCalificacionMateria($alumnoId, $materiaId)
     {
-        \Log::info("updateSubjectGrade called", ['alumno_id' => $alumnoId, 'materia_id' => $materiaId]);
+        \Log::info("actualizarCalificacionMateria llamado", ['alumno_id' => $alumnoId, 'materia_id' => $materiaId]);
         
         // Obtener IDs de exámenes existentes en la materia
         $examIds = Examen::where('materia_id', $materiaId)->pluck('id');
@@ -531,7 +531,7 @@ class ExamenController extends Controller
                 ->where('alumno_id', $alumnoId)
                 ->where('materia_id', $materiaId)
                 ->update(['calificacion' => null]);
-            \Log::info("No exams in subject. Grade reset to NULL.");
+            \Log::info("No hay exámenes en la materia. La calificación se ha restablecido a NULL.");
             return;
         }
 
@@ -541,7 +541,7 @@ class ExamenController extends Controller
             ->where('version_anterior', false) // Solo intentos de versión actual
             ->get();
 
-        \Log::info("Attempts found", ['count' => $attempts->count()]);
+        \Log::info("Intentos encontrados", ['count' => $attempts->count()]);
 
         if ($attempts->isEmpty()) {
             // Si hay exámenes pero el alumno no tiene intentos, calificación NULL
@@ -550,7 +550,7 @@ class ExamenController extends Controller
                 ->where('materia_id', $materiaId)
                 ->update(['calificacion' => null]);
                 
-            \Log::info("No attempts found. Grade reset to NULL");
+            \Log::info("No se encontraron intentos. Calificación restablecida a NULL");
             return;
         }
 
@@ -569,7 +569,7 @@ class ExamenController extends Controller
         if ($examCount > 0) {
             $averageGrade = round($totalPercentage / $examCount, 2);
             
-            \Log::info("Updating grade", ['average' => $averageGrade]);
+            \Log::info("Actualizando calificación", ['average' => $averageGrade]);
             
             // Actualizar calificación en la tabla pivote
             $updated = DB::table('alumno_materias')
@@ -593,7 +593,7 @@ class ExamenController extends Controller
     }
 
     // Calificar una respuesta abierta
-    public function gradeAnswer(Request $request, Respuesta $respuesta)
+    public function calificarRespuesta(Request $request, Respuesta $respuesta)
     {
         $request->validate([
             'es_correcta' => 'required|boolean'
@@ -649,7 +649,7 @@ class ExamenController extends Controller
             ]);
 
             // Actualizar calificación de la materia
-            $this->updateSubjectGrade($intento->alumno_id, $intento->examen->materia_id);
+            $this->actualizarCalificacionMateria($intento->alumno_id, $intento->examen->materia_id);
 
             return redirect()->route('examenes.show', $intento->examen_id)->with('success', 'Respuesta calificada. El examen ha sido calificado automáticamente.');
         }
@@ -658,7 +658,7 @@ class ExamenController extends Controller
     }
 
     // Publicar calificación final
-    public function publishGrade(IntentoExamen $intento)
+    public function publicarCalificacion(IntentoExamen $intento)
     {
         // Calcular puntuación total - contar por PREGUNTA, no por respuesta
         $score = 0;
@@ -693,7 +693,7 @@ class ExamenController extends Controller
         ]);
 
         // Actualizar calificación de la materia
-        $this->updateMateriaGrade($intento->alumno_id, $intento->examen->materia_id);
+        $this->actualizarCalificacionMateria($intento->alumno_id, $intento->examen->materia_id);
 
         return redirect()->back()->with('success', 'Calificación publicada correctamente.');
     }
