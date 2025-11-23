@@ -8,37 +8,37 @@
                 <p class="mt-1 text-blue-700 dark:text-blue-200">Detalles de la materia</p>
             </div>
             <div class="flex gap-3">
-                <a href="{{ route('materia.edit', $materia) }}" class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                <a href="{{ route('materia.edit', $materia) }}" class="btn-primary">
                     Editar
                 </a>
-                <a href="{{ route('materia.index') }}" class="inline-flex items-center rounded-md bg-gray-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                <a href="{{ route('materia.index') }}" class="btn-secondary">
                     Volver
                 </a>
             </div>
         </div>
 
         {{-- Tarjeta de Información General --}}
-        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-zinc-900">
+        <div class="glass-card p-6">
             <h2 class="text-lg font-semibold text-blue-900 dark:text-white mb-4">Información General</h2>
             <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
                 <div>
-                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Nombre</label>
+                    <label class="block text-sm font-medium text-blue-500 dark:text-blue-300">Nombre</label>
                     <p class="mt-1 text-lg text-blue-900 dark:text-white">{{ $materia->nombre }}</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Créditos</label>
+                    <label class="block text-sm font-medium text-blue-500 dark:text-blue-300">Créditos</label>
                     <p class="mt-1 text-lg text-blue-900 dark:text-white">{{ $materia->creditos }}</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Carrera</label>
+                    <label class="block text-sm font-medium text-blue-500 dark:text-blue-300">Carrera</label>
                     <p class="mt-1 text-lg text-blue-900 dark:text-white">{{ $materia->carrera->nombre ?? 'N/A' }}</p>
                 </div>
             </div>
         </div>
 
         {{-- Sección de Docente Asignado --}}
-        <div class="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-zinc-900">
-            <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-700">
+        <div class="glass-card overflow-hidden">
+            <div class="border-b border-blue-100 px-6 py-4 dark:border-blue-800">
                 <h2 class="text-lg font-semibold text-blue-900 dark:text-white">Docente Asignado</h2>
             </div>
 
@@ -47,12 +47,12 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-lg font-medium text-blue-900 dark:text-white">{{ $materia->docente->nombre_completo }}</p>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $materia->docente->email }}</p>
+                            <p class="text-sm text-blue-500 dark:text-blue-300">{{ $materia->docente->email }}</p>
                         </div>
                         <form action="{{ route('docente.unassignMateria', ['docente' => $materia->docente, 'materia' => $materia]) }}" method="post">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" onclick="return confirm('¿Estás seguro de desasignar a este docente?')" class="rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600">
+                            <button type="submit" onclick="return confirm('¿Estás seguro de desasignar a este docente?')" class="rounded-md bg-red-100 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-200 border border-red-200 transition-colors">
                                 Desasignar
                             </button>
                         </form>
@@ -60,19 +60,19 @@
                 </div>
             @else
                 <div class="p-6 border-b border-blue-200/50 dark:border-blue-700/50">
-                    <p class="text-center text-gray-500 dark:text-gray-400 mb-4">No hay docente asignado a esta materia.</p>
+                    <p class="text-center text-blue-500 dark:text-blue-300 mb-4">No hay docente asignado a esta materia.</p>
                     <form action="{{ route('materia.assignDocente', $materia) }}" method="post" class="flex items-end gap-4">
                         @csrf
                         <div class="flex-1">
-                            <label for="docente_id" class="block text-sm font-medium text-gray-500 dark:text-gray-400">Asignar Docente</label>
-                            <select name="docente_id" id="docente_id" required class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white">
+                            <label for="docente_id" class="block text-sm font-medium text-blue-700 dark:text-blue-300">Asignar Docente</label>
+                            <select name="docente_id" id="docente_id" required class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white">
                                 <option value="">Seleccionar docente...</option>
                                 @foreach($docentesDisponibles as $docente)
                                     <option value="{{ $docente->id }}">{{ $docente->nombre_completo }} ({{ $docente->materias_count }}/5 materias)</option>
                                 @endforeach
                             </select>
                         </div>
-                        <button type="submit" class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700">
+                        <button type="submit" class="btn-primary">
                             Asignar
                         </button>
                     </form>
@@ -81,10 +81,10 @@
         </div>
 
         {{-- Sección de Alumnos Inscritos --}}
-        <div class="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-zinc-900">
-            <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-700">
-                <h2 class="text-lg font-semibold text-blue-900 dark:text-white">Alumnos Inscritos</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Lista de alumnos que cursan esta materia.</p>
+        <div class="glass-card overflow-hidden">
+            <div class="border-b border-blue-100 px-6 py-4 dark:border-blue-800">
+                <h2 class="text-lg font-semibold text-blue-900 dark:text-white">Alumnos Inscritos ({{ $materia->alumnos->count() }}/40)</h2>
+                <p class="text-sm text-blue-500 dark:text-blue-300">Lista de alumnos que cursan esta materia.</p>
             </div>
 
             {{-- Formulario para inscribir alumno --}}
@@ -92,15 +92,15 @@
                 <form action="{{ route('materia.enroll', $materia) }}" method="post" class="flex items-end gap-4">
                     @csrf
                     <div class="flex-1">
-                        <label for="alumno_id" class="block text-sm font-medium text-gray-500 dark:text-gray-400">Inscribir Alumno</label>
-                        <select name="alumno_id" id="alumno_id" required class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white">
+                        <label for="alumno_id" class="block text-sm font-medium text-blue-700 dark:text-blue-300">Inscribir Alumno</label>
+                        <select name="alumno_id" id="alumno_id" required class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white">
                             <option value="">Seleccionar alumno...</option>
                             @foreach($alumnosNoInscritos as $alumno)
                                 <option value="{{ $alumno->id }}">{{ $alumno->nombre_completo }} ({{ $alumno->materias_count }}/5)</option>
                             @endforeach
                         </select>
                     </div>
-                    <button type="submit" class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700">
+                    <button type="submit" class="btn-primary">
                         Inscribir
                     </button>
                 </form>
@@ -128,7 +128,7 @@
                                         @method('DELETE')
                                         <input type="hidden" name="alumno_id" value="{{ $alumno->id }}">
                                         <input type="hidden" name="materia_id" value="{{ $materia->id }}">
-                                        <button type="submit" onclick="return confirm('¿Estás seguro de dar de baja a este alumno?')" class="rounded-md bg-red-500 px-3 py-1 text-sm text-white hover:bg-red-600">
+                                        <button type="submit" onclick="return confirm('¿Estás seguro de dar de baja a este alumno?')" class="rounded-md bg-red-100 px-3 py-1 text-sm text-red-700 hover:bg-red-200 border border-red-200 transition-colors">
                                             Dar de Baja
                                         </button>
                                     </form>
@@ -136,7 +136,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                                <td colspan="4" class="px-6 py-8 text-center text-blue-500 dark:text-blue-300">
                                     No hay alumnos inscritos en esta materia.
                                 </td>
                             </tr>

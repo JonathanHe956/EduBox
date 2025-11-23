@@ -5,12 +5,12 @@
                 <h1 class="text-2xl font-bold text-blue-900 dark:text-white">Editar Docente</h1>
                 <p class="mt-1 text-blue-700 dark:text-blue-200">Modifica la información del docente</p>
             </div>
-            <a href="{{ route('docente.index') }}" class="inline-flex items-center rounded-md bg-gray-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+            <a href="{{ route('docente.index') }}" class="btn-secondary">
                 Volver
             </a>
         </div>
 
-        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-zinc-900">
+        <div class="glass-card p-6 max-w-4xl mx-auto w-full">
             <script>
                 function calcularEdad() {
                     const fechaNacimiento = document.getElementById('fecha_nacimiento').value;
@@ -38,8 +38,6 @@
                     }
                     return true;
                 }
-                    return true;
-                }
 
                 function generarEmail() {
                     let nombre = document.getElementById('nombre').value.trim();
@@ -64,32 +62,32 @@
 
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                     <div>
-                        <label for="nombre" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</label>
-                        <input type="text" name="nombre" id="nombre" value="{{ old('nombre', $docente->nombre) }}" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white" required oninput="generarEmail()">
+                        <label for="nombre" class="block text-sm font-medium text-blue-700 dark:text-blue-300">Nombre</label>
+                        <input type="text" name="nombre" id="nombre" value="{{ old('nombre', $docente->nombre) }}" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white" required oninput="generarEmail()">
                         @error('nombre')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <div>
-                        <label for="apaterno" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Apellido Paterno</label>
-                        <input type="text" name="apaterno" id="apaterno" value="{{ old('apaterno', $docente->apaterno) }}" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white" required oninput="generarEmail()">
+                        <label for="apaterno" class="block text-sm font-medium text-blue-700 dark:text-blue-300">Apellido Paterno</label>
+                        <input type="text" name="apaterno" id="apaterno" value="{{ old('apaterno', $docente->apaterno) }}" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white" required oninput="generarEmail()">
                         @error('apaterno')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <div>
-                        <label for="amaterno" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Apellido Materno</label>
-                        <input type="text" name="amaterno" id="amaterno" value="{{ old('amaterno', $docente->amaterno) }}" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white" required>
+                        <label for="amaterno" class="block text-sm font-medium text-blue-700 dark:text-blue-300">Apellido Materno</label>
+                        <input type="text" name="amaterno" id="amaterno" value="{{ old('amaterno', $docente->amaterno) }}" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white" required>
                         @error('amaterno')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <div>
-                        <label for="sexo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sexo</label>
-                        <select name="sexo" id="sexo" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white" required>
+                        <label for="sexo" class="block text-sm font-medium text-blue-700 dark:text-blue-300">Sexo</label>
+                        <select name="sexo" id="sexo" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white" required>
                             <option value="">Seleccione</option>
                             <option value="M" {{ old('sexo', $docente->sexo) == 'M' ? 'selected' : '' }}>Masculino</option>
                             <option value="F" {{ old('sexo', $docente->sexo) == 'F' ? 'selected' : '' }}>Femenino</option>
@@ -100,41 +98,41 @@
                     </div>
 
                     <div>
-                        <label for="fecha_nacimiento" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de Nacimiento</label>
-                        <input type="date" name="fecha_nacimiento" id="fecha_nacimiento" value="{{ old('fecha_nacimiento', $docente->fecha_nacimiento) }}" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white" required onchange="calcularEdad(); generarEmail()">
+                        <label for="fecha_nacimiento" class="block text-sm font-medium text-blue-700 dark:text-blue-300">Fecha de Nacimiento</label>
+                        <input type="date" name="fecha_nacimiento" id="fecha_nacimiento" value="{{ old('fecha_nacimiento', $docente->fecha_nacimiento) }}" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white" required onchange="calcularEdad(); generarEmail()">
                         @error('fecha_nacimiento')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <div>
-                        <label for="edad" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Edad</label>
-                        <input type="number" name="edad" id="edad" value="{{ old('edad', $docente->edad) }}" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white" required>
+                        <label for="edad" class="block text-sm font-medium text-blue-700 dark:text-blue-300">Edad</label>
+                        <input type="number" name="edad" id="edad" value="{{ old('edad', $docente->edad) }}" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white" required>
                         @error('edad')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <div>
-                        <label for="foto" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Foto</label>
+                        <label for="foto" class="block text-sm font-medium text-blue-700 dark:text-blue-300">Foto</label>
                         @if($docente->foto)
-                            <img src="{{ asset('storage/' . $docente->foto) }}" alt="Foto actual" class="w-20 h-20 object-cover mb-2">
+                            <img src="{{ asset('storage/' . $docente->foto) }}" alt="Foto actual" class="w-20 h-20 object-cover mb-2 rounded-full border-2 border-blue-200 dark:border-blue-800">
                         @endif
-                        <input type="file" name="foto" id="foto" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white" accept="image/*">
+                        <input type="file" name="foto" id="foto" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white" accept="image/*">
                         @error('foto')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email (generado automáticamente)</label>
-                        <input type="email" name="email" id="email" value="{{ old('email', $docente->email) }}" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm bg-gray-100 dark:bg-gray-700 dark:border-gray-600 dark:text-white" readonly>
-                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">El email se genera automáticamente con nombre.apellido@example.com</p>
+                        <label for="email" class="block text-sm font-medium text-blue-700 dark:text-blue-300">Email (generado automáticamente)</label>
+                        <input type="email" name="email" id="email" value="{{ old('email', $docente->email) }}" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800 dark:text-white" readonly>
+                        <p class="mt-1 text-sm text-blue-500 dark:text-blue-400">El email se genera automáticamente con nombre.apellido@example.com</p>
                     </div>
 
                     <div class="md:col-span-2">
-                        <label for="carrera_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Carrera</label>
-                        <select name="carrera_id" id="carrera_id" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white" required>
+                        <label for="carrera_id" class="block text-sm font-medium text-blue-700 dark:text-blue-300">Carrera</label>
+                        <select name="carrera_id" id="carrera_id" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white" required>
                             <option value="">Seleccione una carrera</option>
                             @foreach($carreras as $carrera)
                                 <option value="{{ $carrera->id }}" {{ old('carrera_id', $docente->carrera_id) == $carrera->id ? 'selected' : '' }}>{{ $carrera->nombre }}</option>
@@ -147,7 +145,7 @@
                 </div>
 
                 <div class="flex justify-end mt-6">
-                    <button type="submit" class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <button type="submit" class="btn-primary">
                         Actualizar Docente
                     </button>
                 </div>

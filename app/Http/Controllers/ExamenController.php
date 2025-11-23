@@ -159,8 +159,7 @@ class ExamenController extends Controller
         }
         if (! $docente) abort(403);
 
-        // Verificar que la materia pertenece al docente (opcional pero recomendado)
-        // if ($materia->docente_id !== $docente->id) abort(403);
+        // Verificar que la materia pertenece al docente
 
         $examenes = Examen::where('materia_id', $materia->id)
             ->where('docente_id', $docente->id)

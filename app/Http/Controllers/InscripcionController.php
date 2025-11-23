@@ -23,6 +23,12 @@ class InscripcionController extends Controller
         $alumno = alumno::find($request->alumno_id);
         $materia = materia::find($request->materia_id);
 
+        // Verificar límite de alumnos
+        if ($materia->alumnos()->count() >= 40) {
+            session()->flash('error', 'La materia ha alcanzado el límite máximo de 40 alumnos.');
+            return redirect()->back();
+        }
+
         // Verificar si la carrera del alumno coincide con la de la materia
         if ($alumno->carrera_id !== $materia->carrera_id) {
             session()->flash('error', 'No se puede realizar esta acción.');
@@ -100,6 +106,12 @@ class InscripcionController extends Controller
 
         $materia = materia::find($request->materia_id);
 
+        // Verificar límite de alumnos
+        if ($materia->alumnos()->count() >= 40) {
+            session()->flash('error', 'La materia ha alcanzado el límite máximo de 40 alumnos.');
+            return redirect()->back();
+        }
+
         // Verificar si la carrera del alumno coincide con la de la materia
         if ($alumno->carrera_id !== $materia->carrera_id) {
             session()->flash('error', 'No se puede realizar esta acción.');
@@ -142,6 +154,12 @@ class InscripcionController extends Controller
         ]);
 
         $alumno = alumno::find($request->alumno_id);
+
+        // Verificar límite de alumnos
+        if ($materia->alumnos()->count() >= 40) {
+            session()->flash('error', 'La materia ha alcanzado el límite máximo de 40 alumnos.');
+            return redirect()->back();
+        }
 
         // Verificar si la carrera del alumno coincide con la de la materia
         if ($alumno->carrera_id !== $materia->carrera_id) {

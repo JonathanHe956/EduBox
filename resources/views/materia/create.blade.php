@@ -10,7 +10,7 @@
         </div>
 
         {{-- Formulario --}}
-        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-zinc-900">
+        <div class="glass-card p-6 max-w-4xl mx-auto w-full">
             @if($carreras->isEmpty())
                 <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
                     <p>No hay carreras disponibles. Por favor, crea una carrera antes de agregar una materia.</p>
@@ -21,20 +21,20 @@
 
                     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <div>
-                            <label for="nombre" class="block text-sm font-medium text-gray-500 dark:text-gray-400">Nombre de la Materia</label>
+                            <label for="nombre" class="block text-sm font-medium text-blue-700 dark:text-blue-300">Nombre de la Materia</label>
                             <input type="text" name="nombre" id="nombre" value="{{ old('nombre') }}" required
-                                   class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white">
+                                   class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white">
                             @error('nombre')
                                 <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <div>
-                            <label for="creditos" class="block text-sm font-medium text-gray-500 dark:text-gray-400">Créditos</label>
+                            <label for="creditos" class="block text-sm font-medium text-blue-700 dark:text-blue-300">Créditos</label>
                             <input type="number" name="creditos" id="creditos" value="{{ old('creditos') }}" min="4" max="5" required
-                                   class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white"
+                                   class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white"
                                    oninput="validarCreditosMateria(this)">
-                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">La materia debe tener entre 4 y 5 créditos</p>
+                            <p class="mt-1 text-xs text-blue-500 dark:text-blue-400">La materia debe tener entre 4 y 5 créditos</p>
                             @error('creditos')
                                 <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
@@ -43,9 +43,9 @@
                     </div>
 
                     <div>
-                        <label for="carrera_id" class="block text-sm font-medium text-gray-500 dark:text-gray-400">Carrera</label>
+                        <label for="carrera_id" class="block text-sm font-medium text-blue-700 dark:text-blue-300">Carrera</label>
                         <select name="carrera_id" id="carrera_id" required
-                                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white">
+                                class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white">
                             <option value="">Seleccionar carrera...</option>
                             @foreach ($carreras as $carrera)
                                 <option value="{{ $carrera->id }}" {{ old('carrera_id') == $carrera->id ? 'selected' : '' }}>
@@ -59,10 +59,10 @@
                     </div>
 
                     <div class="flex justify-end space-x-3">
-                        <a href="{{ route('materia.index') }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700">
+                        <a href="{{ route('materia.index') }}" class="btn-secondary">
                             Cancelar
                         </a>
-                        <button type="submit" class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        <button type="submit" class="btn-primary">
                             Crear Materia
                         </button>
                     </div>
