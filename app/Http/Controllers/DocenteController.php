@@ -40,8 +40,8 @@ class DocenteController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:255',
-            'apaterno' => 'required|string|max:255',
-            'amaterno' => 'required|string|max:255',
+            'apaterno' => 'nullable|string|max:255',
+            'amaterno' => 'nullable|string|max:255',
             'sexo' => 'required|in:M,F',
             'fecha_nacimiento' => 'required|date|before:-17 years|after:-80 years',
             'foto' => 'nullable|image|max:2048',
@@ -112,8 +112,8 @@ class DocenteController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:255',
-            'apaterno' => 'required|string|max:255',
-            'amaterno' => 'required|string|max:255',
+            'apaterno' => 'nullable|string|max:255',
+            'amaterno' => 'nullable|string|max:255',
             'sexo' => 'required|in:M,F',
             'fecha_nacimiento' => 'required|date|before:-17 years|after:-80 years',
             'foto' => 'nullable|image|max:2048',
