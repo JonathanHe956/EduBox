@@ -84,7 +84,7 @@
 
                     <div>
                         <label for="amaterno" class="block text-sm font-medium text-blue-700 dark:text-blue-300">Apellido Materno</label>
-                        <input type="text" name="amaterno" id="amaterno" value="{{ old('amaterno') }}" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white" required>
+                        <input type="text" name="amaterno" id="amaterno" value="{{ old('amaterno') }}" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white">
                         @error('amaterno')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
