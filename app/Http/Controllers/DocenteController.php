@@ -50,18 +50,22 @@ class DocenteController extends Controller
 
         $data = $request->except('foto');
 
+
         // Calcular edad y generar email
         $data['edad'] = Carbon::parse($request->fecha_nacimiento)->age;
 
+        // Generar email automáticamente
+        $suffix = $request->apaterno ? $request->apaterno : Carbon::parse($request->fecha_nacimiento)->year;
         $nombre = explode(' ', trim($request->nombre))[0];
-        $baseEmail = Str::lower($nombre . '.' . $request->apaterno);
+        $baseEmail = Str::lower($nombre . '.' . $suffix);
         $email = $baseEmail . '@example.com';
         $counter = 1;
         while (User::where('email', $email)->exists() || docente::where('email', $email)->exists()) {
-            $email = $baseEmail . $counter . '@example.com';
+            $email = Str::lower($nombre . '.' . $suffix . $counter) . '@example.com';
             $counter++;
         }
         $data['email'] = $email;
+
 
         // Manejar la subida de foto
         if ($request->hasFile('foto')) {
@@ -72,8 +76,13 @@ class DocenteController extends Controller
         docente::create($data);
 
         // Crear el usuario asociado
+        $nombreCompleto = $request->nombre;
+        if ($request->apaterno) {
+            $nombreCompleto .= ' ' . $request->apaterno;
+        }
+        
         User::create([
-            'name' => $request->nombre . ' ' . $request->apaterno,
+            'name' => $nombreCompleto,
             'email' => $data['email'],
             'password' => Hash::make('password'), // O una contraseña por defecto
         ])->assignRole('docente');
