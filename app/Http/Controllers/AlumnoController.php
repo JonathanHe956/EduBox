@@ -149,6 +149,13 @@ class AlumnoController extends Controller
         $alumno->sexo = $request->sexo;
         $alumno->fecha_nacimiento = $request->fecha_nacimiento;
         $alumno->edad = $edadCalculada;
+        // Validar cambio de carrera
+        if ($request->carrera_id != $alumno->carrera_id) {
+            if ($alumno->materias()->count() > 0) {
+                return back()->withErrors(['carrera_id' => 'No se puede cambiar de carrera porque el alumno tiene materias asignadas.'])->withInput();
+            }
+        }
+
         $alumno->carrera_id = $request->carrera_id;
 
         // Actualizar email si cambia nombre o apellido

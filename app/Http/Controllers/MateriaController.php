@@ -146,9 +146,13 @@ class MateriaController extends Controller
      */
     public function destroy(materia $materia)
     {
-        // Verificar si la materia tiene alumnos inscritos
+        // Verificar si la materia tiene alumnos inscritos o docente asignado
         if ($materia->alumnos()->exists()) {
             return redirect()->route('materia.index')->with('error', 'No se puede eliminar la materia porque tiene alumnos inscritos.');
+        }
+
+        if ($materia->docente()->exists()) {
+            return redirect()->route('materia.index')->with('error', 'No se puede eliminar la materia porque tiene un docente asignado.');
         }
 
         try {

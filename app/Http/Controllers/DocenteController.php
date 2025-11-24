@@ -133,6 +133,13 @@ class DocenteController extends Controller
         $data = $request->except('foto');
         $data['edad'] = Carbon::parse($request->fecha_nacimiento)->age;
 
+        // Validar cambio de carrera
+        if ($request->carrera_id != $docente->carrera_id) {
+            if ($docente->materias()->exists()) {
+                return back()->withErrors(['carrera_id' => 'No se puede cambiar de carrera porque el docente tiene materias asignadas.'])->withInput();
+            }
+        }
+
         // Manejar la subida de foto
         if ($request->hasFile('foto')) {
             // Eliminar foto anterior si existe
