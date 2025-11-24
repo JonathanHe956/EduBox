@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('alumnos', function (Blueprint $table) {
             $table->id();
             $table->string('nombre')->isNotEmpty();
-            $table->string('apaterno');
-            $table->string('amaterno');
+            $table->string('apaterno')->nullable();
+            $table->string('amaterno')->nullable();
             $table->char('sexo', 1);
             $table->dateTime('fecha_nacimiento');
             $table->Integer('edad');

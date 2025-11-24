@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('docentes', function (Blueprint $table) {
             $table->id(); // Esto crea una columna `id` de tipo UNSIGNED BIGINT
             $table->string('nombre');
-            $table->string('apaterno');
-            $table->string('amaterno');
+            $table->string('apaterno')->nullable();
+            $table->string('amaterno')->nullable();
             $table->char('sexo', 1);
             $table->date('fecha_nacimiento');
             $table->integer('edad');
