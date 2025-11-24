@@ -101,7 +101,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
 }; ?>
 
 <div class="flex min-h-screen items-center justify-center">
-    <div class="w-full max-w-md space-y-8 rounded-lg bg-white p-8 shadow-lg dark:bg-zinc-900">
+    <div class="w-full max-w-md space-y-8 p-8 glass-card">
         <div class="text-center">
             <h2 class="text-2xl font-bold text-blue-900 dark:text-white">Iniciar Sesión</h2>
             <p class="mt-2 text-sm text-blue-700 dark:text-blue-200">Ingresa tu correo electrónico y contraseña para iniciar sesión</p>

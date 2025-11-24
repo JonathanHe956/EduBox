@@ -3,7 +3,7 @@
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen glass-card antialiased">
+    <body class="min-h-screen bg-blue-900 authenticated antialiased">
 
         {{ $slot }}
 
