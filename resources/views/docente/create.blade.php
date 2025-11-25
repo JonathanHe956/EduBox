@@ -51,11 +51,11 @@
                         let suffix = apaterno ? apaterno.toLowerCase() : (fechaNacimiento ? new Date(fechaNacimiento).getFullYear() : '');
                         if (suffix) {
                             let email = nombre.toLowerCase() + '.' + suffix + '@example.com';
-                            let counter = 1;
+                            let contador = 1;
                             // Simulate checking for duplicates (in real implementation, this would be done server-side)
                             while (document.getElementById('email').dataset.usedEmails && document.getElementById('email').dataset.usedEmails.includes(email)) {
-                                email = nombre.toLowerCase() + '.' + suffix + counter + '@example.com';
-                                counter++;
+                                email = nombre.toLowerCase() + '.' + suffix + contador + '@example.com';
+                                contador++;
                             }
                             document.getElementById('email').value = email;
                         }

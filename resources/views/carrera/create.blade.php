@@ -52,23 +52,23 @@
     <script>
         function validarCreditos(input) {
             const valor = parseInt(input.value);
-            const errorElement = document.getElementById('creditos-error');
+            const elementoError = document.getElementById('creditos-error');
             
             if (isNaN(valor)) {
-                errorElement.textContent = '';
-                errorElement.classList.add('hidden');
+                elementoError.textContent = '';
+                elementoError.classList.add('hidden');
                 return;
             }
             
             if (valor < 250) {
-                errorElement.textContent = 'La carrera debe tener un mínimo de 250 créditos.';
-                errorElement.classList.remove('hidden');
+                elementoError.textContent = 'La carrera debe tener un mínimo de 250 créditos.';
+                elementoError.classList.remove('hidden');
             } else if (valor > 300) {
-                errorElement.textContent = 'La carrera no puede exceder los 300 créditos.';
-                errorElement.classList.remove('hidden');
+                elementoError.textContent = 'La carrera no puede exceder los 300 créditos.';
+                elementoError.classList.remove('hidden');
             } else {
-                errorElement.textContent = '';
-                errorElement.classList.add('hidden');
+                elementoError.textContent = '';
+                elementoError.classList.add('hidden');
             }
         }
 

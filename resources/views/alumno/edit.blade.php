@@ -45,14 +45,14 @@
                     const fechaNacimiento = document.getElementById('fecha_nacimiento').value;
                     
                     if (nombre) {
-                        // Use only the first name
+                        // Usa solo el primer nombre
                         nombre = nombre.split(' ')[0];
                         
                         let suffix = apaterno ? apaterno.toLowerCase() : (fechaNacimiento ? new Date(fechaNacimiento).getFullYear() : '');
                         if (suffix) {
                             let email = nombre.toLowerCase() + '.' + suffix + '@example.com';
-                            // Note: Duplicate checking is harder in edit without server interaction, 
-                            // but we'll keep the basic generation.
+                            // Nota: La verificación de duplicados es más difícil en edición sin interacción del servidor,
+                            // pero mantendremos la generación básica.
                             document.getElementById('email').value = email;
                         }
                     }

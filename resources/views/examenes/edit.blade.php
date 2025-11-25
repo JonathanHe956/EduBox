@@ -48,7 +48,7 @@
                     </div>
 
                     <div id="questions-container" class="space-y-6">
-                        {{-- Existing questions --}}
+                        {{-- Preguntas existentes --}}
                         @foreach($examen->preguntas as $index => $pregunta)
                             <div class="question-block glass-card p-4 relative" data-index="{{ $index }}">
                                 <button type="button" class="remove-question-btn absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl">
@@ -217,10 +217,10 @@
                 const addQuestionBtn = document.getElementById('add-question-btn');
                 const template = document.getElementById('question-template');
                 
-                // Initialize index based on existing questions
-                let questionIndex = {{ $examen->preguntas->count() }};
+                // Inicializa el índice basado en las preguntas existentes
+                let indicePregunta = {{ $examen->preguntas->count() }};
 
-                function addOption(questionBlock, questionIdx, optionIdx, isExisting = false) {
+                function agregarOpcion(questionBlock, questionIdx, optionIdx, isExisting = false) {
                     const optionsList = questionBlock.querySelector('.options-list');
                     const optDiv = document.createElement('div');
                     optDiv.className = 'flex items-center gap-2 option-item';
@@ -250,7 +250,7 @@
                             return;
                         }
                         optDiv.remove();
-                        updateOptionNumbers(questionBlock, questionIdx);
+                        actualizarNumerosOpciones(questionBlock, questionIdx);
                     });
 
                     optDiv.appendChild(checkbox);
@@ -259,7 +259,7 @@
                     optionsList.appendChild(optDiv);
                 }
 
-                function updateOptionNumbers(questionBlock, questionIdx) {
+                function actualizarNumerosOpciones(questionBlock, questionIdx) {
                     const options = questionBlock.querySelectorAll('.option-item');
                     options.forEach((opt, idx) => {
                         opt.dataset.optionIndex = idx;
@@ -277,7 +277,7 @@
                     });
                 }
 
-                function handleQuestionTypeChange(questionBlock, questionIdx) {
+                function manejarCambioTipoPregunta(questionBlock, questionIdx) {
                     const typeRadios = questionBlock.querySelectorAll('.question-type-radio');
                     const multipleContent = questionBlock.querySelector('.tipo-multiple-content');
                     const vfContent = questionBlock.querySelector('.tipo-verdadero-falso-content');
@@ -285,12 +285,12 @@
                     
                     typeRadios.forEach(radio => {
                         radio.addEventListener('change', function() {
-                            // Hide all content types
+                            // Oculta todos los tipos de contenido
                             multipleContent.style.display = 'none';
                             vfContent.style.display = 'none';
                             abiertaContent.style.display = 'none';
                             
-                            // Show selected type
+                            // Muestra el tipo seleccionado
                             if (this.value === 'multiple') {
                                 multipleContent.style.display = 'block';
                             } else if (this.value === 'verdadero_falso') {
@@ -302,95 +302,95 @@
                     });
                 }
 
-                function addQuestion() {
+                function agregarPregunta() {
                     const clone = template.content.cloneNode(true);
                     const block = clone.querySelector('.question-block');
                     const numberSpan = clone.querySelector('.question-number');
                     const removeQuestionBtn = clone.querySelector('.remove-question-btn');
                     const addOptionBtn = clone.querySelector('.add-option-btn');
 
-                    // Use a unique ID for new questions to prevent any index collision
-                    const uniqueIndex = 'new_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+                    // Usa un ID único para las nuevas preguntas para evitar colisiones de índices
+                    const indiceUnico = 'new_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
 
-                    block.dataset.index = uniqueIndex;
+                    block.dataset.index = indiceUnico;
                     
-                    // Calculate visual number based on current count
-                    const currentCount = container.querySelectorAll('.question-block').length;
-                    numberSpan.textContent = currentCount + 1;
+                    // Calcula el número visual basado en el conteo actual
+                    const conteoActual = container.querySelectorAll('.question-block').length;
+                    numberSpan.textContent = conteoActual + 1;
 
-                    // Update name attributes for all inputs
+                    // Actualiza los atributos name para todos los inputs
                     const textInput = clone.querySelector('textarea');
-                    textInput.name = textInput.name.replace(/INDEX/g, uniqueIndex);
+                    textInput.name = textInput.name.replace(/INDEX/g, indiceUnico);
                     
-                    // Update type radio names
+                    // Actualiza los nombres de los radio buttons
                     const typeRadios = clone.querySelectorAll('.question-type-radio');
                     typeRadios.forEach(radio => {
-                        radio.name = radio.name.replace(/INDEX/g, uniqueIndex);
+                        radio.name = radio.name.replace(/INDEX/g, indiceUnico);
                     });
                     
-                    // Update verdadero/falso radio names
+                    // Actualiza los nombres de los radio buttons
                     const vfRadios = clone.querySelectorAll('input[name*="vf_correcta"]');
                     vfRadios.forEach(radio => {
-                        radio.name = radio.name.replace(/INDEX/g, uniqueIndex);
+                        radio.name = radio.name.replace(/INDEX/g, indiceUnico);
                     });
                     
-                    // Update respuesta esperada textarea name
+                    // Actualiza el nombre del textarea de respuesta esperada
                     const respuestaEsperada = clone.querySelector('textarea[name*="respuesta_esperada"]');
                     if (respuestaEsperada) {
-                        respuestaEsperada.name = respuestaEsperada.name.replace(/INDEX/g, uniqueIndex);
+                        respuestaEsperada.name = respuestaEsperada.name.replace(/INDEX/g, indiceUnico);
                     }
 
-                    // Add initial 2 options (minimum required) for multiple choice
+                    // Agrega las opciones iniciales (minimum required) para el tipo multiple choice
                     for (let i = 0; i < 2; i++) {
-                        addOption(block, uniqueIndex, i);
+                        agregarOpcion(block, indiceUnico, i);
                     }
 
-                    // Add option button handler
+                    // Manejador del botón de agregar opción
                     addOptionBtn.addEventListener('click', function() {
                         const currentOptions = block.querySelectorAll('.option-item');
                         if (currentOptions.length >= 4) {
                             alert('Cada pregunta puede tener un máximo de 4 opciones.');
                             return;
                         }
-                        addOption(block, uniqueIndex, currentOptions.length);
+                        agregarOpcion(block, indiceUnico, currentOptions.length);
                     });
 
                     removeQuestionBtn.addEventListener('click', function() {
                         block.remove();
-                        updateQuestionNumbers();
+                        actualizarNumerosPregunta();
                     });
                     
-                    // Set up type change handler
-                    handleQuestionTypeChange(block, uniqueIndex);
+                    // Manejador del cambio de tipo
+                    manejarCambioTipoPregunta(block, indiceUnico);
 
                     container.appendChild(block);
-                    questionIndex++;
+                    indicePregunta++;
                 }
 
-                function updateQuestionNumbers() {
+                function actualizarNumerosPregunta() {
                     const blocks = container.querySelectorAll('.question-block');
                     blocks.forEach((block, idx) => {
                         block.querySelector('.question-number').textContent = idx + 1;
                     });
                 }
 
-                addQuestionBtn.addEventListener('click', addQuestion);
+                addQuestionBtn.addEventListener('click', agregarPregunta);
 
-                // Attach remove event to existing question buttons
+                // Manejador del evento de eliminar para las preguntas existentes
                 document.querySelectorAll('.remove-question-btn').forEach(btn => {
                     btn.addEventListener('click', function() {
                         this.closest('.question-block').remove();
-                        updateQuestionNumbers();
+                        actualizarNumerosPregunta();
                     });
                 });
 
-                // Set up type change handlers for existing questions
+                // Manejador del cambio de tipo para las preguntas existentes
                 document.querySelectorAll('.question-block').forEach(block => {
                     const questionIdx = block.dataset.index;
-                    handleQuestionTypeChange(block, questionIdx);
+                    manejarCambioTipoPregunta(block, questionIdx);
                 });
 
-                // Attach add option event to existing questions
+                // Manejador del evento de agregar opción para las preguntas existentes
                 document.querySelectorAll('.add-option-btn').forEach(btn => {
                     btn.addEventListener('click', function() {
                         const questionBlock = this.closest('.question-block');
@@ -402,11 +402,11 @@
                         }
                         
                         const questionIdx = questionBlock.dataset.index;
-                        addOption(questionBlock, questionIdx, currentOptions.length, true);
+                        agregarOpcion(questionBlock, questionIdx, currentOptions.length, true);
                     });
                 });
 
-                // Attach remove option event to existing options
+                // Manejador del evento de eliminar opción para las preguntas existentes
                 document.querySelectorAll('.remove-option-btn').forEach(btn => {
                     btn.addEventListener('click', function() {
                         const questionBlock = this.closest('.question-block');
@@ -420,64 +420,64 @@
                         const optionItem = this.closest('.option-item');
                         const questionIdx = this.dataset.questionIndex;
                         optionItem.remove();
-                        updateOptionNumbers(questionBlock, questionIdx);
+                        actualizarNumerosOpciones(questionBlock, questionIdx);
                     });
                 });
 
-                // Form validation on submit
+                // Validación del formulario al enviar
                 document.getElementById('exam-form').addEventListener('submit', function(e) {
                     const questions = container.querySelectorAll('.question-block');
-                    let hasError = false;
-                    let errorMessage = '';
+                    let tieneError = false;
+                    let mensajeError = '';
 
                     questions.forEach((question, idx) => {
-                        // Get the selected question type
-                        const selectedType = question.querySelector('.question-type-radio:checked');
-                        if (!selectedType) {
-                            hasError = true;
-                            errorMessage = `La pregunta ${idx + 1} debe tener un tipo seleccionado.`;
+                        // Obtiene el tipo de pregunta seleccionado
+                        const tipoSeleccionado = question.querySelector('.question-type-radio:checked');
+                        if (!tipoSeleccionado) {
+                            tieneError = true;
+                            mensajeError = `La pregunta ${idx + 1} debe tener un tipo seleccionado.`;
                             return;
                         }
 
-                        const questionType = selectedType.value;
+                        const tipoPregunta = tipoSeleccionado.value;
 
-                        // Validate based on question type
-                        if (questionType === 'multiple') {
-                            // Only check options if multiple choice is selected
+                        // Validación basada en el tipo de pregunta
+                        if (tipoPregunta === 'multiple') {
+                            // Solo verifica las opciones si se selecciona el tipo multiple choice
                             const multipleContent = question.querySelector('.tipo-multiple-content');
                             if (multipleContent && multipleContent.style.display !== 'none') {
                                 const options = question.querySelectorAll('.option-item');
                                 if (options.length < 2) {
-                                    hasError = true;
-                                    errorMessage = `La pregunta ${idx + 1} debe tener al menos 2 opciones.`;
+                                    tieneError = true;
+                                    mensajeError = `La pregunta ${idx + 1} debe tener al menos 2 opciones.`;
                                     return;
                                 }
 
                                 const checkedOptions = question.querySelectorAll('.tipo-multiple-content input[type="checkbox"]:checked');
                                 if (checkedOptions.length === 0) {
-                                    hasError = true;
-                                    errorMessage = `La pregunta ${idx + 1} debe tener al menos una respuesta correcta marcada.`;
+                                    tieneError = true;
+                                    mensajeError = `La pregunta ${idx + 1} debe tener al menos una respuesta correcta marcada.`;
                                     return;
                                 }
                             }
-                        } else if (questionType === 'verdadero_falso') {
-                            // Only check V/F if that type is selected
+                        } else if (tipoPregunta === 'verdadero_falso') {
+                            // Solo verifica V/F si se selecciona el tipo verdadero/falso
                             const vfContent = question.querySelector('.tipo-verdadero-falso-content');
                             if (vfContent && vfContent.style.display !== 'none') {
                                 const vfChecked = question.querySelector('.tipo-verdadero-falso-content input[name*="vf_correcta"]:checked');
                                 if (!vfChecked) {
-                                    hasError = true;
-                                    errorMessage = `La pregunta ${idx + 1} debe tener una respuesta correcta seleccionada (Verdadero o Falso).`;
+                                    tieneError = true;
+                                    mensajeError = `La pregunta ${idx + 1} debe tener una respuesta correcta seleccionada (Verdadero o Falso).`;
                                     return;
                                 }
                             }
                         }
-                        // Open-ended questions don't need special validation
+                        // Las preguntas abiertas no requieren validación especial
                     });
 
-                    if (hasError) {
+                    if (tieneError) {
                         e.preventDefault();
-                        alert(errorMessage);
+                        alert(mensajeError);
                         return false;
                     }
                 });

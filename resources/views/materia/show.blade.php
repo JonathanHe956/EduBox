@@ -1,6 +1,16 @@
 <x-layouts.app :title="_('Detalles de la Materia')">
     <div class="flex h-full w-full flex-1 flex-col gap-6 p-6">
+        @if(session('mensaje'))
+            <script>
+                alert("{{ session('mensaje') }}");
+            </script>
+        @endif
 
+        @if(session('error'))
+            <script>
+                alert("{{ session('error') }}");
+            </script>
+        @endif
         {{-- Encabezado y Botones de Acción --}}
         <div class="flex items-center justify-between">
             <div>
@@ -147,15 +157,3 @@
         </div>
     </div>
 </x-layouts.app>
-
-@if(session('mensaje'))
-    <script>
-        alert("{{ session('mensaje') }}");
-    </script>
-@endif
-
-@if(session('error'))
-    <script>
-        alert("{{ session('error') }}");
-    </script>
-@endif

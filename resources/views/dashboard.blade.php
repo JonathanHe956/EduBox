@@ -1,23 +1,15 @@
 <x-layouts.app :title="__('Panel de Control')">
     <div class="flex h-full w-full flex-1 flex-col gap-6 p-6">
-        @if(auth()->user()->hasRole('admin'))
         <div class="text-center">
             <h1 class="text-3xl font-bold text-white drop-shadow-lg">Bienvenido a EduBox</h1>
-            <p class="mt-2 text-blue-100">Administra tus recursos académicos de manera muy eficiente.</p>
-        </div>
-        @endif
-        @if(auth()->user()->hasRole('estudiante'))
-        <div class="text-center">
-            <h1 class="text-3xl font-bold text-white drop-shadow-lg">Bienvenido a EduBox</h1>
-            <p class="mt-2 text-blue-100">Esperamos que la plataforma sea de gran utilidad para ti.</p>
-        </div>
-        @endif
-        @if(auth()->user()->hasRole('docente'))
-        <div class="text-center">
-            <h1 class="text-3xl font-bold text-white drop-shadow-lg">Bienvenido a EduBox</h1>
-            <p class="mt-2 text-blue-100">Esperamos que la plataforma sea de gran utilidad para ti y tus asignaciones.</p>
-        </div>
-        @endif
+            @if(auth()->user()->hasRole('admin'))
+                <p class="mt-2 text-blue-100">Administra tus recursos académicos de manera muy eficiente.</p>
+            @elseif(auth()->user()->hasRole('estudiante'))
+                <p class="mt-2 text-blue-100">Esperamos que la plataforma sea de gran utilidad para ti.</p>
+            @elseif(auth()->user()->hasRole('docente'))
+                <p class="mt-2 text-blue-100">Esperamos que la plataforma sea de gran utilidad para ti y tus asignaciones.</p>
+            @endif
+        </div>        
 
         @if(auth()->user()->hasRole('admin'))
         <div class="glass-card p-6">
@@ -68,47 +60,38 @@
             </div>
         @endif
 
-        @if(auth()->user()->hasRole('estudiante'))
-            <div class="glass-card p-6">
-                <h3 class="text-lg font-semibold text-blue-900 dark:text-white">Mis Materias</h3>
-                <p class="mt-2 text-blue-700 dark:text-blue-200">Accede a tus asignaturas inscritas.</p>
-                <a href="{{ route('mis.materias') }}" class="mt-4 inline-block btn-blue" wire:navigate>Ver Mis Materias</a>
-            </div>
-        @elseif(auth()->user()->hasRole('docente'))
-            <div class="glass-card p-6">
-                <h3 class="text-lg font-semibold text-blue-900 dark:text-white">Mis Materias</h3>
-                <p class="mt-2 text-blue-700 dark:text-blue-200">Accede a tus asignaturas inscritas.</p>
-                <a href="{{ route('mis.materias') }}" class="mt-4 inline-block btn-blue" wire:navigate>Ver Mis Materias</a>
-            </div>
-        @endif
-
         @if(auth()->user()->hasRole('estudiante') || auth()->user()->hasRole('docente'))
-             <div class="glass-card p-6">
-                 <h3 class="text-lg font-semibold text-blue-900 dark:text-white">Actividad Reciente</h3>
-                 <div class="mt-4 space-y-4">
-                     <div class="flex items-center space-x-4">
-                         <div class="w-2 h-2 bg-gold-500 rounded-full"></div>
-                         <div>
-                             <p class="text-sm text-blue-900 dark:text-white font-medium">Bienvenido al sistema de gestión académica</p>
-                             <p class="text-xs text-blue-700 dark:text-blue-300">Puedes ver estadísticas e información del sistema aquí</p>
-                         </div>
-                     </div>
-                     <div class="flex items-center space-x-4">
-                         <div class="w-2 h-2 bg-bronze-500 rounded-full"></div>
-                         <div>
-                             <p class="text-sm text-blue-900 dark:text-white font-medium">El sistema está funcionando correctamente</p>
-                             <p class="text-xs text-blue-700 dark:text-blue-300">Todos los recursos académicos están actualizados</p>
-                         </div>
-                     </div>
-                     <div class="flex items-center space-x-4">
-                         <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
-                         <div>
-                             <p class="text-sm text-blue-900 dark:text-white font-medium">Contacta a tu administrador para acceso</p>
-                             <p class="text-xs text-blue-700 dark:text-blue-300">Para funciones de gestión, por favor contacta a un administrador</p>
+            <div class="glass-card p-6">
+                <h3 class="text-lg font-semibold text-blue-900 dark:text-white">Mis Materias</h3>
+                <p class="mt-2 text-blue-700 dark:text-blue-200">Accede a tus asignaturas inscritas.</p>
+                <a href="{{ route('mis.materias') }}" class="mt-4 inline-block btn-blue" wire:navigate>Ver Mis Materias</a>
+            </div>
+            <div class="glass-card p-6">
+                <h3 class="text-lg font-semibold text-blue-900 dark:text-white">Actividad Reciente</h3>
+                <div class="mt-4 space-y-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-2 h-2 bg-gold-500 rounded-full"></div>
+                        <div>
+                            <p class="text-sm text-blue-900 dark:text-white font-medium">Bienvenido al sistema de gestión académica</p>
+                            <p class="text-xs text-blue-700 dark:text-blue-300">Puedes ver estadísticas e información del sistema aquí</p>
                         </div>
-                     </div>
-                  </div>
-             </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="w-2 h-2 bg-bronze-500 rounded-full"></div>
+                        <div>
+                            <p class="text-sm text-blue-900 dark:text-white font-medium">El sistema está funcionando correctamente</p>
+                            <p class="text-xs text-blue-700 dark:text-blue-300">Todos los recursos académicos están actualizados</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <div>
+                            <p class="text-sm text-blue-900 dark:text-white font-medium">Contacta a tu administrador para acceso</p>
+                            <p class="text-xs text-blue-700 dark:text-blue-300">Para funciones de gestión, por favor contacta a un administrador</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         @endif
     </div>
 </x-layouts.app>

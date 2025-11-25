@@ -74,23 +74,23 @@
     <script>
         function validarCreditosMateria(input) {
             const valor = parseInt(input.value);
-            const errorElement = document.getElementById('creditos-error');
+            const elementoError = document.getElementById('creditos-error');
             
             if (isNaN(valor)) {
-                errorElement.textContent = '';
-                errorElement.classList.add('hidden');
+                elementoError.textContent = '';
+                elementoError.classList.add('hidden');
                 return;
             }
             
             if (valor < 4) {
-                errorElement.textContent = 'La materia debe tener un mínimo de 4 créditos.';
-                errorElement.classList.remove('hidden');
+                elementoError.textContent = 'La materia debe tener un mínimo de 4 créditos.';
+                elementoError.classList.remove('hidden');
             } else if (valor > 5) {
-                errorElement.textContent = 'La materia no puede exceder los 5 créditos.';
-                errorElement.classList.remove('hidden');
+                elementoError.textContent = 'La materia no puede exceder los 5 créditos.';
+                elementoError.classList.remove('hidden');
             } else {
-                errorElement.textContent = '';
-                errorElement.classList.add('hidden');
+                elementoError.textContent = '';
+                elementoError.classList.add('hidden');
             }
         }
 

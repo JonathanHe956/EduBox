@@ -47,7 +47,7 @@
                     </div>
 
                     <div id="questions-container" class="space-y-6">
-                        {{-- Questions will be added here dynamically --}}
+                        {{-- Preguntas agregadas dinámicamente --}}
                     </div>
 
                     <div class="mt-4">
@@ -106,7 +106,7 @@
                         </button>
                     </div>
                     <div class="options-list space-y-2 pl-4 border-l-2 border-blue-200/50 dark:border-blue-700/50">
-                        {{-- Options injected via JS --}}
+                        {{-- Opciones agregadas dinámicamente --}}
                     </div>
                 </div>
 
@@ -140,9 +140,9 @@
                 const addQuestionBtn = document.getElementById('add-question-btn');
                 const template = document.getElementById('question-template');
                 
-                let questionIndex = 0;
+                let indicePregunta = 0;
 
-                function addOption(questionBlock, questionIdx, optionIdx) {
+                function agregarOpcion(questionBlock, questionIdx, optionIdx) {
                     const optionsList = questionBlock.querySelector('.options-list');
                     const optDiv = document.createElement('div');
                     optDiv.className = 'flex items-center gap-2 option-item';
@@ -171,7 +171,7 @@
                             return;
                         }
                         optDiv.remove();
-                        updateOptionNumbers(questionBlock, questionIdx);
+                        actualizarNumerosOpciones(questionBlock, questionIdx);
                     });
 
                     optDiv.appendChild(checkbox);
@@ -180,7 +180,7 @@
                     optionsList.appendChild(optDiv);
                 }
 
-                function updateOptionNumbers(questionBlock, questionIdx) {
+                function actualizarNumerosOpciones(questionBlock, questionIdx) {
                     const options = questionBlock.querySelectorAll('.option-item');
                     options.forEach((opt, idx) => {
                         opt.dataset.optionIndex = idx;
@@ -193,7 +193,7 @@
                     });
                 }
 
-                function handleQuestionTypeChange(questionBlock, questionIdx) {
+                function manejarCambioTipoPregunta(questionBlock, questionIdx) {
                     const typeRadios = questionBlock.querySelectorAll('.question-type-radio');
                     const multipleContent = questionBlock.querySelector('.tipo-multiple-content');
                     const vfContent = questionBlock.querySelector('.tipo-verdadero-falso-content');
@@ -201,12 +201,12 @@
                     
                     typeRadios.forEach(radio => {
                         radio.addEventListener('change', function() {
-                            // Hide all content types
+                            // Oculta todos los tipos de contenido
                             multipleContent.style.display = 'none';
                             vfContent.style.display = 'none';
                             abiertaContent.style.display = 'none';
                             
-                            // Show selected type
+                            // Muestra el tipo seleccionado
                             if (this.value === 'multiple') {
                                 multipleContent.style.display = 'block';
                             } else if (this.value === 'verdadero_falso') {
@@ -218,131 +218,131 @@
                     });
                 }
 
-                function addQuestion() {
+                function agregarPregunta() {
                     const clone = template.content.cloneNode(true);
                     const block = clone.querySelector('.question-block');
                     const numberSpan = clone.querySelector('.question-number');
                     const removeQuestionBtn = clone.querySelector('.remove-question-btn');
                     const addOptionBtn = clone.querySelector('.add-option-btn');
 
-                    block.dataset.index = questionIndex;
-                    numberSpan.textContent = questionIndex + 1;
+                    block.dataset.index = indicePregunta;
+                    numberSpan.textContent = indicePregunta + 1;
 
-                    // Update name attributes for all inputs
+                    // Actualiza los atributos name para todos los inputs
                     const textInput = clone.querySelector('textarea');
-                    textInput.name = textInput.name.replace(/INDEX/g, questionIndex);
+                    textInput.name = textInput.name.replace(/INDEX/g, indicePregunta);
                     
-                    // Update type radio names
+                    // Actualiza los nombres de los radio buttons de tipo
                     const typeRadios = clone.querySelectorAll('.question-type-radio');
                     typeRadios.forEach(radio => {
-                        radio.name = radio.name.replace(/INDEX/g, questionIndex);
+                        radio.name = radio.name.replace(/INDEX/g, indicePregunta);
                     });
                     
-                    // Update verdadero/falso radio names
+                    // Actualiza el nombre de los radio buttons de verdadero/falso
                     const vfRadios = clone.querySelectorAll('input[name*="vf_correcta"]');
                     vfRadios.forEach(radio => {
-                        radio.name = radio.name.replace(/INDEX/g, questionIndex);
+                        radio.name = radio.name.replace(/INDEX/g, indicePregunta);
                     });
                     
-                    // Update respuesta esperada textarea name
+                    // Actualiza el nombre del textarea de respuesta esperada
                     const respuestaEsperada = clone.querySelector('textarea[name*="respuesta_esperada"]');
                     if (respuestaEsperada) {
-                        respuestaEsperada.name = respuestaEsperada.name.replace(/INDEX/g, questionIndex);
+                        respuestaEsperada.name = respuestaEsperada.name.replace(/INDEX/g, indicePregunta);
                     }
 
-                    // Add initial 2 options (minimum required) for multiple choice
+                    // Agrega 2 opciones (minimum required) para el tipo multiple choice
                     for (let i = 0; i < 2; i++) {
-                        addOption(block, questionIndex, i);
+                        agregarOpcion(block, indicePregunta, i);
                     }
 
-                    // Add option button handler
+                    // Agrega un manejador de clic al botón de agregar opción
                     addOptionBtn.addEventListener('click', function() {
                         const currentOptions = block.querySelectorAll('.option-item');
                         if (currentOptions.length >= 4) {
                             alert('Cada pregunta puede tener un máximo de 4 opciones.');
                             return;
                         }
-                        addOption(block, questionIndex, currentOptions.length);
+                        agregarOpcion(block, indicePregunta, currentOptions.length);
                     });
 
                     removeQuestionBtn.addEventListener('click', function() {
                         block.remove();
-                        updateQuestionNumbers();
+                        actualizarNumerosPregunta();
                     });
                     
-                    // Set up type change handler
-                    handleQuestionTypeChange(block, questionIndex);
+                    // Asigna el manejador de cambio de tipo de pregunta
+                    manejarCambioTipoPregunta(block, indicePregunta);
 
                     container.appendChild(block);
-                    questionIndex++;
+                    indicePregunta++;
                 }
 
-                function updateQuestionNumbers() {
+                function actualizarNumerosPregunta() {
                     const blocks = container.querySelectorAll('.question-block');
                     blocks.forEach((block, idx) => {
                         block.querySelector('.question-number').textContent = idx + 1;
                     });
                 }
 
-                addQuestionBtn.addEventListener('click', addQuestion);
+                addQuestionBtn.addEventListener('click', agregarPregunta);
 
-                // Add initial question
-                addQuestion();
+                // Agrega una pregunta inicial
+                agregarPregunta();
 
-                // Form validation on submit
+                // Validación del formulario al enviar
                 document.getElementById('exam-form').addEventListener('submit', function(e) {
                     const questions = container.querySelectorAll('.question-block');
-                    let hasError = false;
-                    let errorMessage = '';
+                    let tieneError = false;
+                    let mensajeError = '';
 
                     questions.forEach((question, idx) => {
-                        // Get the selected question type
-                        const selectedType = question.querySelector('.question-type-radio:checked');
-                        if (!selectedType) {
-                            hasError = true;
-                            errorMessage = `La pregunta ${idx + 1} debe tener un tipo seleccionado.`;
+                        // Obtiene el tipo de pregunta seleccionado
+                        const tipoSeleccionado = question.querySelector('.question-type-radio:checked');
+                        if (!tipoSeleccionado) {
+                            tieneError = true;
+                            mensajeError = `La pregunta ${idx + 1} debe tener un tipo seleccionado.`;
                             return;
                         }
 
-                        const questionType = selectedType.value;
+                        const tipoPregunta = tipoSeleccionado.value;
 
-                        // Validate based on question type
-                        if (questionType === 'multiple') {
-                            // Only check options if multiple choice is selected
+                        // Validación basada en el tipo de pregunta
+                        if (tipoPregunta === 'multiple') {
+                            // Solo verifica las opciones si se selecciona el tipo multiple choice
                             const multipleContent = question.querySelector('.tipo-multiple-content');
                             if (multipleContent && multipleContent.style.display !== 'none') {
                                 const options = question.querySelectorAll('.option-item');
                                 if (options.length < 2) {
-                                    hasError = true;
-                                    errorMessage = `La pregunta ${idx + 1} debe tener al menos 2 opciones.`;
+                                    tieneError = true;
+                                    mensajeError = `La pregunta ${idx + 1} debe tener al menos 2 opciones.`;
                                     return;
                                 }
 
                                 const checkedOptions = question.querySelectorAll('.tipo-multiple-content input[type="checkbox"]:checked');
                                 if (checkedOptions.length === 0) {
-                                    hasError = true;
-                                    errorMessage = `La pregunta ${idx + 1} debe tener al menos una respuesta correcta marcada.`;
+                                    tieneError = true;
+                                    mensajeError = `La pregunta ${idx + 1} debe tener al menos una respuesta correcta marcada.`;
                                     return;
                                 }
                             }
-                        } else if (questionType === 'verdadero_falso') {
-                            // Only check V/F if that type is selected
+                        } else if (tipoPregunta === 'verdadero_falso') {
+                            // Solo verifica V/F si se selecciona el tipo verdadero/falso
                             const vfContent = question.querySelector('.tipo-verdadero-falso-content');
                             if (vfContent && vfContent.style.display !== 'none') {
                                 const vfChecked = question.querySelector('.tipo-verdadero-falso-content input[name*="vf_correcta"]:checked');
                                 if (!vfChecked) {
-                                    hasError = true;
-                                    errorMessage = `La pregunta ${idx + 1} debe tener una respuesta correcta seleccionada (Verdadero o Falso).`;
+                                    tieneError = true;
+                                    mensajeError = `La pregunta ${idx + 1} debe tener una respuesta correcta seleccionada (Verdadero o Falso).`;
                                     return;
                                 }
                             }
                         }
-                        // Open-ended questions don't need special validation
+                        // Abierta no requiere validación especial
                     });
 
-                    if (hasError) {
+                    if (tieneError) {
                         e.preventDefault();
-                        alert(errorMessage);
+                        alert(mensajeError);
                         return false;
                     }
                 });

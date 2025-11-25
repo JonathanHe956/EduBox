@@ -24,50 +24,50 @@
 
     <script>
         (function(){
-            const optionsPerQuestion = parseInt(@json($optionsPerQuestion ?? 4));
-            const correctAnswers = parseInt(@json($correctAnswers ?? 1));
-            const container = document.getElementById('options-container');
-            const optionsCountSpan = document.getElementById('options-count');
-            const correctCountSpan = document.getElementById('correct-count');
-            const hiddenCount = document.getElementById('_options_count');
+            const opcionesPorPregunta = parseInt(@json($optionsPerQuestion ?? 4));
+            const respuestasCorrectas = parseInt(@json($correctAnswers ?? 1));
+            const contenedor = document.getElementById('options-container');
+            const spanConteoOpciones = document.getElementById('options-count');
+            const spanConteoCorrectas = document.getElementById('correct-count');
+            const conteoOculto = document.getElementById('_options_count');
 
-            optionsCountSpan.textContent = optionsPerQuestion;
-            correctCountSpan.textContent = correctAnswers;
-            hiddenCount.value = optionsPerQuestion;
+            spanConteoOpciones.textContent = opcionesPorPregunta;
+            spanConteoCorrectas.textContent = respuestasCorrectas;
+            conteoOculto.value = opcionesPorPregunta;
 
-            let correctChecked = 0;
+            let correctasMarcadas = 0;
 
-            for (let i = 0; i < optionsPerQuestion; i++) {
-                const div = document.createElement('div');
-                const input = document.createElement('input');
-                input.name = `options[${i}][text]`;
-                input.placeholder = `Opción ${String.fromCharCode(65 + i)}`;
-                input.required = i < 2; // require first two by default
-                input.className = 'border px-2 py-1 mr-2';
+            for (let i = 0; i < opcionesPorPregunta; i++) {
+                const contenedorDiv = document.createElement('div');
+                const entrada = document.createElement('input');
+                entrada.name = `options[${i}][text]`;
+                entrada.placeholder = `Opción ${String.fromCharCode(65 + i)}`;
+                entrada.required = i < 2; // require first two by default
+                entrada.className = 'border px-2 py-1 mr-2';
 
-                const label = document.createElement('label');
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.name = `options[${i}][is_correct]`;
-                checkbox.addEventListener('change', function(){
+                const etiqueta = document.createElement('label');
+                const casillaVerificacion = document.createElement('input');
+                casillaVerificacion.type = 'checkbox';
+                casillaVerificacion.name = `options[${i}][is_correct]`;
+                casillaVerificacion.addEventListener('change', function(){
                     if (this.checked) {
-                        correctChecked++;
+                        correctasMarcadas++;
                     } else {
-                        correctChecked--;
+                        correctasMarcadas--;
                     }
-                    if (correctChecked > correctAnswers) {
+                    if (correctasMarcadas > respuestasCorrectas) {
                         alert('Has excedido el número máximo de respuestas correctas permitidas.');
                         this.checked = false;
-                        correctChecked--;
+                        correctasMarcadas--;
                     }
                 });
 
-                label.appendChild(checkbox);
-                label.appendChild(document.createTextNode(' correcta'));
+                etiqueta.appendChild(casillaVerificacion);
+                etiqueta.appendChild(document.createTextNode(' correcta'));
 
-                div.appendChild(input);
-                div.appendChild(label);
-                container.appendChild(div);
+                contenedorDiv.appendChild(entrada);
+                contenedorDiv.appendChild(etiqueta);
+                contenedor.appendChild(contenedorDiv);
             }
         })();
     </script>

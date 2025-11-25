@@ -17,7 +17,7 @@
                     </div>
                 </div>
             @else
-                {{-- Score Display --}}
+                {{-- Calificacion --}}
                 <div class="mt-6 inline-block rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 p-8 shadow-lg">
                     <div class="text-white">
                         <p class="text-sm font-medium uppercase tracking-wide">Tu calificación</p>
@@ -37,7 +37,7 @@
             @endif
         </div>
 
-        {{-- Answers Review --}}
+        {{-- Revision de respuestas --}}
         @if(!$intento->isEnRevision())
             <div class="mt-8">
                 <h2 class="text-xl font-semibold text-blue-900 dark:text-white mb-4">Revisión de Respuestas</h2>
@@ -45,29 +45,29 @@
                     @foreach($intento->examen->preguntas as $index => $pregunta)
                         @php
                             $respuestas = $intento->respuestas->where('pregunta_id', $pregunta->id);
-                            $isOpenEnded = $pregunta->isAbierta();
-                            $isCorrect = false;
+                            $esAbierta = $pregunta->isAbierta();
+                            $esCorrecta = false;
                             
-                            if ($isOpenEnded) {
+                            if ($esAbierta) {
                                 $respuesta = $respuestas->first();
-                                // Consider correct if it has points (graded)
-                                $isCorrect = $respuesta && $respuesta->puntos_obtenidos > 0;
+                                // Considera correcta si tiene puntos (calificada)
+                                $esCorrecta = $respuesta && $respuesta->puntos_obtenidos > 0;
                             } else {
-                                // For multiple choice, check if all selected options are correct and no incorrect ones are selected
-                                // Logic matches controller: strict comparison of selected vs correct options
-                                $selectedOptions = $respuestas->pluck('opcion_id')->sort()->values()->all();
-                                $correctOptions = $pregunta->opciones->where('es_correcta', true)->pluck('id')->sort()->values()->all();
-                                $isCorrect = $selectedOptions == $correctOptions;
+                                // Para preguntas multiple choice, verifica si todas las opciones seleccionadas son correctas y no hay opciones incorrectas seleccionadas
+                                // La lógica coincide con el controlador: comparación estricta de las opciones seleccionadas vs las correctas
+                                $opcionesSeleccionadas = $respuestas->pluck('opcion_id')->sort()->values()->all();
+                                $opcionesCorrectas = $pregunta->opciones->where('es_correcta', true)->pluck('id')->sort()->values()->all();
+                                $esCorrecta = $opcionesSeleccionadas == $opcionesCorrectas;
                             }
                         @endphp
                         
-                        <div class="rounded-lg border {{ $isCorrect ? 'border-green-200 bg-green-50 dark:border-green-900/30 dark:bg-green-900/10' : ($isOpenEnded && (!$respuestas->first() || $respuestas->first()->puntos_obtenidos === null) ? 'border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-zinc-900' : 'border-red-200 bg-red-50 dark:border-red-900/30 dark:bg-red-900/10') }} p-6">
+                        <div class="rounded-lg border {{ $esCorrecta ? 'border-green-200 bg-green-50 dark:border-green-900/30 dark:bg-green-900/10' : ($esAbierta && (!$respuestas->first() || $respuestas->first()->puntos_obtenidos === null) ? 'border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-zinc-900' : 'border-red-200 bg-red-50 dark:border-red-900/30 dark:bg-red-900/10') }} p-6">
                             <div class="flex items-start gap-3">
-                                @if($isOpenEnded)
+                                @if($esAbierta)
                                     <svg class="h-6 w-6 flex-shrink-0 text-gray-600 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
-                                @elseif($isCorrect)
+                                @elseif($esCorrecta)
                                     <svg class="h-6 w-6 flex-shrink-0 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
@@ -81,7 +81,7 @@
                                         Pregunta {{ $index + 1 }}: {{ $pregunta->pregunta ?? '—' }}
                                     </h3>
                                     
-                                    @if($isOpenEnded)
+                                    @if($esAbierta)
                                         @php $respuesta = $respuestas->first(); @endphp
                                         <p class="mt-2 text-sm text-gray-700 dark:text-gray-300">
                                             <span class="font-medium">Tu respuesta:</span>
@@ -108,7 +108,7 @@
                                             @endif
                                         </div>
 
-                                        @if(!$isCorrect)
+                                        @if(!$esCorrecta)
                                             <div class="mt-3">
                                                 <p class="text-sm text-green-700 dark:text-green-400 font-medium mb-1">Respuesta correcta:</p>
                                                 <ul class="list-disc list-inside text-sm text-green-700 dark:text-green-400">

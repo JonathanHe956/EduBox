@@ -10,7 +10,7 @@
         <link rel="icon" href="{{ asset('favicon.svg') }}?v=2" type="image/svg+xml">
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
-        <!-- Fonts -->
+        <!-- Fondos -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
 
@@ -50,7 +50,7 @@
             </header>
 
             <main class="text-center">
-                <!-- Logo and Title -->
+                <!-- Logo y titulo -->
                 <div class="mb-12">
                     <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-gold-400 to-bronze-500 rounded-2xl mb-6 shadow-2xl">
                         <svg class="w-14 h-14 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -65,7 +65,7 @@
                     </p>
                 </div>
 
-                <!-- Features Grid -->
+                <!-- Grid de caracteristicas -->
                 <div class="grid md:grid-cols-3 gap-6 mb-12">
                     <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 hover:bg-white/15 transition-all duration-300 transform hover:scale-105">
                         <div class="w-12 h-12 bg-gradient-to-br from-gold-400 to-gold-600 rounded-lg flex items-center justify-center mx-auto mb-4">
@@ -98,7 +98,7 @@
                     </div>
                 </div>
 
-                <!-- CTA Buttons -->
+                <!-- Botones de Accion -->
                 <div class="flex gap-4 justify-center items-center">
                     @if (Route::has('login'))
                         @auth
@@ -113,7 +113,7 @@
                     @endif
                 </div>
 
-                <!-- Footer -->
+                <!-- Pie de pagina -->
                 <div class="mt-16 text-blue-200 text-sm">
                     <p>© {{ date('Y') }} EduBox. Plataforma educativa de última generación.</p>
                 </div>

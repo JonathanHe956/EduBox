@@ -19,10 +19,10 @@
                         <div>
                             @if($hasAttempt)
                                 <span class="bg-gray-200 text-gray-700 px-3 py-1 rounded cursor-not-allowed" title="Ya has realizado este examen">
-                                    Completado ({{ $intento->puntuacion == floor($intento->puntuacion) ? number_format($intento->puntuacion, 0) : number_format($intento->puntuacion, 1) }}/{{ $intento->total }})
+                                    **Finalizado** ({{ $intento->puntuacion == floor($intento->puntuacion) ? number_format($intento->puntuacion, 0) : number_format($intento->puntuacion, 1) }}/{{ $intento->total }})
                                 </span>
                             @else
-                                <a href="{{ route('examenes.show', $examen) }}" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">Realizar</a>
+                                <a href="{{ route('examenes.show', $examen) }}" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">**Realizar**</a>
                             @endif
                         </div>
                     </li>

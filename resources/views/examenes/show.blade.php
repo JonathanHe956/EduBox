@@ -20,20 +20,20 @@
         @else
             @auth
                 @php
-                    $isStudent = auth()->user()->hasRole('estudiante');
-                    $isTeacher = auth()->user()->hasRole('docente');
-                    $hasAttempted = false;
+                    $esEstudiante = auth()->user()->hasRole('estudiante');
+                    $esDocente = auth()->user()->hasRole('docente');
+                    $haIntentado = false;
                     
-                    if ($isStudent) {
+                    if ($esEstudiante) {
                         $alumno = auth()->user()->alumno ?? \App\Models\Alumno::where('email', auth()->user()->email)->first();
-                        $hasAttempted = $alumno && $examen->intentos()
+                        $haIntentado = $alumno && $examen->intentos()
                             ->where('alumno_id', $alumno->id)
                             ->where('version_anterior', false) // Solo verificar intentos de versión actual
                             ->exists();
                     }
                 @endphp
 
-                @if($isStudent && !$hasAttempted)
+                @if($esEstudiante && !$haIntentado)
                     {{-- Student exam form --}}
                     <form method="POST" action="{{ route('examenes.attempt', $examen) }}" class="space-y-6">
                         @csrf
@@ -44,7 +44,7 @@
                                 </h3>
                                 
                                 @if($pregunta->isAbierta())
-                                    {{-- Open-ended question --}}
+                                    {{-- Pregunta abierta --}}
                                     <div>
                                         <label for="answer-{{ $pregunta->id }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                             Tu respuesta:
@@ -59,10 +59,10 @@
                                         ></textarea>
                                     </div>
                                 @else
-                                    {{-- Multiple choice or True/False --}}
+                                    {{-- Pregunta multiple --}}
                                     <div class="space-y-2">
                                         @if($pregunta->tipo === 'verdadero_falso')
-                                            {{-- True/False: Radio buttons (Single selection) --}}
+                                            {{-- Pregunta Verdadero/Falso --}}
                                             @foreach($pregunta->opciones as $opcion)
                                                 <label class="flex items-center gap-3 rounded-lg border border-gray-200 p-3 cursor-pointer hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-zinc-800">
                                                     <input 
@@ -76,7 +76,7 @@
                                                 </label>
                                             @endforeach
                                         @else
-                                            {{-- Multiple Choice: Checkboxes (Multiple selection) --}}
+                                            {{-- Pregunta Multiple Choice: (Multiple seleccion) --}}
                                             @foreach($pregunta->opciones as $opcion)
                                                 <label class="flex items-center gap-3 rounded-lg border border-gray-200 p-3 cursor-pointer hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-zinc-800">
                                                     <input 
@@ -150,7 +150,7 @@
                             }
                         </script>
                     </form>
-                @elseif($isStudent && $hasAttempted)
+                @elseif($esEstudiante && $haIntentado)
                     {{-- Student has already attempted --}}
                     <div class="rounded-lg border border-yellow-200 bg-yellow-50 p-6 dark:border-yellow-900/30 dark:bg-yellow-900/20">
                         <p class="text-yellow-800 dark:text-yellow-400">Ya has completado este examen. Puedes ver tu resultado en la lista de exámenes.</p>
@@ -158,10 +158,10 @@
                             Volver a exámenes →
                         </a>
                     </div>
-                @elseif($isTeacher)
-                    {{-- Teacher view - show questions and student attempts --}}
+                @elseif($esDocente)
+                    {{--  ach--}}
                     
-                    {{-- Questions Preview --}}
+                    {{-- Preguntas del examen --}}
                     <div class="mb-8">
                         <h2 class="text-xl font-semibold text-blue-900 dark:text-white mb-4">Preguntas del Examen</h2>
                         <div class="space-y-4">
@@ -197,7 +197,7 @@
                         </div>
                     </div>
 
-                    {{-- Student Attempts --}}
+                    {{-- Intentos del examen --}}
                     @php
                         $intentos = $examen->intentos()
                             ->where('version_anterior', false) // Solo mostrar intentos de versión actual
