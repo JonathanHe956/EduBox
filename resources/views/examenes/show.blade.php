@@ -159,7 +159,7 @@
                         </a>
                     </div>
                 @elseif($esDocente)
-                    {{--  ach--}}
+                    {{-- Vista del docente --}}
                     
                     {{-- Preguntas del examen --}}
                     <div class="mb-8">
