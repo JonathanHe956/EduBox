@@ -5,6 +5,11 @@
         <div>
             <h1 class="text-2xl font-bold text-blue-900 dark:text-white">Mis Materias Inscritas</h1>
             <p class="mt-1 text-blue-700 dark:text-blue-200">Lista de asignaturas en las que estás matriculado.</p>
+            <div class="flex justify-end">
+                <a href="{{ route('dashboard') }}" class="btn-secondary" wire:navigate>
+                    Volver
+                </a>
+            </div>
         </div>
 
         {{-- Sección de Materias Inscritas --}}
@@ -17,6 +22,7 @@
                             <th scope="col" class="px-6 py-3">Nombre de la Materia</th>
                             <th scope="col" class="px-6 py-3">Créditos</th>
                             <th scope="col" class="px-6 py-3">Carrera</th>
+                            <th scope="col" class="px-6 py-3">Docente</th>
                             <th scope="col" class="px-6 py-3">Calificación</th>
                             <th scope="col" class="px-6 py-3 text-right">Acciones</th>
                         </tr>
@@ -35,6 +41,9 @@
                                 </td>
                                 <td class="px-6 py-4 text-blue-900 dark:text-white">
                                     {{ $materia->carrera->nombre ?? 'N/A' }}
+                                </td>
+                                <td class="px-6 py-4 text-blue-900 dark:text-white">
+                                    {{ $materia->docente->nombre_completo ?? 'Sin asignar' }}
                                 </td>
                                 <td class="px-6 py-4 text-blue-900 dark:text-white">
                                     {{ $materia->pivot->calificacion ?? 'N/A' }}

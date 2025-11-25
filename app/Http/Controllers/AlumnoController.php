@@ -230,7 +230,7 @@ class AlumnoController extends Controller
             $materias = collect();
         } else {
             // Obtener las materias inscritas con relaciones
-            $materias = $alumno->materias()->with('carrera')->get();
+            $materias = $alumno->materias()->with(['carrera', 'docente'])->get();
         }
 
         return view('alumno.materias', compact('materias'));

@@ -1,9 +1,23 @@
 <x-layouts.app :title="__('Panel de Control')">
     <div class="flex h-full w-full flex-1 flex-col gap-6 p-6">
+        @if(auth()->user()->hasRole('admin'))
         <div class="text-center">
             <h1 class="text-3xl font-bold text-white drop-shadow-lg">Bienvenido a EduBox</h1>
             <p class="mt-2 text-blue-100">Administra tus recursos académicos de manera muy eficiente.</p>
         </div>
+        @endif
+        @if(auth()->user()->hasRole('estudiante'))
+        <div class="text-center">
+            <h1 class="text-3xl font-bold text-white drop-shadow-lg">Bienvenido a EduBox</h1>
+            <p class="mt-2 text-blue-100">Esperamos que la plataforma sea de gran utilidad para ti.</p>
+        </div>
+        @endif
+        @if(auth()->user()->hasRole('docente'))
+        <div class="text-center">
+            <h1 class="text-3xl font-bold text-white drop-shadow-lg">Bienvenido a EduBox</h1>
+            <p class="mt-2 text-blue-100">Esperamos que la plataforma sea de gran utilidad para ti y tus asignaciones.</p>
+        </div>
+        @endif
 
         @if(auth()->user()->hasRole('admin'))
         <div class="glass-card p-6">
