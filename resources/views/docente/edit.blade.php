@@ -132,7 +132,26 @@
 
                     <div class="md:col-span-2">
                         <label for="carrera_id" class="block text-sm font-medium text-blue-700 dark:text-blue-300">Carrera</label>
-                        <select name="carrera_id" id="carrera_id" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white" required>
+                        
+                        @if($docente->materias()->exists())
+                            <div class="rounded-md bg-yellow-50 p-4 mb-2 dark:bg-yellow-900/20">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm text-yellow-700 dark:text-yellow-200">
+                                            No se puede cambiar la carrera porque el docente tiene materias asignadas.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="carrera_id" value="{{ $docente->carrera_id }}">
+                        @endif
+
+                        <select name="carrera_id" id="carrera_id" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white disabled:opacity-50 disabled:bg-gray-100 dark:disabled:bg-zinc-900" required {{ $docente->materias()->exists() ? 'disabled' : '' }}>
                             <option value="">Seleccione una carrera</option>
                             @foreach($carreras as $carrera)
                                 <option value="{{ $carrera->id }}" {{ old('carrera_id', $docente->carrera_id) == $carrera->id ? 'selected' : '' }}>{{ $carrera->nombre }}</option>

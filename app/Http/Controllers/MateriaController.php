@@ -119,6 +119,13 @@ class MateriaController extends Controller
             'creditos.max' => 'La materia no puede exceder los 5 créditos.',
         ]);
 
+        // Verificar si la materia tiene alumnos inscritos o docente asignado antes de permitir cambio de carrera
+        if (($materia->alumnos()->exists() || $materia->docente_id) && $request->carrera_id != $materia->carrera_id) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['carrera_id' => 'No se puede cambiar la carrera de una materia que tiene alumnos inscritos o un docente asignado.']);
+        }
+
         // Verificar que no se excedan los créditos totales de la carrera
         $carrera = carrera::findOrFail($request->carrera_id);
         // Calcular créditos actuales excluyendo esta materia

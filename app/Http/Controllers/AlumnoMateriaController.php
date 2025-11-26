@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\alumno;
 use App\Models\materia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AlumnoMateriaController extends Controller
 {
@@ -46,7 +47,7 @@ class AlumnoMateriaController extends Controller
         }
 
         // Verificar calificación previa en historial
-        $previousGrade = \DB::table('alumno_materias_history')
+        $previousGrade = DB::table('alumno_materias_history')
             ->where('alumno_id', $request->alumno_id)
             ->where('materia_id', $request->materia_id)
             ->orderBy('unenrolled_at', 'desc')
@@ -77,7 +78,7 @@ class AlumnoMateriaController extends Controller
         
         if ($currentEnrollment && $currentEnrollment->pivot->calificacion !== null) {
             // Guardar en historial
-            \DB::table('alumno_materias_history')->insert([
+            DB::table('alumno_materias_history')->insert([
                 'alumno_id' => $request->alumno_id,
                 'materia_id' => $request->materia_id,
                 'calificacion' => $currentEnrollment->pivot->calificacion,
@@ -177,7 +178,7 @@ class AlumnoMateriaController extends Controller
         }
 
         // Verificar calificación previa en historial
-        $previousGrade = \DB::table('alumno_materias_history')
+        $previousGrade = DB::table('alumno_materias_history')
             ->where('alumno_id', $request->alumno_id)
             ->where('materia_id', $materia->id)
             ->orderBy('unenrolled_at', 'desc')
