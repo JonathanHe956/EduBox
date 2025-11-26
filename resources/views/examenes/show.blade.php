@@ -34,7 +34,7 @@
                 @endphp
 
                 @if($esEstudiante && !$haIntentado)
-                    {{-- Student exam form --}}
+                    {{-- Formulario de examen --}}
                     <form method="POST" action="{{ route('examenes.attempt', $examen) }}" class="space-y-6">
                         @csrf
                         @foreach($examen->preguntas as $index => $pregunta)

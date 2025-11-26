@@ -51,8 +51,10 @@
                         {{-- Preguntas existentes --}}
                         @foreach($examen->preguntas as $index => $pregunta)
                             <div class="question-block glass-card p-4 relative" data-index="{{ $index }}">
-                                <button type="button" class="remove-question-btn absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl">
-                                    &times;
+                                <button type="button" class="remove-question-btn absolute top-2 right-2 text-red-400 hover:text-red-600 p-1 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors" title="Eliminar pregunta">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
                                 </button>
                                 <input type="hidden" name="questions[{{ $index }}][id]" value="{{ $pregunta->id }}">
                                 <div class="mb-3">
@@ -89,11 +91,13 @@
                                     </div>
                                     <div class="options-list space-y-2 pl-4 border-l-2 border-blue-200/50 dark:border-blue-700/50">
                                         @foreach($pregunta->opciones as $optIndex => $opcion)
-                                            <div class="flex items-center gap-2 option-item" data-option-index="{{ $optIndex }}">
+                                            <div class="flex items-center gap-2 option-item border border-transparent rounded p-1 transition-colors {{ $opcion->es_correcta ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-700' : '' }}" data-option-index="{{ $optIndex }}">
                                                 <input type="hidden" name="questions[{{ $index }}][options][{{ $optIndex }}][id]" value="{{ $opcion->id }}">
-                                                <input type="checkbox" name="questions[{{ $index }}][options][{{ $optIndex }}][is_correct]" value="1" {{ $opcion->es_correcta ? 'checked' : '' }} class="w-4 h-4">
+                                                <input type="checkbox" name="questions[{{ $index }}][options][{{ $optIndex }}][is_correct]" value="1" {{ $opcion->es_correcta ? 'checked' : '' }} class="w-4 h-4 option-checkbox">
                                                 <input type="text" name="questions[{{ $index }}][options][{{ $optIndex }}][text]" value="{{ $opcion->opcion }}" class="border rounded px-2 py-1 flex-1 text-sm">
-                                                <button type="button" class="remove-option-btn text-red-500 hover:text-red-700 font-bold text-lg" data-question-index="{{ $index }}">&times;</button>
+                                                <button type="button" class="remove-option-btn text-red-400 hover:text-red-600 p-1 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors" data-question-index="{{ $index }}" title="Eliminar opción">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                                                </button>
                                             </div>
                                         @endforeach
                                     </div>
@@ -147,8 +151,10 @@
 
         <template id="question-template">
             <div class="question-block glass-card p-4 relative">
-                <button type="button" class="remove-question-btn absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl">
-                    &times;
+                <button type="button" class="remove-question-btn absolute top-2 right-2 text-red-400 hover:text-red-600 p-1 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors" title="Eliminar pregunta">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
                 </button>
                 <div class="mb-3">
                     <label class="block font-medium text-sm mb-1">Pregunta <span class="question-number"></span></label>
@@ -238,10 +244,25 @@
                     text.className = 'border rounded px-2 py-1 flex-1 text-sm';
                     text.placeholder = `Opción ${optionIdx + 1}`;
 
+                    // Highlight container if correct
+                    checkbox.addEventListener('change', function() {
+                        if (this.checked) {
+                            optDiv.classList.add('bg-green-50', 'border-green-200', 'dark:bg-green-900/20', 'dark:border-green-700');
+                            optDiv.classList.remove('border-transparent');
+                        } else {
+                            optDiv.classList.remove('bg-green-50', 'border-green-200', 'dark:bg-green-900/20', 'dark:border-green-700');
+                            optDiv.classList.add('border-transparent');
+                        }
+                    });
+
+                    // Initial state
+                    optDiv.classList.add('border', 'border-transparent', 'rounded', 'p-1', 'transition-colors');
+
                     const removeBtn = document.createElement('button');
                     removeBtn.type = 'button';
-                    removeBtn.className = 'remove-option-btn text-red-500 hover:text-red-700 font-bold text-lg';
-                    removeBtn.innerHTML = '&times;';
+                    removeBtn.className = 'remove-option-btn text-red-400 hover:text-red-600 p-1 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors';
+                    removeBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>';
+                    removeBtn.title = "Eliminar opción";
                     removeBtn.dataset.questionIndex = questionIdx;
                     removeBtn.addEventListener('click', function() {
                         const optionItems = questionBlock.querySelectorAll('.option-item');
@@ -479,6 +500,21 @@
                         e.preventDefault();
                         alert(mensajeError);
                         return false;
+                    }
+                });
+                // Inicializar listeners para opciones existentes
+                document.querySelectorAll('.option-item').forEach(item => {
+                    const checkbox = item.querySelector('input[type="checkbox"]');
+                    if (checkbox) {
+                        checkbox.addEventListener('change', function() {
+                            if (this.checked) {
+                                item.classList.add('bg-green-50', 'border-green-200', 'dark:bg-green-900/20', 'dark:border-green-700');
+                                item.classList.remove('border-transparent');
+                            } else {
+                                item.classList.remove('bg-green-50', 'border-green-200', 'dark:bg-green-900/20', 'dark:border-green-700');
+                                item.classList.add('border-transparent');
+                            }
+                        });
                     }
                 });
             });
