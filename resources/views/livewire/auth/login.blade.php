@@ -57,13 +57,21 @@ new #[Layout('components.layouts.auth')] class extends Component {
      */
     protected function validateCredentials(): User
     {
-        $user = Auth::getProvider()->retrieveByCredentials(['email' => $this->email, 'password' => $this->password]);
+        $user = User::where('email', $this->email)->first();
 
-        if (! $user || ! Auth::getProvider()->validateCredentials($user, ['password' => $this->password])) {
+        if (! $user) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
+                'email' => 'No existe una cuenta con este correo electrónico.',
+            ]);
+        }
+
+        if (! Auth::getProvider()->validateCredentials($user, ['password' => $this->password])) {
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'password' => 'La contraseña es incorrecta.',
             ]);
         }
 
@@ -107,37 +115,42 @@ new #[Layout('components.layouts.auth')] class extends Component {
             <p class="mt-2 text-sm text-blue-700 dark:text-blue-200">Ingresa tu correo electrónico y contraseña para iniciar sesión</p>
         </div>
 
-        <!-- Session Status -->
+        <!-- Estado de sesión -->
         <x-auth-session-status class="text-center" :status="session('status')" />
 
-        <form method="POST" wire:submit="login" class="space-y-6">
-            <!-- Email Address -->
+        <form method="POST" wire:submit="login" class="space-y-6" action="#">
+            <!-- Correo electrónico -->
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Correo electrónico</label>
                 <input
                     wire:model="email"
                     id="email"
+                    name="email"
                     type="email"
                     required
                     autofocus
                     autocomplete="email"
                     placeholder="correo@ejemplo.com"
-                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white"
+                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white @error('email') border-red-500 dark:border-red-500 @enderror"
                 />
+                @error('email')
+                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                @enderror
             </div>
 
-            <!-- Password -->
+            <!-- Contraseña -->
             <div>
                 <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Contraseña</label>
                 <div class="relative">
                     <input
                         wire:model="password"
                         id="password"
+                        name="password"
                         type="password"
                         required
                         autocomplete="current-password"
                         placeholder="Contraseña"
-                        class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white"
+                        class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white @error('password') border-red-500 dark:border-red-500 @enderror"
                     />
                     @if (Route::has('password.request'))
                         <a class="absolute right-3 top-3 text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400" href="{{ route('password.request') }}" wire:navigate>
@@ -145,17 +158,23 @@ new #[Layout('components.layouts.auth')] class extends Component {
                         </a>
                     @endif
                 </div>
+                @error('password')
+                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                @enderror
             </div>
 
-            <!-- Remember Me -->
+            <!-- Recordarme -->
             <div class="flex items-center">
-                <input
-                    wire:model="remember"
-                    id="remember"
-                    type="checkbox"
-                    class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-zinc-800"
-                />
-                <label for="remember" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">Recordarme</label>
+                <label for="remember" class="flex items-center cursor-pointer">
+                    <input
+                        wire:model="remember"
+                        id="remember"
+                        name="remember"
+                        type="checkbox"
+                        class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-zinc-800"
+                    />
+                    <span class="ml-2 block text-sm text-gray-900 dark:text-gray-300">Recordarme</span>
+                </label>
             </div>
 
             <div>
