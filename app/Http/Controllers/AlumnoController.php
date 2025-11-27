@@ -171,6 +171,21 @@ class AlumnoController extends Controller
                     $email = strtolower($nombre . '.' . $suffix . $counter . '@example.com');
                     $counter++;
                 }
+                
+                // Actualizar también el usuario asociado para mantener el acceso y la consistencia de datos
+                $user = \App\Models\User::where('email', $alumno->email)->first();
+                if ($user) {
+                    $nombreCompleto = $request->nombre;
+                    if ($request->apaterno) {
+                        $nombreCompleto .= ' ' . $request->apaterno;
+                    }
+                    
+                    $user->update([
+                        'name' => $nombreCompleto,
+                        'email' => $email,
+                    ]);
+                }
+
                 $alumno->email = $email;
             }
         }
