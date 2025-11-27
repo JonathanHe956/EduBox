@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('titulo');
             $table->text('descripcion')->nullable();
             $table->integer('cantidad_preguntas')->default(0);
-            $table->integer('options_per_question')->default(4);
-            $table->integer('correct_answers')->default(1);
+            $table->integer('opciones_por_pregunta')->default(4);
+            $table->integer('respuestas_correctas')->default(1);
             $table->timestamps();
         });
         }

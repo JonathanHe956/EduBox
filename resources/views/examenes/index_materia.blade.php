@@ -52,7 +52,7 @@
                                     </td>
                                     <td class="px-6 py-4">
                                         <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
-                                            {{ $ex->options_per_question ?? 4 }} opciones
+                                            {{ $ex->opciones_por_pregunta ?? 4 }} opciones
                                         </span>
                                     </td>
                                     <td class="px-6 py-4">

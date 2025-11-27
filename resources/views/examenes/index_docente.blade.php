@@ -23,7 +23,7 @@
                         <tr class="border-t">
                             <td class="px-4 py-2">{{ $ex->titulo }}</td>
                             <td class="px-4 py-2">{{ $ex->preguntas_count }}</td>
-                            <td class="px-4 py-2">{{ $ex->options_per_question ?? 4 }} / {{ $ex->correct_answers ?? 1 }}</td>
+                            <td class="px-4 py-2">{{ $ex->opciones_por_pregunta ?? 4 }} / {{ $ex->respuestas_correctas ?? 1 }}</td>
                             <td class="px-4 py-2">
                                 <a href="{{ route('examenes.show', $ex) }}" class="text-sm text-blue-600 mr-2">Ver</a>
                                 <a href="{{ route('examenes.edit', $ex) }}" class="text-sm text-yellow-600 mr-2">Editar</a>

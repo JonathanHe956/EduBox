@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('respuesta_correcta_abierta')->nullable();
             $table->timestamps();
 
-            $table->foreign('examen_id')->references('id')->on('exams')->onDelete('cascade');
+            $table->foreign('examen_id')->references('id')->on('examenes')->onDelete('cascade');
         });
     }
 

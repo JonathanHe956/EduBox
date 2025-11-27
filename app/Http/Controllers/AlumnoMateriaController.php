@@ -47,10 +47,10 @@ class AlumnoMateriaController extends Controller
         }
 
         // Verificar calificación previa en historial
-        $previousGrade = DB::table('alumno_materias_history')
+        $previousGrade = DB::table('alumno_materias_historial')
             ->where('alumno_id', $request->alumno_id)
             ->where('materia_id', $request->materia_id)
-            ->orderBy('unenrolled_at', 'desc')
+            ->orderBy('fecha_baja', 'desc')
             ->first();
 
         $alumno->materias()->attach($request->materia_id, [
@@ -78,11 +78,11 @@ class AlumnoMateriaController extends Controller
         
         if ($currentEnrollment && $currentEnrollment->pivot->calificacion !== null) {
             // Guardar en historial
-            DB::table('alumno_materias_history')->insert([
+            DB::table('alumno_materias_historial')->insert([
                 'alumno_id' => $request->alumno_id,
                 'materia_id' => $request->materia_id,
                 'calificacion' => $currentEnrollment->pivot->calificacion,
-                'unenrolled_at' => now(),
+                'fecha_baja' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -129,10 +129,10 @@ class AlumnoMateriaController extends Controller
         }
 
         // Verificar calificación previa en historial
-        $previousGrade = \DB::table('alumno_materias_history')
+        $previousGrade = \DB::table('alumno_materias_historial')
             ->where('alumno_id', $alumno->id)
             ->where('materia_id', $request->materia_id)
-            ->orderBy('unenrolled_at', 'desc')
+            ->orderBy('fecha_baja', 'desc')
             ->first();
 
         $alumno->materias()->attach($request->materia_id, [
@@ -178,10 +178,10 @@ class AlumnoMateriaController extends Controller
         }
 
         // Verificar calificación previa en historial
-        $previousGrade = DB::table('alumno_materias_history')
+        $previousGrade = DB::table('alumno_materias_historial')
             ->where('alumno_id', $request->alumno_id)
             ->where('materia_id', $materia->id)
-            ->orderBy('unenrolled_at', 'desc')
+            ->orderBy('fecha_baja', 'desc')
             ->first();
 
         $materia->alumnos()->attach($request->alumno_id, [

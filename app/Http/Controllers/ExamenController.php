@@ -40,8 +40,8 @@ class ExamenController extends Controller
                 'titulo' => $request->input('title'),
                 'descripcion' => $request->input('description'),
                 'cantidad_preguntas' => 0,
-                'options_per_question' => 4,
-                'correct_answers' => 1,
+                'opciones_por_pregunta' => 4,
+                'respuestas_correctas' => 1,
             ]);
 
             if ($request->has('questions')) {

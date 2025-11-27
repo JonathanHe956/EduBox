@@ -127,7 +127,7 @@
                     <div>
                         <label for="email" class="block text-sm font-medium text-blue-700 dark:text-blue-300">Email (generado automáticamente)</label>
                         <input type="email" name="email" id="email" value="{{ old('email', $docente->email) }}" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800 dark:text-white" readonly>
-                        <p class="mt-1 text-sm text-blue-500 dark:text-blue-400">El email se genera automáticamente con nombre.apellido@example.com</p>
+                        <p class="mt-1 text-sm text-blue-500 dark:text-blue-400">El email se genera automáticamente basado en el nombre y apellido paterno, o fecha de nacimiento si no hay apellido, el correo puede sufrir cambios al momento de guardarse depende a la disponibilidad.</p>
                     </div>
 
                     <div class="md:col-span-2">

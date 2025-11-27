@@ -23,7 +23,7 @@ return new class extends Migration
             $table->boolean('version_anterior')->default(false);
             $table->timestamps();
 
-            $table->foreign('examen_id')->references('id')->on('exams')->onDelete('cascade');
+            $table->foreign('examen_id')->references('id')->on('examenes')->onDelete('cascade');
             $table->foreign('alumno_id')->references('id')->on('alumnos')->onDelete('cascade');
             $table->foreign('revisado_por')->references('id')->on('docentes')->onDelete('set null');
         });

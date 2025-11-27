@@ -17,8 +17,8 @@ class StoreExamRequest extends FormRequest
         return [
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'options_per_question' => 'nullable|integer|min:2|max:8',
-            'correct_answers' => 'nullable|integer|min:1|max:8',
+            'opciones_por_pregunta' => 'nullable|integer|min:2|max:8',
+            'respuestas_correctas' => 'nullable|integer|min:1|max:8',
             'questions' => 'nullable|array',
             'questions.*.text' => 'nullable|string',
             'questions.*.options' => 'nullable|array',

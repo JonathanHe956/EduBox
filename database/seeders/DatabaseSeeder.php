@@ -20,14 +20,6 @@ class DatabaseSeeder extends Seeder
         $studentRole = Role::firstOrCreate(['name' => 'estudiante']);
         $docenteRole = Role::firstOrCreate(['name' => 'docente']);
 
-        // Crear permisos (si es necesario)
-        // Permission::create(['name' => 'view grades']);
-        // Permission::create(['name' => 'manage users']);
-
-        // Asignar permisos a roles (si es necesario)
-        // $adminRole->givePermissionTo(['view grades', 'manage users']);
-        // $studentRole->givePermissionTo(['view grades']);
-
         // Crear usuarios de ejemplo y asignar roles (usar firstOrCreate para evitar duplicados)
         $admin = User::firstOrCreate([
             'email' => 'admin@example.com',
@@ -45,11 +37,13 @@ class DatabaseSeeder extends Seeder
         ]);
         $student->assignRole('estudiante');
 
-        // Crear datos de ejemplo para alumnos y docentes
-        $carrera = \App\Models\carrera::firstOrCreate([
-            'nombre' => 'Ingeniería en TICs',
-            'creditos' => 240,
+        $docente = User::firstOrCreate([
+            'email' => 'docente@example.com',
+        ], [
+            'name' => 'Docente',
+            'password' => bcrypt('password'),
         ]);
+        $docente->assignRole('docente');
 
         // Asignar rol 'estudiante' a todos los alumnos existentes
         $alumnos = \App\Models\alumno::all();

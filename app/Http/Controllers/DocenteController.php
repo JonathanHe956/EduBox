@@ -149,6 +149,20 @@ class DocenteController extends Controller
             $data['foto'] = $request->file('foto')->store('fotos_docentes', 'public');
         }
 
+        // Actualizar también el usuario asociado para mantener el acceso y la consistencia de datos
+        $user = User::where('email', $docente->email)->first();
+        if ($user) {
+            $nombreCompleto = $request->nombre;
+            if ($request->apaterno) {
+                $nombreCompleto .= ' ' . $request->apaterno;
+            }
+            
+            $user->update([
+                'name' => $nombreCompleto,
+                'email' => $data['email'],
+            ]);
+        }
+
         $docente->update($data);
 
         return redirect()->route('docente.index')->with('mensaje', 'Docente actualizado exitosamente.');

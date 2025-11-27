@@ -77,14 +77,14 @@
                         </div>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <div class="w-2 h-2 bg-bronze-500 rounded-full"></div>
+                        <div class="w-2 h-2 bg-gold-500 rounded-full"></div>
                         <div>
                             <p class="text-sm text-blue-900 dark:text-white font-medium">El sistema está funcionando correctamente</p>
                             <p class="text-xs text-blue-700 dark:text-blue-300">Todos los recursos académicos están actualizados</p>
                         </div>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <div class="w-2 h-2 bg-gold-500 rounded-full"></div>
                         <div>
                             <p class="text-sm text-blue-900 dark:text-white font-medium">Contacta a tu administrador para acceso</p>
                             <p class="text-xs text-blue-700 dark:text-blue-300">Para funciones de gestión, por favor contacta a un administrador</p>

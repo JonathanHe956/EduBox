@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('materias', function (Blueprint $table) {
             $table->id();
             $table->string('nombre')->unique();
-            $table->integer('creditos')->isNotEmpty();
+            $table->integer('creditos');
             $table->unsignedBigInteger('carrera_id');
             $table->unsignedBigInteger('docente_id')->nullable();
             $table->foreign('carrera_id')->references('id')->on('carreras')->onDelete('cascade');
