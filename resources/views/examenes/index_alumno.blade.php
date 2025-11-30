@@ -9,7 +9,7 @@
                 @foreach($examenes as $examen)
                     @php
                         $intento = $examen->intentos->first();
-                        $hasAttempt = $intento !== null;
+                        $tieneIntento = $intento !== null;
                     @endphp
                     <li class="border rounded p-3 flex justify-between items-center">
                         <div>
@@ -17,7 +17,7 @@
                             <div class="text-sm text-gray-600">{{ $examen->descripcion }}</div>
                         </div>
                         <div>
-                            @if($hasAttempt)
+                            @if($tieneIntento)
                                 <span class="bg-gray-200 text-gray-700 px-3 py-1 rounded cursor-not-allowed" title="Ya has realizado este examen">
                                     **Finalizado** ({{ $intento->puntuacion == floor($intento->puntuacion) ? number_format($intento->puntuacion, 0) : number_format($intento->puntuacion, 1) }}/{{ $intento->total }})
                                 </span>

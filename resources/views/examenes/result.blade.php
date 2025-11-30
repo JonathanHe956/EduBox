@@ -1,15 +1,21 @@
-<x-layouts.app :title="__('Resultado del Examen')">
+<x-layouts.app :title="'Resultado: ' . $intento->examen->titulo">
     <div class="px-4 py-6 max-w-4xl mx-auto">
+        <div class="mb-6 text-center">
+            <h1 class="text-2xl font-semibold text-blue-900 dark:text-white">Resultado: {{ $intento->examen->titulo }}</h1>
+            <p class="mt-1 text-sm text-blue-700 dark:text-blue-200">
+                Realizado el {{ $intento->created_at->format('d/m/Y H:i') }}
+            </p>
+        </div>
+
         <div class="mb-8 text-center">
-            <h1 class="text-3xl font-bold text-blue-900 dark:text-white">Resultado del Examen</h1>
-            
             @if($intento->isEnRevision())
-                {{-- Exam is under review --}}
-                <div class="mt-6 rounded-lg bg-yellow-50 border border-yellow-200 p-8 dark:bg-yellow-900/20 dark:border-yellow-900/30">
-                    <div class="flex items-center justify-center gap-3 text-yellow-800 dark:text-yellow-400">
-                        <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+                <div class="rounded-lg border border-yellow-200 bg-yellow-50 p-6 dark:border-yellow-900/30 dark:bg-yellow-900/20">
+                    <div class="flex items-center justify-center gap-4">
+                        <div class="rounded-full bg-yellow-100 p-2 text-yellow-600 dark:bg-yellow-900/50 dark:text-yellow-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
                         <div>
                             <p class="text-lg font-semibold">Examen en Revisión</p>
                             <p class="mt-1 text-sm">Tu examen está siendo revisado por el docente. La calificación final estará disponible pronto.</p>
@@ -17,7 +23,7 @@
                     </div>
                 </div>
             @else
-                {{-- Calificacion --}}
+                {{-- Calificación --}}
                 <div class="mt-6 inline-block rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 p-8 shadow-lg">
                     <div class="text-white">
                         <p class="text-sm font-medium uppercase tracking-wide">Tu calificación</p>
@@ -37,7 +43,7 @@
             @endif
         </div>
 
-        {{-- Revision de respuestas --}}
+        {{-- Revisión de respuestas --}}
         @if(!$intento->isEnRevision())
             <div class="mt-8">
                 <h2 class="text-xl font-semibold text-blue-900 dark:text-white mb-4">Revisión de Respuestas</h2>
@@ -87,7 +93,7 @@
                                             <span class="font-medium">Tu respuesta:</span>
                                         </p>
                                         <div class="mt-1 rounded bg-white dark:bg-zinc-800 p-3 text-sm text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
-                                            {{ $respuesta->respuesta_abierta ?? 'No respondida' }}
+                                            {{ optional($respuesta)->respuesta_abierta ?? 'No respondida' }}
                                         </div>
                                         @if($respuesta && $respuesta->puntos_obtenidos !== null)
                                             <p class="mt-2 text-sm font-medium text-indigo-600 dark:text-indigo-400">
@@ -102,7 +108,7 @@
                                             @else
                                                 <ul class="list-disc list-inside text-sm text-gray-700 dark:text-gray-300">
                                                     @foreach($respuestas as $resp)
-                                                        <li>{{ $resp->opcion->opcion ?? 'Opción eliminada' }}</li>
+                                                        <li>{{ optional($resp->opcion)->opcion ?? 'Opción eliminada' }}</li>
                                                     @endforeach
                                                 </ul>
                                             @endif

@@ -39,7 +39,7 @@
                             @foreach($examenes as $ex)
                                 @php
                                     $intento = $ex->intentos->first();
-                                    $hasAttempt = $intento !== null;
+                                    $tieneIntento = $intento !== null;
                                 @endphp
                                 <tr class="border-b border-blue-200/50 dark:border-blue-700/50 hover:bg-blue-50/50 dark:hover:bg-blue-900/30 transition-colors duration-150">
                                     <td class="px-6 py-4">
@@ -52,7 +52,7 @@
                                         {{ $ex->preguntas_count }} preguntas
                                     </td>
                                     <td class="px-6 py-4">
-                                        @if($hasAttempt)
+                                        @if($tieneIntento)
                                             <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
                                                 Completado: {{ $intento->puntuacion == floor($intento->puntuacion) ? number_format($intento->puntuacion, 0) : number_format($intento->puntuacion, 1) }}/{{ $intento->total }}
                                             </span>
@@ -64,7 +64,7 @@
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center justify-end gap-2">
-                                            @if($hasAttempt)
+                                            @if($tieneIntento)
                                                 <a href="{{ route('examenes.result', $intento) }}" class="btn-blue px-3 py-1 text-xs">
                                                     Ver Resultado
                                                 </a>

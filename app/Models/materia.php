@@ -25,4 +25,9 @@ class materia extends Model
     {
         return $this->belongsTo(docente::class);
     }
+
+    public function examenes()
+    {
+        return $this->hasMany(examen::class, 'materia_id');
+    }
 }

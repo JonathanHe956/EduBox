@@ -44,48 +44,52 @@ class ExamenController extends Controller
                 'respuestas_correctas' => 1,
             ]);
 
+            if (!$request->has('questions') || count($request->input('questions')) < 1) {
+                throw new \Exception("El examen debe tener al menos una pregunta.");
+            }
+
             if ($request->has('questions')) {
-                foreach ($request->input('questions') as $qIndex => $qData) {
-                    $tipo = $qData['tipo'] ?? 'multiple';
+                foreach ($request->input('questions') as $indiceP => $datosP) {
+                    $tipo = $datosP['tipo'] ?? 'multiple';
                     
                     // Validar según el tipo de pregunta
                     if ($tipo === 'multiple') {
-                        if (!isset($qData['options']) || count($qData['options']) < 2) {
-                            throw new \Exception("La pregunta " . ($qIndex + 1) . " debe tener al menos 2 opciones.");
+                        if (!isset($datosP['options']) || count($datosP['options']) < 2) {
+                            throw new \Exception("La pregunta " . ($indiceP + 1) . " debe tener al menos 2 opciones.");
                         }
                         
-                        $hasCorrectAnswer = false;
-                        foreach ($qData['options'] as $optData) {
-                            if (isset($optData['is_correct'])) {
-                                $hasCorrectAnswer = true;
+                        $tieneRespuestaCorrecta = false;
+                        foreach ($datosP['options'] as $datosO) {
+                            if (isset($datosO['is_correct'])) {
+                                $tieneRespuestaCorrecta = true;
                                 break;
                             }
                         }
                         
-                        if (!$hasCorrectAnswer) {
-                            throw new \Exception("La pregunta " . ($qIndex + 1) . " debe tener al menos una respuesta correcta.");
+                        if (!$tieneRespuestaCorrecta) {
+                            throw new \Exception("La pregunta " . ($indiceP + 1) . " debe tener al menos una respuesta correcta.");
                         }
                     } elseif ($tipo === 'verdadero_falso') {
-                        if (!isset($qData['vf_correcta'])) {
-                            throw new \Exception("La pregunta " . ($qIndex + 1) . " debe tener una respuesta correcta seleccionada.");
+                        if (!isset($datosP['vf_correcta'])) {
+                            throw new \Exception("La pregunta " . ($indiceP + 1) . " debe tener una respuesta correcta seleccionada.");
                         }
                     }
 
                     // Crear la pregunta
                     $pregunta = pregunta::create([
                         'examen_id' => $examen->id,
-                        'pregunta' => $qData['text'],
+                        'pregunta' => $datosP['text'],
                         'tipo' => $tipo,
-                        'respuesta_correcta_abierta' => $qData['respuesta_esperada'] ?? null,
+                        'respuesta_correcta_abierta' => $datosP['respuesta_esperada'] ?? null,
                     ]);
 
                     // Crear opciones según el tipo
-                    if ($tipo === 'multiple' && isset($qData['options'])) {
-                        foreach ($qData['options'] as $optData) {
+                    if ($tipo === 'multiple' && isset($datosP['options'])) {
+                        foreach ($datosP['options'] as $datosO) {
                             opcion::create([
                                 'pregunta_id' => $pregunta->id,
-                                'opcion' => $optData['text'],
-                                'es_correcta' => isset($optData['is_correct']),
+                                'opcion' => $datosO['text'],
+                                'es_correcta' => isset($datosO['is_correct']),
                             ]);
                         }
                     } elseif ($tipo === 'verdadero_falso') {
@@ -93,12 +97,12 @@ class ExamenController extends Controller
                         opcion::create([
                             'pregunta_id' => $pregunta->id,
                             'opcion' => 'Verdadero',
-                            'es_correcta' => $qData['vf_correcta'] === 'verdadero',
+                            'es_correcta' => $datosP['vf_correcta'] === 'verdadero',
                         ]);
                         opcion::create([
                             'pregunta_id' => $pregunta->id,
                             'opcion' => 'Falso',
-                            'es_correcta' => $qData['vf_correcta'] === 'falso',
+                            'es_correcta' => $datosP['vf_correcta'] === 'falso',
                         ]);
                     }
                     // Las preguntas abiertas no tienen opciones
@@ -179,8 +183,8 @@ class ExamenController extends Controller
         if (! $alumno) abort(403);
 
         // Verificar que el alumno está inscrito en la materia
-        $isEnrolled = $alumno->materias()->where('materias.id', $materia->id)->exists();
-        if (!$isEnrolled) abort(403, 'No estás inscrito en esta materia');
+        $estaInscrito = $alumno->materias()->where('materias.id', $materia->id)->exists();
+        if (!$estaInscrito) abort(403, 'No estás inscrito en esta materia');
 
         // Obtener exámenes de la materia con información de intentos del alumno
         $examenes = examen::where('materia_id', $materia->id)
@@ -230,68 +234,78 @@ class ExamenController extends Controller
                     'descripcion' => $request->input('description'),
                 ]);
 
-                // Sincronizar preguntas
-                $incomingQuestionIds = [];
+                // Validar que haya al menos una pregunta (existente o nueva)
+                $totalPreguntas = 0;
                 if ($request->has('questions')) {
-                    foreach ($request->input('questions') as $index => $qData) {
-                        $tipo = $qData['tipo'] ?? 'multiple';
+                    $totalPreguntas = count($request->input('questions'));
+                }
+                
+                if ($totalPreguntas < 1) {
+                    throw new \Exception("El examen debe tener al menos una pregunta.");
+                }
+
+                // Sincronizar preguntas
+                $idsPreguntasEntrantes = [];
+                if ($request->has('questions')) {
+                    foreach ($request->input('questions') as $indice => $datosP) {
+                        $tipo = $datosP['tipo'] ?? 'multiple';
                         
                         // Validar según el tipo de pregunta
                         if ($tipo === 'multiple') {
-                            if (!isset($qData['options']) || count($qData['options']) < 2) {
-                                throw new \Exception("La pregunta " . ($index + 1) . " debe tener al menos 2 opciones.");
+                            if (!isset($datosP['options']) || count($datosP['options']) < 2) {
+                                throw new \Exception("La pregunta " . ($indice + 1) . " debe tener al menos 2 opciones.");
                             }
                             
-                            $hasCorrectAnswer = false;
-                            foreach ($qData['options'] as $optData) {
-                                if (isset($optData['is_correct'])) {
-                                    $hasCorrectAnswer = true;
+                            $tieneRespuestaCorrecta = false;
+                            foreach ($datosP['options'] as $datosO) {
+                                if (isset($datosO['is_correct'])) {
+                                    $tieneRespuestaCorrecta = true;
                                     break;
                                 }
                             }
                             
-                            if (!$hasCorrectAnswer) {
-                                throw new \Exception("La pregunta " . ($index + 1) . " debe tener al menos una respuesta correcta.");
+                            if (!$tieneRespuestaCorrecta) {
+                                throw new \Exception("La pregunta " . ($indice + 1) . " debe tener al menos una respuesta correcta.");
                             }
                         } elseif ($tipo === 'verdadero_falso') {
-                            if (!isset($qData['vf_correcta'])) {
-                                throw new \Exception("La pregunta " . ($index + 1) . " debe tener una respuesta correcta seleccionada.");
+                            if (!isset($datosP['vf_correcta'])) {
+                                throw new \Exception("La pregunta " . ($indice + 1) . " debe tener una respuesta correcta seleccionada.");
                             }
                         }
 
-                        if (isset($qData['id'])) {
+                        if (isset($datosP['id'])) {
                             // Actualizar pregunta existente
-                            $incomingQuestionIds[] = $qData['id'];
-                            $pregunta = pregunta::find($qData['id']);
+                            $idsPreguntasEntrantes[] = $datosP['id'];
+                            $pregunta = pregunta::find($datosP['id']);
                             
                             if ($pregunta && $pregunta->examen_id == $examen->id) {
                                 $pregunta->update([
-                                    'pregunta' => $qData['text'],
+                                    'pregunta' => $datosP['text'],
                                     'tipo' => $tipo,
-                                    'respuesta_correcta_abierta' => $qData['respuesta_esperada'] ?? null,
+                                    'respuesta_correcta_abierta' => $datosP['respuesta_esperada'] ?? null,
                                 ]);
                                 
                                 // Eliminar opciones antiguas y crear nuevas
                                 $pregunta->opciones()->delete();
                                 
-                                if ($tipo === 'multiple' && isset($qData['options'])) {
-                                    foreach ($qData['options'] as $optData) {
+                                if ($tipo === 'multiple' && isset($datosP['options'])) {
+                                    foreach ($datosP['options'] as $datosO) {
                                         opcion::create([
                                             'pregunta_id' => $pregunta->id,
-                                            'opcion' => $optData['text'],
-                                            'es_correcta' => isset($optData['is_correct']),
+                                            'opcion' => $datosO['text'],
+                                            'es_correcta' => isset($datosO['is_correct']),
                                         ]);
                                     }
                                 } elseif ($tipo === 'verdadero_falso') {
                                     opcion::create([
                                         'pregunta_id' => $pregunta->id,
                                         'opcion' => 'Verdadero',
-                                        'es_correcta' => $qData['vf_correcta'] === 'verdadero',
+                                        'es_correcta' => $datosP['vf_correcta'] === 'verdadero',
                                     ]);
                                     opcion::create([
                                         'pregunta_id' => $pregunta->id,
                                         'opcion' => 'Falso',
-                                        'es_correcta' => $qData['vf_correcta'] === 'falso',
+                                        'es_correcta' => $datosP['vf_correcta'] === 'falso',
                                     ]);
                                 }
                             }
@@ -299,30 +313,30 @@ class ExamenController extends Controller
                             // Nueva pregunta
                             $pregunta = pregunta::create([
                                 'examen_id' => $examen->id,
-                                'pregunta' => $qData['text'],
+                                'pregunta' => $datosP['text'],
                                 'tipo' => $tipo,
-                                'respuesta_correcta_abierta' => $qData['respuesta_esperada'] ?? null,
+                                'respuesta_correcta_abierta' => $datosP['respuesta_esperada'] ?? null,
                             ]);
-                            $incomingQuestionIds[] = $pregunta->id;
+                            $idsPreguntasEntrantes[] = $pregunta->id;
                             
-                            if ($tipo === 'multiple' && isset($qData['options'])) {
-                                foreach ($qData['options'] as $optData) {
+                            if ($tipo === 'multiple' && isset($datosP['options'])) {
+                                foreach ($datosP['options'] as $datosO) {
                                     opcion::create([
                                         'pregunta_id' => $pregunta->id,
-                                        'opcion' => $optData['text'],
-                                        'es_correcta' => isset($optData['is_correct']),
+                                        'opcion' => $datosO['text'],
+                                        'es_correcta' => isset($datosO['is_correct']),
                                     ]);
                                 }
                             } elseif ($tipo === 'verdadero_falso') {
                                 opcion::create([
                                     'pregunta_id' => $pregunta->id,
                                     'opcion' => 'Verdadero',
-                                    'es_correcta' => $qData['vf_correcta'] === 'verdadero',
+                                    'es_correcta' => $datosP['vf_correcta'] === 'verdadero',
                                 ]);
                                 opcion::create([
                                     'pregunta_id' => $pregunta->id,
                                     'opcion' => 'Falso',
-                                    'es_correcta' => $qData['vf_correcta'] === 'falso',
+                                    'es_correcta' => $datosP['vf_correcta'] === 'falso',
                                 ]);
                             }
                         }
@@ -330,7 +344,7 @@ class ExamenController extends Controller
                 }
 
                 // Eliminar preguntas removidas
-                $examen->preguntas()->whereNotIn('id', $incomingQuestionIds)->delete();
+                $examen->preguntas()->whereNotIn('id', $idsPreguntasEntrantes)->delete();
 
                 // Actualizar contador
                 $examen->cantidad_preguntas = $examen->preguntas()->count();
@@ -406,23 +420,23 @@ class ExamenController extends Controller
 
         $alumno = auth()->user()->alumno;
         if (!$alumno) {
-            $alumno = \App\Models\Alumno::where('email', auth()->user()->email)->first();
+            $alumno = \App\Models\alumno::where('email', auth()->user()->email)->first();
         }
         if (!$alumno) abort(403, 'No se encontró el registro de alumno');
 
         $alumnoId = $alumno->id;
 
-        $exists = intentoExamen::where('examen_id', $examen->id)
+        $existe = intentoExamen::where('examen_id', $examen->id)
             ->where('alumno_id', $alumnoId)
             ->where('version_anterior', false)
             ->exists();
-        if ($exists) {
-            return redirect()->route('examenes.show', $examen)->withErrors(['already' => 'Ya has realizado este examen. Solo se permite un intento.']);
+        if ($existe) {
+            return redirect()->route('examenes.show', $examen)->withErrors(['ya_realizado' => 'Ya has realizado este examen. Solo se permite un intento.']);
         }
 
-        $answers = $request->input('answers', []);
-        if (count($answers) !== $examen->preguntas->count()) {
-            return redirect()->route('examenes.show', $examen)->withErrors(['incomplete' => 'Debes responder todas las preguntas antes de enviar el examen.']);
+        $respuestas = $request->input('answers', []);
+        if (count($respuestas) !== $examen->preguntas->count()) {
+            return redirect()->route('examenes.show', $examen)->withErrors(['incompleto' => 'Debes responder todas las preguntas antes de enviar el examen.']);
         }
 
         $tieneAbiertas = $examen->preguntas()->where('tipo', pregunta::TIPO_ABIERTA)->exists();
@@ -436,15 +450,15 @@ class ExamenController extends Controller
             'estado' => $estadoInicial,
         ]);
 
-        $score = 0;
+        $puntuacion = 0;
         $total = 0;
         
-        \Log::info('Iniciando cálculo de puntuación', ['answers' => $answers]);
+        \Log::info('Iniciando cálculo de puntuación', ['respuestas' => $respuestas]);
         
         // Iterar sobre TODAS las preguntas del examen
         foreach ($examen->preguntas as $preg) {
             $total++;
-            $answer = $answers[$preg->id] ?? null;
+            $respuesta = $respuestas[$preg->id] ?? null;
             
             // Manejar según el tipo de pregunta
             if ($preg->isAbierta()) {
@@ -453,53 +467,58 @@ class ExamenController extends Controller
                     'intento_id' => $intento->id,
                     'pregunta_id' => $preg->id,
                     'opcion_id' => null,
-                    'respuesta_abierta' => $answer,
+                    'respuesta_abierta' => $respuesta,
                     'es_correcta' => 0, // Se marcará como correcta cuando el docente califique
                     'puntos_obtenidos' => null, // Pendiente de calificación
                 ]);
             } else {
                 // Pregunta de opción múltiple o verdadero/falso
                 // Ahora puede ser un array de opciones
-                $selectedOptions = is_array($answer) ? $answer : [$answer];
+                $opcionesSeleccionadas = is_array($respuesta) ? $respuesta : [$respuesta];
                 
                 // Convertir a enteros para asegurar comparación correcta
-                $selectedOptions = array_map('intval', $selectedOptions);
+                $opcionesSeleccionadas = array_map('intval', $opcionesSeleccionadas);
+                
+                // Filtrar valores inválidos (0 o negativos) que pueden resultar de inputs vacíos
+                $opcionesSeleccionadas = array_filter($opcionesSeleccionadas, function($val) {
+                    return $val > 0;
+                });
                 
                 // Obtener las opciones correctas de esta pregunta
-                $correctOptions = $preg->opciones()->where('es_correcta', true)->pluck('id')->toArray();
+                $opcionesCorrectas = $preg->opciones()->where('es_correcta', true)->pluck('id')->toArray();
                 
                 // Verificar si la respuesta es correcta
                 // Es correcta si seleccionó TODAS las correctas y NINGUNA incorrecta
-                sort($selectedOptions);
-                sort($correctOptions);
+                sort($opcionesSeleccionadas);
+                sort($opcionesCorrectas);
                 
                 // Comparación flexible para arrays
-                $isCorrect = $selectedOptions == $correctOptions;
+                $esCorrecta = $opcionesSeleccionadas == $opcionesCorrectas;
                 
                 \Log::info('Procesando respuesta', [
-                    'question_id' => $preg->id,
-                    'selected_options' => $selectedOptions,
-                    'correct_options' => $correctOptions,
-                    'isCorrect' => $isCorrect
+                    'id_pregunta' => $preg->id,
+                    'opciones_seleccionadas' => $opcionesSeleccionadas,
+                    'opciones_correctas' => $opcionesCorrectas,
+                    'es_correcta' => $esCorrecta
                 ]);
                 
-                if ($isCorrect) $score++;
+                if ($esCorrecta) $puntuacion++;
 
                 // Guardar cada opción seleccionada como una respuesta
-                foreach ($selectedOptions as $optionId) {
+                foreach ($opcionesSeleccionadas as $optionId) {
                     respuesta::create([
                         'intento_id' => $intento->id,
                         'pregunta_id' => $preg->id,
                         'opcion_id' => $optionId,
-                        'es_correcta' => $isCorrect,
+                        'es_correcta' => $esCorrecta,
                     ]);
                 }
             }
         }
         
-        \Log::info('Puntuación final', ['score' => $score, 'total' => $total]);
+        \Log::info('Puntuación final', ['puntuacion' => $puntuacion, 'total' => $total]);
 
-        $intento->puntuacion = $score;
+        $intento->puntuacion = $puntuacion;
         $intento->total = $total;
         $intento->save();
 
@@ -520,12 +539,12 @@ class ExamenController extends Controller
      */
     private function actualizarCalificacionMateria($alumnoId, $materiaId)
     {
-        \Log::info("actualizarCalificacionMateria llamado", ['alumno_id' => $alumnoId, 'materia_id' => $materiaId]);
+        \Log::info("actualizarCalificacionMateria llamado", ['id_alumno' => $alumnoId, 'id_materia' => $materiaId]);
         
         // Obtener IDs de exámenes existentes en la materia
-        $examIds = examen::where('materia_id', $materiaId)->pluck('id');
+        $idsExamenes = examen::where('materia_id', $materiaId)->pluck('id');
         
-        if ($examIds->isEmpty()) {
+        if ($idsExamenes->isEmpty()) {
             // Si no hay exámenes en la materia, calificación es NULL
             DB::table('alumno_materias')
                 ->where('alumno_id', $alumnoId)
@@ -536,14 +555,14 @@ class ExamenController extends Controller
         }
 
         // Obtener intentos válidos para esos exámenes (solo versión actual)
-        $attempts = intentoExamen::whereIn('examen_id', $examIds)
+        $intentos = intentoExamen::whereIn('examen_id', $idsExamenes)
             ->where('alumno_id', $alumnoId)
             ->where('version_anterior', false) // Solo intentos de versión actual
             ->get();
 
-        \Log::info("Intentos encontrados", ['count' => $attempts->count()]);
+        \Log::info("Intentos encontrados", ['conteo' => $intentos->count()]);
 
-        if ($attempts->isEmpty()) {
+        if ($intentos->isEmpty()) {
             // Si hay exámenes pero el alumno no tiene intentos, calificación NULL
             DB::table('alumno_materias')
                 ->where('alumno_id', $alumnoId)
@@ -555,27 +574,27 @@ class ExamenController extends Controller
         }
 
         // Calcular porcentaje promedio de todos los exámenes
-        $totalPercentage = 0;
-        $examCount = 0;
+        $porcentajeTotal = 0;
+        $conteoExamenes = 0;
 
-        foreach ($attempts as $attempt) {
-            if ($attempt->total > 0) {
-                $percentage = ($attempt->puntuacion / $attempt->total) * 100;
-                $totalPercentage += $percentage;
-                $examCount++;
+        foreach ($intentos as $intento) {
+            if ($intento->total > 0) {
+                $porcentaje = ($intento->puntuacion / $intento->total) * 100;
+                $porcentajeTotal += $porcentaje;
+                $conteoExamenes++;
             }
         }
 
-        if ($examCount > 0) {
-            $averageGrade = round($totalPercentage / $examCount, 2);
+        if ($conteoExamenes > 0) {
+            $promedioCalificacion = round($porcentajeTotal / $conteoExamenes, 2);
             
-            \Log::info("Actualizando calificación", ['average' => $averageGrade]);
+            \Log::info("Actualizando calificación", ['promedio' => $promedioCalificacion]);
             
             // Actualizar calificación en la tabla pivote
-            $updated = DB::table('alumno_materias')
+            $actualizado = DB::table('alumno_materias')
                 ->where('alumno_id', $alumnoId)
                 ->where('materia_id', $materiaId)
-                ->update(['calificacion' => $averageGrade]);
+                ->update(['calificacion' => $promedioCalificacion]);
         } else {
              // Si tiene intentos pero ninguno válido para promedio (ej. total=0), resetear
              DB::table('alumno_materias')
@@ -596,11 +615,11 @@ class ExamenController extends Controller
     public function calificarIntentoMasivo(Request $request, intentoExamen $intento)
     {
         $request->validate([
-            'grades' => 'required|array',
-            'grades.*' => 'required|boolean'
+            'calificaciones' => 'required|array',
+            'calificaciones.*' => 'required|boolean'
         ]);
 
-        foreach ($request->grades as $respuestaId => $esCorrecta) {
+        foreach ($request->calificaciones as $respuestaId => $esCorrecta) {
             $respuesta = respuesta::find($respuestaId);
             if ($respuesta && $respuesta->intento_id == $intento->id) {
                 $respuesta->update([
@@ -622,7 +641,7 @@ class ExamenController extends Controller
         // Si todas están calificadas, publicar automáticamente
         if ($todasCalificadas) {
             // Calcular puntuación total - contar por PREGUNTA, no por respuesta
-            $score = 0;
+            $puntuacion = 0;
             $total = 0;
 
             // Recargar respuestas para asegurar datos actualizados
@@ -637,18 +656,18 @@ class ExamenController extends Controller
                 
                 if ($primeraRespuesta->pregunta->isAbierta()) {
                     // Para preguntas abiertas, usar puntos_obtenidos
-                    $score += $primeraRespuesta->puntos_obtenidos ?? 0;
+                    $puntuacion += $primeraRespuesta->puntos_obtenidos ?? 0;
                 } else {
                     // Para preguntas de opción múltiple, verificar si es correcta
                     if ($primeraRespuesta->es_correcta) {
-                        $score++;
+                        $puntuacion++;
                     }
                 }
             }
 
             // Actualizar intento
             $intento->update([
-                'puntuacion' => $score,
+                'puntuacion' => $puntuacion,
                 'total' => $total,
                 'estado' => intentoExamen::ESTADO_CALIFICADO,
                 'revisado_por' => auth()->user()->docente->id ?? null,
@@ -658,7 +677,7 @@ class ExamenController extends Controller
             // Actualizar calificación de la materia
             $this->actualizarCalificacionMateria($intento->alumno_id, $intento->examen->materia_id);
 
-            return redirect()->route('examenes.show', $intento->examen_id)->with('success', 'Respuestas calificadas. El examen ha sido calificado automáticamente.');
+            return redirect()->route('examenes.show', $intento->examen_id)->with('success', 'Respuestas calificadas. El examen ha sido calificado.');
         }
 
         return redirect()->route('examenes.show', $intento->examen_id)->with('success', 'Respuestas guardadas correctamente.');
@@ -689,7 +708,7 @@ class ExamenController extends Controller
         // Si todas están calificadas, publicar automáticamente
         if ($todasCalificadas && $intento->isEnRevision()) {
             // Calcular puntuación total - contar por PREGUNTA, no por respuesta
-            $score = 0;
+            $puntuacion = 0;
             $total = 0;
 
             // Agrupar respuestas por pregunta
@@ -701,19 +720,19 @@ class ExamenController extends Controller
                 
                 if ($primeraRespuesta->pregunta->isAbierta()) {
                     // Para preguntas abiertas, usar puntos_obtenidos
-                    $score += $primeraRespuesta->puntos_obtenidos ?? 0;
+                    $puntuacion += $primeraRespuesta->puntos_obtenidos ?? 0;
                 } else {
                     // Para preguntas de opción múltiple, verificar si es correcta
                     // Solo necesitamos verificar una respuesta ya que todas tienen el mismo valor es_correcta
                     if ($primeraRespuesta->es_correcta) {
-                        $score++;
+                        $puntuacion++;
                     }
                 }
             }
 
             // Actualizar intento
             $intento->update([
-                'puntuacion' => $score,
+                'puntuacion' => $puntuacion,
                 'total' => $total,
                 'estado' => intentoExamen::ESTADO_CALIFICADO,
                 'revisado_por' => auth()->user()->docente->id ?? null,
@@ -733,7 +752,7 @@ class ExamenController extends Controller
     public function publicarCalificacion(intentoExamen $intento)
     {
         // Calcular puntuación total - contar por PREGUNTA, no por respuesta
-        $score = 0;
+        $puntuacion = 0;
         $total = 0;
 
         // Agrupar respuestas por pregunta
@@ -745,19 +764,19 @@ class ExamenController extends Controller
             
             if ($primeraRespuesta->pregunta->isAbierta()) {
                 // Para preguntas abiertas, usar puntos_obtenidos
-                $score += $primeraRespuesta->puntos_obtenidos ?? 0;
+                $puntuacion += $primeraRespuesta->puntos_obtenidos ?? 0;
             } else {
                 // Para preguntas de opción múltiple, verificar si es correcta
                 // Solo necesitamos verificar una respuesta ya que todas tienen el mismo valor es_correcta
                 if ($primeraRespuesta->es_correcta) {
-                    $score++;
+                    $puntuacion++;
                 }
             }
         }
 
         // Actualizar intento
         $intento->update([
-            'puntuacion' => $score,
+            'puntuacion' => $puntuacion,
             'total' => $total,
             'estado' => intentoExamen::ESTADO_CALIFICADO,
             'revisado_por' => auth()->user()->docente->id ?? null,

@@ -73,4 +73,12 @@ class User extends Authenticatable
     {
         return $this->hasOne(docente::class, 'email', 'email');
     }
+
+    /**
+     * Get the alumno associated with the user.
+     */
+    public function alumno(): HasOne
+    {
+        return $this->hasOne(alumno::class, 'email', 'email');
+    }
 }

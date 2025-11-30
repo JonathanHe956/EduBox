@@ -68,7 +68,7 @@ Route::middleware(['auth', 'verified', 'role:docente'])->group(function () {
     Route::put('/examen/{examen}', [App\Http\Controllers\ExamenController::class, 'update'])->name('examenes.update');
     Route::delete('/examen/{examen}', [App\Http\Controllers\ExamenController::class, 'destroy'])->name('examenes.destroy');
     Route::post('/respuesta/{respuesta}/calificar', [App\Http\Controllers\ExamenController::class, 'calificarRespuesta'])->name('examenes.grade-answer');
-    Route::post('/intento/{intento}/calificar-masivo', [App\Http\Controllers\ExamenController::class, 'calificarIntentoMasivo'])->name('examenes.grade-attempt');
+    Route::post('/intento/{intento}/calificar-masivo', [App\Http\Controllers\ExamenController::class, 'calificarIntentoMasivo'])->name('examenes.calificar-intento');
     Route::post('/intento/{intento}/publicar', [App\Http\Controllers\ExamenController::class, 'publicarCalificacion'])->name('examenes.publish-grade');
 });
 
@@ -81,7 +81,7 @@ Route::middleware(['auth', 'role:estudiante'])->group(function () {
     Route::get('/alumno/materias', [AlumnoController::class, 'materias'])->name('alumno.materias');
 
     // Gestión de Exámenes (Intentar, Índice, Índice por Materia)
-    Route::post('/examen/{examen}/intentar', [App\Http\Controllers\ExamenController::class, 'intentar'])->name('examenes.attempt');
+    Route::post('/examen/{examen}/intentar', [App\Http\Controllers\ExamenController::class, 'intentar'])->name('examenes.intentar');
     Route::get('/alumno/examenes', [App\Http\Controllers\ExamenController::class, 'alumnoIndex'])->name('examenes.pending');
     Route::get('/alumno/materia/{materia}/examenes', [App\Http\Controllers\ExamenController::class, 'indiceParaMateriaAlumno'])->name('examenes.materia.alumno');
 });
@@ -115,7 +115,7 @@ Route::get('/mis-materias', function () {
     }
 
     if ($user->hasRole('estudiante') || $user->hasRole('student')) {
-        $alumno = \App\Models\Alumno::where('email', $user->email)->first();
+        $alumno = \App\Models\alumno::where('email', $user->email)->first();
         $materias = $alumno ? $alumno->materias()->withPivot('calificacion')->with(['carrera', 'docente'])->get() : collect();
         return view('alumno.materias', compact('materias'));
     }

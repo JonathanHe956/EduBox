@@ -13,6 +13,16 @@
             </div>
         @endif
 
+        @if($errors->any())
+            <div class="mb-4 rounded-md bg-red-50 p-4 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                <ul class="list-disc list-inside">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         @if($examen->preguntas->isEmpty())
             <div class="rounded-lg border border-gray-200 bg-white p-8 text-center dark:border-gray-700 dark:bg-zinc-900">
                 <p class="text-gray-500 dark:text-gray-400">Este examen aún no tiene preguntas.</p>
@@ -25,7 +35,7 @@
                     $haIntentado = false;
                     
                     if ($esEstudiante) {
-                        $alumno = auth()->user()->alumno ?? \App\Models\Alumno::where('email', auth()->user()->email)->first();
+                        $alumno = auth()->user()->alumno ?? \App\Models\alumno::where('email', auth()->user()->email)->first();
                         $haIntentado = $alumno && $examen->intentos()
                             ->where('alumno_id', $alumno->id)
                             ->where('version_anterior', false) // Solo verificar intentos de versión actual
@@ -35,7 +45,7 @@
 
                 @if($esEstudiante && !$haIntentado)
                     {{-- Formulario de examen --}}
-                    <form method="POST" action="{{ route('examenes.attempt', $examen) }}" class="space-y-6">
+                    <form method="POST" action="{{ route('examenes.intentar', $examen) }}" class="space-y-6">
                         @csrf
                         @foreach($examen->preguntas as $index => $pregunta)
                             <div class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-zinc-900">
@@ -76,15 +86,15 @@
                                                 </label>
                                             @endforeach
                                         @else
-                                            {{-- Pregunta Multiple Choice: (Multiple seleccion) --}}
+                                            {{-- Pregunta Multiple Eleccion: (Multiple seleccion) --}}
                                             @foreach($pregunta->opciones as $opcion)
                                                 <label class="flex items-center gap-3 rounded-lg border border-gray-200 p-3 cursor-pointer hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-zinc-800">
                                                     <input 
                                                         type="checkbox" 
                                                         name="answers[{{ $pregunta->id }}][]" 
                                                         value="{{ $opcion->id }}" 
-                                                        class="w-4 h-4 text-indigo-600 dark:bg-zinc-700 dark:border-gray-600 focus:ring-indigo-500 answer-checkbox-{{ $pregunta->id }}" 
-                                                        onchange="limitCheckboxes({{ $pregunta->id }})"
+                                                        class="w-4 h-4 text-indigo-600 dark:bg-zinc-700 dark:border-gray-600 focus:ring-indigo-500 respuesta-casilla-{{ $pregunta->id }}" 
+                                                        onchange="limitarCasillas({{ $pregunta->id }})"
                                                     >
                                                     <span class="text-sm text-blue-900 dark:text-white">{{ $opcion->opcion }}</span>
                                                 </label>
@@ -100,47 +110,47 @@
                             <a href="{{ route('examenes.materia.alumno', $examen->materia_id) }}" class="btn-secondary px-4 py-2">
                                 Cancelar
                             </a>
-                            <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-green-600 px-6 py-2 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500" onclick="return validateForm()">
+                            <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-green-600 px-6 py-2 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500" onclick="return validarFormulario()">
                                 Enviar Respuestas
                             </button>
                         </div>
 
                         <script>
-                            function limitCheckboxes(questionId) {
-                                const checkboxes = document.querySelectorAll('.answer-checkbox-' + questionId);
-                                const checked = Array.from(checkboxes).filter(cb => cb.checked);
+                            function limitarCasillas(idPregunta) {
+                                const casillas = document.querySelectorAll('.respuesta-casilla-' + idPregunta);
+                                const marcadas = Array.from(casillas).filter(cb => cb.checked);
                                 
-                                if (checked.length > 4) {
+                                if (marcadas.length > 4) {
                                     // Desmarcar la última seleccionada
                                     event.target.checked = false;
                                     alert('Solo puedes seleccionar hasta 4 opciones por pregunta.');
                                 }
                             }
 
-                            function validateForm() {
+                            function validarFormulario() {
                                 // Validar que todas las preguntas de opción múltiple y verdadero/falso tengan respuesta
-                                const questionGroups = {};
+                                const gruposPreguntas = {};
                                 
                                 // Seleccionar todos los inputs de respuesta (radio y checkbox)
-                                const inputs = document.querySelectorAll('input[name^="answers"]');
+                                const entradas = document.querySelectorAll('input[name^="answers"]');
                                 
-                                inputs.forEach(input => {
+                                entradas.forEach(entrada => {
                                     // Extraer el ID de la pregunta del nombre: answers[123] o answers[123][]
-                                    const match = input.name.match(/answers\[(\d+)\]/);
-                                    if (match) {
-                                        const questionId = match[1];
-                                        if (!questionGroups[questionId]) {
-                                            questionGroups[questionId] = false;
+                                    const coincidencia = entrada.name.match(/answers\[(\d+)\]/);
+                                    if (coincidencia) {
+                                        const idPregunta = coincidencia[1];
+                                        if (!gruposPreguntas[idPregunta]) {
+                                            gruposPreguntas[idPregunta] = false;
                                         }
-                                        if (input.checked) {
-                                            questionGroups[questionId] = true;
+                                        if (entrada.checked) {
+                                            gruposPreguntas[idPregunta] = true;
                                         }
                                     }
                                 });
 
                                 // Verificar si alguna pregunta no tiene respuesta
-                                for (const questionId in questionGroups) {
-                                    if (!questionGroups[questionId]) {
+                                for (const idPregunta in gruposPreguntas) {
+                                    if (!gruposPreguntas[idPregunta]) {
                                         alert('Debes responder todas las preguntas antes de enviar el examen.');
                                         return false;
                                     }
@@ -251,21 +261,21 @@
                                         <div class="p-4">
                                             <button 
                                                 type="button" 
-                                                onclick="toggleAttempt({{ $intento->id }})" 
+                                                onclick="alternarIntento({{ $intento->id }})" 
                                                 class="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
                                                 aria-expanded="false" 
-                                                aria-controls="attempt-{{ $intento->id }}"
+                                                aria-controls="intento-{{ $intento->id }}"
                                             >
                                                 Ver / Ocultar respuestas →
                                             </button>
                                             
-                                            <div id="attempt-{{ $intento->id }}" class="hidden mt-4 space-y-4">
+                                            <div id="intento-{{ $intento->id }}" class="hidden mt-4 space-y-4">
                                                 @php
-                                                    $canGrade = $intento->isEnRevision();
+                                                    $puedeCalificar = $intento->isEnRevision();
                                                 @endphp
                                                 
-                                                @if($canGrade)
-                                                    <form action="{{ route('examenes.grade-attempt', $intento) }}" method="POST">
+                                                @if($puedeCalificar)
+                                                    <form action="{{ route('examenes.calificar-intento', $intento) }}" method="POST">
                                                         @csrf
                                                 @endif
 
@@ -288,7 +298,7 @@
                                                                 </div>
                                                             </div>
                                                             
-                                                            @if($respuesta && $canGrade)
+                                                            @if($respuesta && $puedeCalificar)
                                                                 <div class="mt-3">
                                                                     <div class="space-y-3">
                                                                         <p class="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -298,7 +308,7 @@
                                                                             <label class="flex items-center gap-2 cursor-pointer">
                                                                                 <input 
                                                                                     type="radio" 
-                                                                                    name="grades[{{ $respuesta->id }}]" 
+                                                                                    name="calificaciones[{{ $respuesta->id }}]" 
                                                                                     value="1" 
                                                                                     class="w-4 h-4 text-green-600 focus:ring-green-500" 
                                                                                     required
@@ -308,7 +318,7 @@
                                                                             <label class="flex items-center gap-2 cursor-pointer">
                                                                                 <input 
                                                                                     type="radio" 
-                                                                                    name="grades[{{ $respuesta->id }}]" 
+                                                                                    name="calificaciones[{{ $respuesta->id }}]" 
                                                                                     value="0" 
                                                                                     class="w-4 h-4 text-red-600 focus:ring-red-500" 
                                                                                     required
@@ -318,7 +328,7 @@
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            @elseif(!$respuesta && $canGrade)
+                                                            @elseif(!$respuesta && $puedeCalificar)
                                                                 <div class="mt-2 text-sm text-gray-500 dark:text-gray-400 italic">
                                                                     El estudiante no respondió esta pregunta. Se calificará automáticamente como incorrecta (0 puntos).
                                                                 </div>
@@ -336,7 +346,7 @@
                                                                 </div>
                                                             @endif
                                                         @else
-                                                            {{-- Multiple choice or True/False --}}
+                                                            {{-- Multiple respuesta --}}
                                                             <div class="text-sm">
                                                                 <p class="text-gray-600 dark:text-gray-400 font-medium mb-1">Respuesta(s):</p>
                                                                 @if($respuestas->isEmpty())
@@ -352,13 +362,13 @@
                                                                 @endif
 
                                                                 @php
-                                                                    // Determine if the set of answers is correct
-                                                                    $selectedOptions = $respuestas->pluck('opcion_id')->sort()->values()->all();
-                                                                    $correctOptions = $pregunta->opciones->where('es_correcta', true)->pluck('id')->sort()->values()->all();
-                                                                    $isCorrect = !empty($selectedOptions) && $selectedOptions == $correctOptions;
+                                                                    // Determine si la respuesta es correcta
+                                                                    $opcionesSeleccionadas = $respuestas->pluck('opcion_id')->sort()->values()->all();
+                                                                    $opcionesCorrectas = $pregunta->opciones->where('es_correcta', true)->pluck('id')->sort()->values()->all();
+                                                                    $esCorrecta = !empty($opcionesSeleccionadas) && $opcionesSeleccionadas == $opcionesCorrectas;
                                                                 @endphp
 
-                                                                @if($isCorrect)
+                                                                @if($esCorrecta)
                                                                     <span class="inline-flex items-center mt-2 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
                                                                         ✓ Correcta
                                                                     </span>
@@ -372,7 +382,7 @@
                                                     </div>
                                                 @endforeach
 
-                                                @if($canGrade)
+                                                @if($puedeCalificar)
                                                     <div class="flex justify-end pt-4">
                                                         <button type="submit" class="rounded bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
                                                             Guardar Calificaciones
@@ -389,9 +399,9 @@
                     </div>
                     
                     <script>
-                        function toggleAttempt(id) {
-                            const element = document.getElementById('attempt-' + id);
-                            const button = document.querySelector(`button[aria-controls="attempt-${id}"]`);
+                        function alternarIntento(id) {
+                            const element = document.getElementById('intento-' + id);
+                            const button = document.querySelector(`button[aria-controls="intento-${id}"]`);
                             const isHidden = element.classList.toggle('hidden');
                             if (button) {
                                 button.setAttribute('aria-expanded', isHidden ? 'false' : 'true');
@@ -399,27 +409,25 @@
                         }
                     </script>
                 @endif
+                <div class="mt-6">
+                    @if(auth()->user()->hasRole('docente'))
+                        <a href="{{ route('examenes.materia', $examen->materia_id) }}" class="inline-flex items-center gap-2 btn-secondary px-4 py-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                            </svg>
+                            Volver a Exámenes
+                        </a>
+                    @else
+                        <a href="{{ route('examenes.materia.alumno', $examen->materia_id) }}" class="inline-flex items-center gap-2 btn-secondary px-4 py-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                            </svg>
+                            Volver a Exámenes
+                        </a>
+                    @endif
+                </div>
             @endauth
         @endif
-
-        <div class="mt-6">
-            @auth
-                @if(auth()->user()->hasRole('docente'))
-                    <a href="{{ route('examenes.materia', $examen->materia_id) }}" class="inline-flex items-center gap-2 btn-secondary px-4 py-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                        </svg>
-                        Volver a Exámenes
-                    </a>
-                @else
-                    <a href="{{ route('examenes.materia.alumno', $examen->materia_id) }}" class="inline-flex items-center gap-2 btn-secondary px-4 py-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                        </svg>
-                        Volver a Exámenes
-                    </a>
-                @endif
-            @endauth
         </div>
     </div>
 </x-layouts.app>

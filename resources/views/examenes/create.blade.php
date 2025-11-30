@@ -162,7 +162,7 @@
                     text.className = 'border rounded px-2 py-1 flex-1 text-sm';
                     text.placeholder = `Opción ${optionIdx + 1}`;
 
-                    // Highlight container if correct
+                    // Resaltar contenedor si es correcta
                     checkbox.addEventListener('change', function() {
                         if (this.checked) {
                             optDiv.classList.add('bg-green-50', 'border-green-200', 'dark:bg-green-900/20', 'dark:border-green-700');
@@ -175,7 +175,7 @@
                         }
                     });
 
-                    // Initial state
+                    // Estado inicial
                     optDiv.classList.add('border', 'border-transparent', 'rounded', 'p-1', 'transition-colors');
 
                     const removeBtn = document.createElement('button');
@@ -294,6 +294,7 @@
 
                     container.appendChild(block);
                     indicePregunta++;
+                    actualizarNumerosPregunta();
                 }
 
                 function actualizarNumerosPregunta() {
@@ -313,6 +314,14 @@
                     const questions = container.querySelectorAll('.question-block');
                     let tieneError = false;
                     let mensajeError = '';
+
+
+
+                    if (questions.length === 0) {
+                        alert('El examen debe tener al menos una pregunta.');
+                        e.preventDefault();
+                        return false;
+                    }
 
                     questions.forEach((question, idx) => {
                         // Obtiene el tipo de pregunta seleccionado
