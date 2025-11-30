@@ -341,7 +341,7 @@ class DocenteController extends Controller
                 ->get();
                 
             // Filtrar intentos solo de esta materia
-            $intentos = \App\Models\IntentoExamen::where('alumno_id', $alumno->id)
+            $intentos = \App\Models\intentoExamen::where('alumno_id', $alumno->id)
                 ->whereHas('examen', function($query) use ($materia) {
                     $query->where('materia_id', $materia->id);
                 })
@@ -357,7 +357,7 @@ class DocenteController extends Controller
                 ->get();
                 
             // Mostrar todos los intentos de las materias del docente
-            $intentos = \App\Models\IntentoExamen::where('alumno_id', $alumno->id)
+            $intentos = \App\Models\intentoExamen::where('alumno_id', $alumno->id)
                 ->whereHas('examen', function($query) use ($materiaIds) {
                     $query->whereIn('materia_id', $materiaIds);
                 })

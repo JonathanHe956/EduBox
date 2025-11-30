@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Examen;
-use App\Models\Pregunta;
-use App\Models\Opcion;
-use App\Models\IntentoExamen;
-use App\Models\Respuesta;
+use App\Models\examen;
+use App\Models\pregunta;
+use App\Models\opcion;
+use App\Models\intentoExamen;
+use App\Models\respuesta;
 use App\Models\materia;
 use App\Models\docente;
 use App\Models\alumno;
@@ -34,7 +34,7 @@ class ExamenController extends Controller
         $docenteId = $docente?->id;
 
         DB::transaction(function () use ($request, $materia, $docenteId) {
-            $examen = Examen::create([
+            $examen = examen::create([
                 'materia_id' => $materia->id,
                 'docente_id' => $docenteId,
                 'titulo' => $request->input('title'),
@@ -72,7 +72,7 @@ class ExamenController extends Controller
                     }
 
                     // Crear la pregunta
-                    $pregunta = Pregunta::create([
+                    $pregunta = pregunta::create([
                         'examen_id' => $examen->id,
                         'pregunta' => $qData['text'],
                         'tipo' => $tipo,
@@ -82,7 +82,7 @@ class ExamenController extends Controller
                     // Crear opciones según el tipo
                     if ($tipo === 'multiple' && isset($qData['options'])) {
                         foreach ($qData['options'] as $optData) {
-                            Opcion::create([
+                            opcion::create([
                                 'pregunta_id' => $pregunta->id,
                                 'opcion' => $optData['text'],
                                 'es_correcta' => isset($optData['is_correct']),
@@ -90,12 +90,12 @@ class ExamenController extends Controller
                         }
                     } elseif ($tipo === 'verdadero_falso') {
                         // Crear automáticamente las opciones Verdadero/Falso
-                        Opcion::create([
+                        opcion::create([
                             'pregunta_id' => $pregunta->id,
                             'opcion' => 'Verdadero',
                             'es_correcta' => $qData['vf_correcta'] === 'verdadero',
                         ]);
-                        Opcion::create([
+                        opcion::create([
                             'pregunta_id' => $pregunta->id,
                             'opcion' => 'Falso',
                             'es_correcta' => $qData['vf_correcta'] === 'falso',
@@ -112,7 +112,7 @@ class ExamenController extends Controller
     }
 
     // Añadir pregunta y sus opciones a un examen
-    public function agregarPregunta(StoreQuestionRequest $request, Examen $examen)
+    public function agregarPregunta(StoreQuestionRequest $request, examen $examen)
     {
         // Obsoleto por formulario dinámico, mantenido por compatibilidad
         return back();
@@ -128,7 +128,7 @@ class ExamenController extends Controller
 
         $materiaIds = $alumno->materias()->pluck('materias.id');
 
-        $examenes = Examen::whereIn('materia_id', $materiaIds)
+        $examenes = examen::whereIn('materia_id', $materiaIds)
             ->with(['intentos' => function ($q) use ($alumno) {
                 $q->where('alumno_id', $alumno->id);
             }])
@@ -146,7 +146,7 @@ class ExamenController extends Controller
         }
         if (! $docente) abort(403);
 
-        $examenes = Examen::where('docente_id', $docente->id)->withCount('preguntas')->get();
+        $examenes = examen::where('docente_id', $docente->id)->withCount('preguntas')->get();
         return view('examenes.index_docente', compact('examenes'));
     }
 
@@ -161,7 +161,7 @@ class ExamenController extends Controller
 
         // Verificar que la materia pertenece al docente
 
-        $examenes = Examen::where('materia_id', $materia->id)
+        $examenes = examen::where('materia_id', $materia->id)
             ->where('docente_id', $docente->id)
             ->withCount('preguntas')
             ->get();
@@ -183,7 +183,7 @@ class ExamenController extends Controller
         if (!$isEnrolled) abort(403, 'No estás inscrito en esta materia');
 
         // Obtener exámenes de la materia con información de intentos del alumno
-        $examenes = Examen::where('materia_id', $materia->id)
+        $examenes = examen::where('materia_id', $materia->id)
             ->withCount('preguntas')
             ->with(['intentos' => function($q) use ($alumno) {
                 $q->where('alumno_id', $alumno->id)
@@ -195,7 +195,7 @@ class ExamenController extends Controller
     }
 
     // Editar examen (form)
-    public function edit(Examen $examen)
+    public function edit(examen $examen)
     {
         $docente = auth()->user()->docente;
         if (!$docente) {
@@ -208,7 +208,7 @@ class ExamenController extends Controller
     }
 
     // Actualizar examen
-    public function update(Request $request, Examen $examen)
+    public function update(Request $request, examen $examen)
     {
         $docente = auth()->user()->docente;
         if (!$docente) {
@@ -262,7 +262,7 @@ class ExamenController extends Controller
                         if (isset($qData['id'])) {
                             // Actualizar pregunta existente
                             $incomingQuestionIds[] = $qData['id'];
-                            $pregunta = Pregunta::find($qData['id']);
+                            $pregunta = pregunta::find($qData['id']);
                             
                             if ($pregunta && $pregunta->examen_id == $examen->id) {
                                 $pregunta->update([
@@ -276,19 +276,19 @@ class ExamenController extends Controller
                                 
                                 if ($tipo === 'multiple' && isset($qData['options'])) {
                                     foreach ($qData['options'] as $optData) {
-                                        Opcion::create([
+                                        opcion::create([
                                             'pregunta_id' => $pregunta->id,
                                             'opcion' => $optData['text'],
                                             'es_correcta' => isset($optData['is_correct']),
                                         ]);
                                     }
                                 } elseif ($tipo === 'verdadero_falso') {
-                                    Opcion::create([
+                                    opcion::create([
                                         'pregunta_id' => $pregunta->id,
                                         'opcion' => 'Verdadero',
                                         'es_correcta' => $qData['vf_correcta'] === 'verdadero',
                                     ]);
-                                    Opcion::create([
+                                    opcion::create([
                                         'pregunta_id' => $pregunta->id,
                                         'opcion' => 'Falso',
                                         'es_correcta' => $qData['vf_correcta'] === 'falso',
@@ -297,7 +297,7 @@ class ExamenController extends Controller
                             }
                         } else {
                             // Nueva pregunta
-                            $pregunta = Pregunta::create([
+                            $pregunta = pregunta::create([
                                 'examen_id' => $examen->id,
                                 'pregunta' => $qData['text'],
                                 'tipo' => $tipo,
@@ -307,19 +307,19 @@ class ExamenController extends Controller
                             
                             if ($tipo === 'multiple' && isset($qData['options'])) {
                                 foreach ($qData['options'] as $optData) {
-                                    Opcion::create([
+                                    opcion::create([
                                         'pregunta_id' => $pregunta->id,
                                         'opcion' => $optData['text'],
                                         'es_correcta' => isset($optData['is_correct']),
                                     ]);
                                 }
                             } elseif ($tipo === 'verdadero_falso') {
-                                Opcion::create([
+                                opcion::create([
                                     'pregunta_id' => $pregunta->id,
                                     'opcion' => 'Verdadero',
                                     'es_correcta' => $qData['vf_correcta'] === 'verdadero',
                                 ]);
-                                Opcion::create([
+                                opcion::create([
                                     'pregunta_id' => $pregunta->id,
                                     'opcion' => 'Falso',
                                     'es_correcta' => $qData['vf_correcta'] === 'falso',
@@ -341,13 +341,13 @@ class ExamenController extends Controller
         }
 
         // Marcar intentos anteriores como versión anterior
-        $intentosAnteriores = IntentoExamen::where('examen_id', $examen->id)
+        $intentosAnteriores = intentoExamen::where('examen_id', $examen->id)
             ->where('version_anterior', false)
             ->get();
 
         if ($intentosAnteriores->isNotEmpty()) {
             // Marcar todos los intentos existentes como versión anterior
-            IntentoExamen::where('examen_id', $examen->id)
+            intentoExamen::where('examen_id', $examen->id)
                 ->where('version_anterior', false)
                 ->update(['version_anterior' => true]);
             
@@ -361,7 +361,7 @@ class ExamenController extends Controller
     // Eliminar examen
     public function destroy($id)
     {
-        $examen = Examen::find($id);
+        $examen = examen::find($id);
 
         if (!$examen) {
             return redirect()->back()->with('error', 'El examen no existe o ya fue eliminado.');
@@ -391,14 +391,14 @@ class ExamenController extends Controller
     }
 
     // Mostrar examen (para docente o alumno)
-    public function show(Examen $examen)
+    public function show(examen $examen)
     {
         $examen->load('preguntas.opciones');
         return view('examenes.show', compact('examen'));
     }
 
     // Alumno realiza intento
-    public function intentar(Request $request, Examen $examen)
+    public function intentar(Request $request, examen $examen)
     {
         $request->validate([
             'answers' => 'required|array',
@@ -412,7 +412,7 @@ class ExamenController extends Controller
 
         $alumnoId = $alumno->id;
 
-        $exists = IntentoExamen::where('examen_id', $examen->id)
+        $exists = intentoExamen::where('examen_id', $examen->id)
             ->where('alumno_id', $alumnoId)
             ->where('version_anterior', false)
             ->exists();
@@ -425,10 +425,10 @@ class ExamenController extends Controller
             return redirect()->route('examenes.show', $examen)->withErrors(['incomplete' => 'Debes responder todas las preguntas antes de enviar el examen.']);
         }
 
-        $tieneAbiertas = $examen->preguntas()->where('tipo', Pregunta::TIPO_ABIERTA)->exists();
-        $estadoInicial = $tieneAbiertas ? IntentoExamen::ESTADO_EN_REVISION : IntentoExamen::ESTADO_CALIFICADO;
+        $tieneAbiertas = $examen->preguntas()->where('tipo', pregunta::TIPO_ABIERTA)->exists();
+        $estadoInicial = $tieneAbiertas ? intentoExamen::ESTADO_EN_REVISION : intentoExamen::ESTADO_CALIFICADO;
 
-        $intento = IntentoExamen::create([
+        $intento = intentoExamen::create([
             'examen_id' => $examen->id,
             'alumno_id' => $alumnoId,
             'puntuacion' => 0,
@@ -449,7 +449,7 @@ class ExamenController extends Controller
             // Manejar según el tipo de pregunta
             if ($preg->isAbierta()) {
                 // Pregunta abierta - guardar texto de respuesta
-                Respuesta::create([
+                respuesta::create([
                     'intento_id' => $intento->id,
                     'pregunta_id' => $preg->id,
                     'opcion_id' => null,
@@ -487,7 +487,7 @@ class ExamenController extends Controller
 
                 // Guardar cada opción seleccionada como una respuesta
                 foreach ($selectedOptions as $optionId) {
-                    Respuesta::create([
+                    respuesta::create([
                         'intento_id' => $intento->id,
                         'pregunta_id' => $preg->id,
                         'opcion_id' => $optionId,
@@ -523,7 +523,7 @@ class ExamenController extends Controller
         \Log::info("actualizarCalificacionMateria llamado", ['alumno_id' => $alumnoId, 'materia_id' => $materiaId]);
         
         // Obtener IDs de exámenes existentes en la materia
-        $examIds = Examen::where('materia_id', $materiaId)->pluck('id');
+        $examIds = examen::where('materia_id', $materiaId)->pluck('id');
         
         if ($examIds->isEmpty()) {
             // Si no hay exámenes en la materia, calificación es NULL
@@ -536,7 +536,7 @@ class ExamenController extends Controller
         }
 
         // Obtener intentos válidos para esos exámenes (solo versión actual)
-        $attempts = IntentoExamen::whereIn('examen_id', $examIds)
+        $attempts = intentoExamen::whereIn('examen_id', $examIds)
             ->where('alumno_id', $alumnoId)
             ->where('version_anterior', false) // Solo intentos de versión actual
             ->get();
@@ -586,14 +586,86 @@ class ExamenController extends Controller
     }
 
     // Mostrar resultado de intento
-    public function result(IntentoExamen $intento)
+    public function result(intentoExamen $intento)
     {
         $intento->load('respuestas.pregunta', 'respuestas.opcion');
         return view('examenes.result', compact('intento'));
     }
 
-    // Calificar una respuesta abierta
-    public function calificarRespuesta(Request $request, Respuesta $respuesta)
+    // Calificar múltiples respuestas de un intento
+    public function calificarIntentoMasivo(Request $request, intentoExamen $intento)
+    {
+        $request->validate([
+            'grades' => 'required|array',
+            'grades.*' => 'required|boolean'
+        ]);
+
+        foreach ($request->grades as $respuestaId => $esCorrecta) {
+            $respuesta = respuesta::find($respuestaId);
+            if ($respuesta && $respuesta->intento_id == $intento->id) {
+                $respuesta->update([
+                    'es_correcta' => $esCorrecta,
+                    'puntos_obtenidos' => $esCorrecta ? 1 : 0
+                ]);
+            }
+        }
+
+        // Verificar si todas las preguntas abiertas ya están calificadas
+        $preguntasAbiertas = $intento->respuestas->filter(function($r) {
+            return $r->pregunta->isAbierta();
+        });
+
+        $todasCalificadas = $preguntasAbiertas->every(function($r) {
+            return $r->puntos_obtenidos !== null;
+        });
+
+        // Si todas están calificadas, publicar automáticamente
+        if ($todasCalificadas) {
+            // Calcular puntuación total - contar por PREGUNTA, no por respuesta
+            $score = 0;
+            $total = 0;
+
+            // Recargar respuestas para asegurar datos actualizados
+            $intento->load('respuestas.pregunta');
+
+            // Agrupar respuestas por pregunta
+            $respuestasPorPregunta = $intento->respuestas->groupBy('pregunta_id');
+            
+            foreach ($respuestasPorPregunta as $preguntaId => $respuestas) {
+                $total++;
+                $primeraRespuesta = $respuestas->first();
+                
+                if ($primeraRespuesta->pregunta->isAbierta()) {
+                    // Para preguntas abiertas, usar puntos_obtenidos
+                    $score += $primeraRespuesta->puntos_obtenidos ?? 0;
+                } else {
+                    // Para preguntas de opción múltiple, verificar si es correcta
+                    if ($primeraRespuesta->es_correcta) {
+                        $score++;
+                    }
+                }
+            }
+
+            // Actualizar intento
+            $intento->update([
+                'puntuacion' => $score,
+                'total' => $total,
+                'estado' => intentoExamen::ESTADO_CALIFICADO,
+                'revisado_por' => auth()->user()->docente->id ?? null,
+                'fecha_revision' => now()
+            ]);
+
+            // Actualizar calificación de la materia
+            $this->actualizarCalificacionMateria($intento->alumno_id, $intento->examen->materia_id);
+
+            return redirect()->route('examenes.show', $intento->examen_id)->with('success', 'Respuestas calificadas. El examen ha sido calificado automáticamente.');
+        }
+
+        return redirect()->route('examenes.show', $intento->examen_id)->with('success', 'Respuestas guardadas correctamente.');
+    }
+
+    // Calificar una respuesta abierta (Obsoleto pero mantenido por compatibilidad)
+    public function calificarRespuesta(Request $request, respuesta $respuesta)
     {
         $request->validate([
             'es_correcta' => 'required|boolean'
@@ -643,7 +715,7 @@ class ExamenController extends Controller
             $intento->update([
                 'puntuacion' => $score,
                 'total' => $total,
-                'estado' => IntentoExamen::ESTADO_CALIFICADO,
+                'estado' => intentoExamen::ESTADO_CALIFICADO,
                 'revisado_por' => auth()->user()->docente->id ?? null,
                 'fecha_revision' => now()
             ]);
@@ -658,7 +730,7 @@ class ExamenController extends Controller
     }
 
     // Publicar calificación final
-    public function publicarCalificacion(IntentoExamen $intento)
+    public function publicarCalificacion(intentoExamen $intento)
     {
         // Calcular puntuación total - contar por PREGUNTA, no por respuesta
         $score = 0;
@@ -687,7 +759,7 @@ class ExamenController extends Controller
         $intento->update([
             'puntuacion' => $score,
             'total' => $total,
-            'estado' => IntentoExamen::ESTADO_CALIFICADO,
+            'estado' => intentoExamen::ESTADO_CALIFICADO,
             'revisado_por' => auth()->user()->docente->id ?? null,
             'fecha_revision' => now()
         ]);

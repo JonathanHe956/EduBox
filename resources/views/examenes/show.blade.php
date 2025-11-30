@@ -260,12 +260,21 @@
                                             </button>
                                             
                                             <div id="attempt-{{ $intento->id }}" class="hidden mt-4 space-y-4">
+                                                @php
+                                                    $canGrade = $intento->isEnRevision();
+                                                @endphp
+                                                
+                                                @if($canGrade)
+                                                    <form action="{{ route('examenes.grade-attempt', $intento) }}" method="POST">
+                                                        @csrf
+                                                @endif
+
                                                 @foreach($examen->preguntas as $pregunta)
                                                     @php
                                                         $respuestas = $intento->respuestas->where('pregunta_id', $pregunta->id);
                                                         $respuesta = $respuestas->first();
                                                     @endphp
-                                                    <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-600 dark:bg-zinc-800">
+                                                    <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-600 dark:bg-zinc-800 mb-4">
                                                         <h4 class="font-medium text-blue-900 dark:text-white mb-2">
                                                             {{ $pregunta->pregunta }}
                                                         </h4>
@@ -279,9 +288,8 @@
                                                                 </div>
                                                             </div>
                                                             
-                                                            @if($respuesta && $intento->isEnRevision())
-                                                                <form action="{{ route('examenes.grade-answer', $respuesta) }}" method="POST" class="mt-3">
-                                                                    @csrf
+                                                            @if($respuesta && $canGrade)
+                                                                <div class="mt-3">
                                                                     <div class="space-y-3">
                                                                         <p class="text-sm font-medium text-gray-700 dark:text-gray-300">
                                                                             Calificación:
@@ -290,7 +298,7 @@
                                                                             <label class="flex items-center gap-2 cursor-pointer">
                                                                                 <input 
                                                                                     type="radio" 
-                                                                                    name="es_correcta" 
+                                                                                    name="grades[{{ $respuesta->id }}]" 
                                                                                     value="1" 
                                                                                     class="w-4 h-4 text-green-600 focus:ring-green-500" 
                                                                                     required
@@ -300,7 +308,7 @@
                                                                             <label class="flex items-center gap-2 cursor-pointer">
                                                                                 <input 
                                                                                     type="radio" 
-                                                                                    name="es_correcta" 
+                                                                                    name="grades[{{ $respuesta->id }}]" 
                                                                                     value="0" 
                                                                                     class="w-4 h-4 text-red-600 focus:ring-red-500" 
                                                                                     required
@@ -308,12 +316,9 @@
                                                                                 <span class="text-sm text-gray-700 dark:text-gray-300">✗ Incorrecta</span>
                                                                             </label>
                                                                         </div>
-                                                                        <button type="submit" class="rounded bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
-                                                                            Guardar Calificación
-                                                                        </button>
                                                                     </div>
-                                                                </form>
-                                                            @elseif(!$respuesta && $intento->isEnRevision())
+                                                                </div>
+                                                            @elseif(!$respuesta && $canGrade)
                                                                 <div class="mt-2 text-sm text-gray-500 dark:text-gray-400 italic">
                                                                     El estudiante no respondió esta pregunta. Se calificará automáticamente como incorrecta (0 puntos).
                                                                 </div>
@@ -366,8 +371,15 @@
                                                         @endif
                                                     </div>
                                                 @endforeach
-                                                
 
+                                                @if($canGrade)
+                                                    <div class="flex justify-end pt-4">
+                                                        <button type="submit" class="rounded bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+                                                            Guardar Calificaciones
+                                                        </button>
+                                                    </div>
+                                                    </form>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>

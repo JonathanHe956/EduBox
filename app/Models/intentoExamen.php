@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class IntentoExamen extends Model
+class intentoExamen extends Model
 {
     const ESTADO_EN_PROGRESO = 'en_progreso';
     const ESTADO_EN_REVISION = 'en_revision';
@@ -15,29 +15,20 @@ class IntentoExamen extends Model
     protected $table = 'intento_examenes';
     protected $fillable = ['examen_id', 'alumno_id', 'puntuacion', 'total', 'estado', 'revisado_por', 'fecha_revision', 'version_anterior'];
 
-    protected $casts = [
-        'estado' => 'string',
-        'fecha_revision' => 'datetime',
-    ];
-
+    // Relaciones
     public function examen(): BelongsTo
     {
-        return $this->belongsTo(Examen::class, 'examen_id');
+        return $this->belongsTo(examen::class, 'examen_id');
     }
 
     public function alumno(): BelongsTo
     {
-        return $this->belongsTo(alumno::class);
+        return $this->belongsTo(alumno::class, 'alumno_id');
     }
 
     public function respuestas(): HasMany
     {
-        return $this->hasMany(Respuesta::class, 'intento_id');
-    }
-
-    public function revisadoPor(): BelongsTo
-    {
-        return $this->belongsTo(docente::class, 'revisado_por');
+        return $this->hasMany(respuesta::class, 'intento_id');
     }
 
     // Métodos auxiliares

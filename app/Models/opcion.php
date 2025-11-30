@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Opcion extends Model
+class opcion extends Model
 {
     protected $table = 'opciones';
     protected $fillable = ['pregunta_id', 'opcion', 'es_correcta'];
@@ -14,8 +14,8 @@ class Opcion extends Model
         'es_correcta' => 'boolean',
     ];
 
-    public function pregunta(): BelongsTo
+    public function pregunta()
     {
-        return $this->belongsTo(Pregunta::class, 'pregunta_id');
+        return $this->belongsTo(pregunta::class, 'pregunta_id');
     }
 }

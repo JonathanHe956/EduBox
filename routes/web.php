@@ -68,6 +68,7 @@ Route::middleware(['auth', 'verified', 'role:docente'])->group(function () {
     Route::put('/examen/{examen}', [App\Http\Controllers\ExamenController::class, 'update'])->name('examenes.update');
     Route::delete('/examen/{examen}', [App\Http\Controllers\ExamenController::class, 'destroy'])->name('examenes.destroy');
     Route::post('/respuesta/{respuesta}/calificar', [App\Http\Controllers\ExamenController::class, 'calificarRespuesta'])->name('examenes.grade-answer');
+    Route::post('/intento/{intento}/calificar-masivo', [App\Http\Controllers\ExamenController::class, 'calificarIntentoMasivo'])->name('examenes.grade-attempt');
     Route::post('/intento/{intento}/publicar', [App\Http\Controllers\ExamenController::class, 'publicarCalificacion'])->name('examenes.publish-grade');
 });
 

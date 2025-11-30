@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Respuesta extends Model
+class respuesta extends Model
 {
     protected $table = 'respuestas';
     protected $fillable = ['intento_id', 'pregunta_id', 'opcion_id', 'es_correcta', 'respuesta_abierta', 'puntos_obtenidos'];
@@ -15,18 +15,18 @@ class Respuesta extends Model
         'puntos_obtenidos' => 'decimal:2',
     ];
 
-    public function intento(): BelongsTo
+    public function intento()
     {
-        return $this->belongsTo(IntentoExamen::class, 'intento_id');
+        return $this->belongsTo(intentoExamen::class, 'intento_id');
     }
 
-    public function pregunta(): BelongsTo
+    public function pregunta()
     {
-        return $this->belongsTo(Pregunta::class, 'pregunta_id');
+        return $this->belongsTo(pregunta::class, 'pregunta_id');
     }
 
-    public function opcion(): BelongsTo
+    public function opcion()
     {
-        return $this->belongsTo(Opcion::class, 'opcion_id');
+        return $this->belongsTo(opcion::class, 'opcion_id');
     }
 }

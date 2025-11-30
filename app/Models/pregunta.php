@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Pregunta extends Model
+class pregunta extends Model
 {
     const TIPO_MULTIPLE = 'multiple';
     const TIPO_VERDADERO_FALSO = 'verdadero_falso';
@@ -21,12 +21,12 @@ class Pregunta extends Model
 
     public function examen(): BelongsTo
     {
-        return $this->belongsTo(Examen::class, 'examen_id');
+        return $this->belongsTo(examen::class, 'examen_id');
     }
 
     public function opciones(): HasMany
     {
-        return $this->hasMany(Opcion::class, 'pregunta_id');
+        return $this->hasMany(opcion::class, 'pregunta_id');
     }
 
     // Métodos auxiliares
