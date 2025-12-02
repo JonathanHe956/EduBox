@@ -15,6 +15,8 @@ use App\Http\Requests\StoreQuestionRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class ExamenController extends Controller
 {
@@ -27,9 +29,14 @@ class ExamenController extends Controller
     // Guardar examen básico
     public function store(StoreExamRequest $request, materia $materia)
     {
-        $docente = auth()->user()->docente;
+        /** @var User $user */
+        $user = Auth::user();
+        if (!$user) {
+            abort(403, 'Usuario no autenticado');
+        }
+        $docente = $user->docente;
         if (!$docente) {
-            $docente = docente::where('email', auth()->user()->email)->first();
+            $docente = docente::where('email', $user->email)->first();
         }
         $docenteId = $docente?->id;
 
@@ -125,7 +132,12 @@ class ExamenController extends Controller
     // Lista de exámenes pendientes para el alumno (no intentados aún)
     public function alumnoIndex()
     {
-        $alumno = auth()->user()->alumno;
+        /** @var User $user */
+        $user = Auth::user();
+        if (!$user) {
+            abort(403, 'Usuario no autenticado');
+        }
+        $alumno = $user->alumno;
         if (! $alumno) {
             abort(403);
         }
@@ -144,9 +156,14 @@ class ExamenController extends Controller
     // Lista de exámenes del docente
     public function docenteIndex()
     {
-        $docente = auth()->user()->docente;
+        /** @var User $user */
+        $user = Auth::user();
+        if (!$user) {
+            abort(403, 'Usuario no autenticado');
+        }
+        $docente = $user->docente;
         if (!$docente) {
-            $docente = docente::where('email', auth()->user()->email)->first();
+            $docente = docente::where('email', $user->email)->first();
         }
         if (! $docente) abort(403);
 
@@ -157,9 +174,14 @@ class ExamenController extends Controller
     // Lista de exámenes por materia (docente)
     public function indiceParaMateria(materia $materia)
     {
-        $docente = auth()->user()->docente;
+        /** @var User $user */
+        $user = Auth::user();
+        if (!$user) {
+            abort(403, 'Usuario no autenticado');
+        }
+        $docente = $user->docente;
         if (!$docente) {
-            $docente = docente::where('email', auth()->user()->email)->first();
+            $docente = docente::where('email', $user->email)->first();
         }
         if (! $docente) abort(403);
 
@@ -176,9 +198,14 @@ class ExamenController extends Controller
     // Lista de exámenes por materia (alumno)
     public function indiceParaMateriaAlumno(materia $materia)
     {
-        $alumno = auth()->user()->alumno;
+        /** @var User $user */
+        $user = Auth::user();
+        if (!$user) {
+            abort(403, 'Usuario no autenticado');
+        }
+        $alumno = $user->alumno;
         if (!$alumno) {
-            $alumno = alumno::where('email', auth()->user()->email)->first();
+            $alumno = alumno::where('email', $user->email)->first();
         }
         if (! $alumno) abort(403);
 
@@ -201,9 +228,14 @@ class ExamenController extends Controller
     // Editar examen (form)
     public function edit(examen $examen)
     {
-        $docente = auth()->user()->docente;
+        /** @var User $user */
+        $user = Auth::user();
+        if (!$user) {
+            abort(403, 'Usuario no autenticado');
+        }
+        $docente = $user->docente;
         if (!$docente) {
-            $docente = docente::where('email', auth()->user()->email)->first();
+            $docente = docente::where('email', $user->email)->first();
         }
         if (! $docente || $examen->docente_id !== $docente->id) abort(403);
 
@@ -214,9 +246,14 @@ class ExamenController extends Controller
     // Actualizar examen
     public function update(Request $request, examen $examen)
     {
-        $docente = auth()->user()->docente;
+        /** @var User $user */
+        $user = Auth::user();
+        if (!$user) {
+            abort(403, 'Usuario no autenticado');
+        }
+        $docente = $user->docente;
         if (!$docente) {
-            $docente = docente::where('email', auth()->user()->email)->first();
+            $docente = docente::where('email', $user->email)->first();
         }
         if (! $docente || $examen->docente_id !== $docente->id) abort(403);
 
@@ -381,7 +418,15 @@ class ExamenController extends Controller
             return redirect()->back()->with('error', 'El examen no existe o ya fue eliminado.');
         }
 
-        $docente = auth()->user()->docente;
+        /** @var User $user */
+        $user = Auth::user();
+        if (!$user) {
+            abort(403, 'Usuario no autenticado');
+        }
+        $docente = $user->docente;
+        if (!$docente) {
+            $docente = docente::where('email', $user->email)->first();
+        }
         if (! $docente || $examen->docente_id !== $docente->id) abort(403);
 
         $materiaId = $examen->materia_id;
@@ -418,9 +463,12 @@ class ExamenController extends Controller
             'answers' => 'required|array',
         ]);
 
-        $alumno = auth()->user()->alumno;
+        /** @var User $user */
+        $user = Auth::user();
+        if (!$user) abort(403);
+        $alumno = $user->alumno;
         if (!$alumno) {
-            $alumno = \App\Models\alumno::where('email', auth()->user()->email)->first();
+            $alumno = \App\Models\alumno::where('email', Auth::user()->email)->first();
         }
         if (!$alumno) abort(403, 'No se encontró el registro de alumno');
 
@@ -453,7 +501,7 @@ class ExamenController extends Controller
         $puntuacion = 0;
         $total = 0;
         
-        \Log::info('Iniciando cálculo de puntuación', ['respuestas' => $respuestas]);
+        Log::info('Iniciando cálculo de puntuación', ['respuestas' => $respuestas]);
         
         // Iterar sobre TODAS las preguntas del examen
         foreach ($examen->preguntas as $preg) {
@@ -495,7 +543,7 @@ class ExamenController extends Controller
                 // Comparación flexible para arrays
                 $esCorrecta = $opcionesSeleccionadas == $opcionesCorrectas;
                 
-                \Log::info('Procesando respuesta', [
+                Log::info('Procesando respuesta', [
                     'id_pregunta' => $preg->id,
                     'opciones_seleccionadas' => $opcionesSeleccionadas,
                     'opciones_correctas' => $opcionesCorrectas,
@@ -516,7 +564,7 @@ class ExamenController extends Controller
             }
         }
         
-        \Log::info('Puntuación final', ['puntuacion' => $puntuacion, 'total' => $total]);
+        Log::info('Puntuación final', ['puntuacion' => $puntuacion, 'total' => $total]);
 
         $intento->puntuacion = $puntuacion;
         $intento->total = $total;
@@ -539,7 +587,7 @@ class ExamenController extends Controller
      */
     private function actualizarCalificacionMateria($alumnoId, $materiaId)
     {
-        \Log::info("actualizarCalificacionMateria llamado", ['id_alumno' => $alumnoId, 'id_materia' => $materiaId]);
+        Log::info("actualizarCalificacionMateria llamado", ['id_alumno' => $alumnoId, 'id_materia' => $materiaId]);
         
         // Obtener IDs de exámenes existentes en la materia
         $idsExamenes = examen::where('materia_id', $materiaId)->pluck('id');
@@ -550,7 +598,7 @@ class ExamenController extends Controller
                 ->where('alumno_id', $alumnoId)
                 ->where('materia_id', $materiaId)
                 ->update(['calificacion' => null]);
-            \Log::info("No hay exámenes en la materia. La calificación se ha restablecido a NULL.");
+            Log::info("No hay exámenes en la materia. La calificación se ha restablecido a NULL.");
             return;
         }
 
@@ -560,7 +608,7 @@ class ExamenController extends Controller
             ->where('version_anterior', false) // Solo intentos de versión actual
             ->get();
 
-        \Log::info("Intentos encontrados", ['conteo' => $intentos->count()]);
+        Log::info("Intentos encontrados", ['conteo' => $intentos->count()]);
 
         if ($intentos->isEmpty()) {
             // Si hay exámenes pero el alumno no tiene intentos, calificación NULL
@@ -569,7 +617,7 @@ class ExamenController extends Controller
                 ->where('materia_id', $materiaId)
                 ->update(['calificacion' => null]);
                 
-            \Log::info("No se encontraron intentos. Calificación restablecida a NULL");
+            Log::info("No se encontraron intentos. Calificación restablecida a NULL");
             return;
         }
 
@@ -588,7 +636,7 @@ class ExamenController extends Controller
         if ($conteoExamenes > 0) {
             $promedioCalificacion = round($porcentajeTotal / $conteoExamenes, 2);
             
-            \Log::info("Actualizando calificación", ['promedio' => $promedioCalificacion]);
+            Log::info("Actualizando calificación", ['promedio' => $promedioCalificacion]);
             
             // Actualizar calificación en la tabla pivote
             $actualizado = DB::table('alumno_materias')
@@ -652,8 +700,14 @@ class ExamenController extends Controller
             
             foreach ($respuestasPorPregunta as $preguntaId => $respuestas) {
                 $total++;
+                /** @var \App\Models\respuesta $primeraRespuesta */
                 $primeraRespuesta = $respuestas->first();
                 
+                if (!$primeraRespuesta->pregunta) {
+                    Log::warning("Respuesta huérfana encontrada: ID {$primeraRespuesta->id}");
+                    continue;
+                }
+
                 if ($primeraRespuesta->pregunta->isAbierta()) {
                     // Para preguntas abiertas, usar puntos_obtenidos
                     $puntuacion += $primeraRespuesta->puntos_obtenidos ?? 0;
@@ -666,11 +720,13 @@ class ExamenController extends Controller
             }
 
             // Actualizar intento
+            /** @var User $user */
+            $user = Auth::user();
             $intento->update([
                 'puntuacion' => $puntuacion,
                 'total' => $total,
                 'estado' => intentoExamen::ESTADO_CALIFICADO,
-                'revisado_por' => auth()->user()->docente->id ?? null,
+                'revisado_por' => $user?->docente?->id ?? null,
                 'fecha_revision' => now()
             ]);
 
@@ -731,11 +787,13 @@ class ExamenController extends Controller
             }
 
             // Actualizar intento
+            /** @var User $user */
+            $user = Auth::user();
             $intento->update([
                 'puntuacion' => $puntuacion,
                 'total' => $total,
                 'estado' => intentoExamen::ESTADO_CALIFICADO,
-                'revisado_por' => auth()->user()->docente->id ?? null,
+                'revisado_por' => $user?->docente?->id ?? null,
                 'fecha_revision' => now()
             ]);
 
@@ -775,11 +833,13 @@ class ExamenController extends Controller
         }
 
         // Actualizar intento
+        /** @var User $user */
+        $user = Auth::user();
         $intento->update([
             'puntuacion' => $puntuacion,
             'total' => $total,
             'estado' => intentoExamen::ESTADO_CALIFICADO,
-            'revisado_por' => auth()->user()->docente->id ?? null,
+            'revisado_por' => $user?->docente?->id ?? null,
             'fecha_revision' => now()
         ]);
 

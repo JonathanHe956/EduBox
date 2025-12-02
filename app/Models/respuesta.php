@@ -15,17 +15,17 @@ class respuesta extends Model
         'puntos_obtenidos' => 'decimal:2',
     ];
 
-    public function intento()
+    public function intento(): BelongsTo
     {
         return $this->belongsTo(intentoExamen::class, 'intento_id');
     }
 
-    public function pregunta()
+    public function pregunta(): BelongsTo
     {
         return $this->belongsTo(pregunta::class, 'pregunta_id');
     }
 
-    public function opcion()
+    public function opcion(): BelongsTo
     {
         return $this->belongsTo(opcion::class, 'opcion_id');
     }
