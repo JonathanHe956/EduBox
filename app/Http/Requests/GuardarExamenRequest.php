@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreExamRequest extends FormRequest
+class GuardarExamenRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -15,22 +15,22 @@ class StoreExamRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'titulo' => 'required|string|max:255',
+            'descripcion' => 'nullable|string',
             'opciones_por_pregunta' => 'nullable|integer|min:2|max:8',
             'respuestas_correctas' => 'nullable|integer|min:1|max:8',
-            'questions' => 'nullable|array',
-            'questions.*.text' => 'nullable|string',
-            'questions.*.options' => 'nullable|array',
-            'questions.*.options.*.text' => 'nullable|string',
+            'preguntas' => 'nullable|array',
+            'preguntas.*.texto' => 'nullable|string',
+            'preguntas.*.opciones' => 'nullable|array',
+            'preguntas.*.opciones.*.texto' => 'nullable|string',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'title.required' => 'El título es obligatorio.',
-            'title.max' => 'El título no puede superar los 255 caracteres.',
+            'titulo.required' => 'El título es obligatorio.',
+            'titulo.max' => 'El título no puede superar los 255 caracteres.',
         ];
     }
 }

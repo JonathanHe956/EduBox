@@ -12,6 +12,10 @@
 
         <div class="glass-card p-6 max-w-4xl mx-auto w-full">
             <script>
+                function validarTexto(input) {
+                    input.value = input.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+                }
+
                 function calcularEdad() {
                     const fechaNacimiento = document.getElementById('fecha_nacimiento').value;
                     if (fechaNacimiento) {
@@ -65,7 +69,7 @@
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                     <div>
                         <label for="nombre" class="block text-sm font-medium text-blue-700 dark:text-blue-300">Nombre</label>
-                        <input type="text" name="nombre" id="nombre" value="{{ old('nombre', $alumno->nombre) }}" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white" required oninput="generarEmail()">
+                        <input type="text" name="nombre" id="nombre" value="{{ old('nombre', $alumno->nombre) }}" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white" required oninput="validarTexto(this); generarEmail()">
                         @error('nombre')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -73,7 +77,7 @@
 
                     <div>
                         <label for="apaterno" class="block text-sm font-medium text-blue-700 dark:text-blue-300">Apellido Paterno</label>
-                        <input type="text" name="apaterno" id="apaterno" value="{{ old('apaterno', $alumno->apaterno) }}" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white" oninput="generarEmail()">
+                        <input type="text" name="apaterno" id="apaterno" value="{{ old('apaterno', $alumno->apaterno) }}" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white" oninput="validarTexto(this); generarEmail()">
                         @error('apaterno')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -81,7 +85,7 @@
 
                     <div>
                         <label for="amaterno" class="block text-sm font-medium text-blue-700 dark:text-blue-300">Apellido Materno</label>
-                        <input type="text" name="amaterno" id="amaterno" value="{{ old('amaterno', $alumno->amaterno) }}" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white">
+                        <input type="text" name="amaterno" id="amaterno" value="{{ old('amaterno', $alumno->amaterno) }}" class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white" oninput="validarTexto(this)">
                         @error('amaterno')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror

@@ -23,7 +23,8 @@
                         <div>
                             <label for="nombre" class="block text-sm font-medium text-blue-700 dark:text-blue-300">Nombre de la Materia</label>
                             <input type="text" name="nombre" id="nombre" value="{{ old('nombre') }}" required
-                                   class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white">
+                                   class="mt-1 block w-full rounded-md border border-blue-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-white"
+                                   oninput="validarTexto(this)">
                             @error('nombre')
                                 <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
@@ -72,6 +73,10 @@
     </div>
 
     <script>
+        function validarTexto(input) {
+            input.value = input.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+        }
+
         function validarCreditosMateria(input) {
             const valor = parseInt(input.value);
             const elementoError = document.getElementById('creditos-error');

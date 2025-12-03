@@ -29,13 +29,13 @@
             <div class="glass-card p-6 space-y-6">
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                     <div>
-                        <label for="title" class="block text-sm font-medium text-gray-500 dark:text-gray-400">Título</label>
-                        <input id="title" name="title" type="text" required maxlength="255" class="input-modern w-full" value="{{ old('title') }}">
+                        <label for="titulo" class="block text-sm font-medium text-gray-500 dark:text-gray-400">Título</label>
+                        <input id="titulo" name="titulo" type="text" required maxlength="255" class="input-modern w-full" value="{{ old('titulo') }}">
                     </div>
 
                     <div>
-                        <label for="description" class="block text-sm font-medium text-gray-500 dark:text-gray-400">Descripción</label>
-                        <textarea id="description" name="description" class="input-modern w-full" rows="3">{{ old('description') }}</textarea>
+                        <label for="descripcion" class="block text-sm font-medium text-gray-500 dark:text-gray-400">Descripción</label>
+                        <textarea id="descripcion" name="descripcion" class="input-modern w-full" rows="3">{{ old('descripcion') }}</textarea>
                     </div>
                 </div>
 
@@ -77,7 +77,7 @@
                 </button>
                 <div class="mb-3">
                     <label class="block font-medium text-sm mb-1">Pregunta <span class="question-number"></span></label>
-                    <textarea name="questions[INDEX][text]" required class="border rounded w-full px-2 py-1" placeholder="Escribe la pregunta aquí..."></textarea>
+                    <textarea name="preguntas[INDEX][texto]" required class="border rounded w-full px-2 py-1" placeholder="Escribe la pregunta aquí..."></textarea>
                 </div>
                 
                 <!-- Selector de tipo de pregunta -->
@@ -85,15 +85,15 @@
                     <label class="block font-medium text-sm mb-2">Tipo de pregunta</label>
                     <div class="flex gap-4">
                         <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="questions[INDEX][tipo]" value="multiple" class="question-type-radio mr-2" checked>
+                            <input type="radio" name="preguntas[INDEX][tipo]" value="multiple" class="question-type-radio mr-2" checked>
                             <span class="text-sm">Opción múltiple</span>
                         </label>
                         <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="questions[INDEX][tipo]" value="verdadero_falso" class="question-type-radio mr-2">
+                            <input type="radio" name="preguntas[INDEX][tipo]" value="verdadero_falso" class="question-type-radio mr-2">
                             <span class="text-sm">Verdadero/Falso</span>
                         </label>
                         <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="questions[INDEX][tipo]" value="abierta" class="question-type-radio mr-2">
+                            <input type="radio" name="preguntas[INDEX][tipo]" value="abierta" class="question-type-radio mr-2">
                             <span class="text-sm">Pregunta abierta</span>
                         </label>
                     </div>
@@ -117,11 +117,11 @@
                     <label class="block font-medium text-sm mb-2">Respuesta correcta</label>
                     <div class="space-y-2">
                         <label class="flex items-center cursor-pointer p-2 border rounded hover:bg-gray-50 dark:hover:bg-zinc-700">
-                            <input type="radio" name="questions[INDEX][vf_correcta]" value="verdadero" class="mr-2">
+                            <input type="radio" name="preguntas[INDEX][vf_correcta]" value="verdadero" class="mr-2">
                             <span>Verdadero</span>
                         </label>
                         <label class="flex items-center cursor-pointer p-2 border rounded hover:bg-gray-50 dark:hover:bg-zinc-700">
-                            <input type="radio" name="questions[INDEX][vf_correcta]" value="falso" class="mr-2">
+                            <input type="radio" name="preguntas[INDEX][vf_correcta]" value="falso" class="mr-2">
                             <span>Falso</span>
                         </label>
                     </div>
@@ -130,7 +130,7 @@
                 <!-- Contenedor para pregunta abierta -->
                 <div class="tipo-abierta-content" style="display: none;">
                     <label class="block font-medium text-sm mb-2">Respuesta esperada / Criterios de evaluación (opcional)</label>
-                    <textarea name="questions[INDEX][respuesta_esperada]" class="border rounded w-full px-2 py-1 text-sm" rows="3" placeholder="Describe la respuesta esperada o los criterios para calificar esta pregunta..."></textarea>
+                    <textarea name="preguntas[INDEX][respuesta_esperada]" class="border rounded w-full px-2 py-1 text-sm" rows="3" placeholder="Describe la respuesta esperada o los criterios para calificar esta pregunta..."></textarea>
                     <p class="text-xs text-gray-500 mt-1">Esta información te ayudará al momento de revisar las respuestas de los estudiantes.</p>
                 </div>
             </div>
@@ -152,13 +152,13 @@
                     
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
-                    checkbox.name = `questions[${questionIdx}][options][${optionIdx}][is_correct]`;
+                    checkbox.name = `preguntas[${questionIdx}][opciones][${optionIdx}][es_correcta]`;
                     checkbox.value = '1';
                     checkbox.className = 'w-4 h-4';
                     
                     const text = document.createElement('input');
                     text.type = 'text';
-                    text.name = `questions[${questionIdx}][options][${optionIdx}][text]`;
+                    text.name = `preguntas[${questionIdx}][opciones][${optionIdx}][texto]`;
                     text.className = 'border rounded px-2 py-1 flex-1 text-sm';
                     text.placeholder = `Opción ${optionIdx + 1}`;
 
@@ -206,8 +206,8 @@
                         const checkbox = opt.querySelector('input[type="checkbox"]');
                         const textInput = opt.querySelector('input[type="text"]');
                         
-                        checkbox.name = `questions[${questionIdx}][options][${idx}][is_correct]`;
-                        textInput.name = `questions[${questionIdx}][options][${idx}][text]`;
+                        checkbox.name = `preguntas[${questionIdx}][opciones][${idx}][es_correcta]`;
+                        textInput.name = `preguntas[${questionIdx}][opciones][${idx}][texto]`;
                         textInput.placeholder = `Opción ${idx + 1}`;
                     });
                 }

@@ -10,8 +10,8 @@ use App\Models\respuesta;
 use App\Models\materia;
 use App\Models\docente;
 use App\Models\alumno;
-use App\Http\Requests\StoreExamRequest;
-use App\Http\Requests\StoreQuestionRequest;
+use App\Http\Requests\GuardarExamenRequest;
+use App\Http\Requests\GuardarPreguntaRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -27,7 +27,7 @@ class ExamenController extends Controller
     }
 
     // Guardar examen básico
-    public function store(StoreExamRequest $request, materia $materia)
+    public function store(GuardarExamenRequest $request, materia $materia)
     {
         /** @var User $user */
         $user = Auth::user();
@@ -44,30 +44,30 @@ class ExamenController extends Controller
             $examen = examen::create([
                 'materia_id' => $materia->id,
                 'docente_id' => $docenteId,
-                'titulo' => $request->input('title'),
-                'descripcion' => $request->input('description'),
+                'titulo' => $request->input('titulo'),
+                'descripcion' => $request->input('descripcion'),
                 'cantidad_preguntas' => 0,
                 'opciones_por_pregunta' => 4,
                 'respuestas_correctas' => 1,
             ]);
 
-            if (!$request->has('questions') || count($request->input('questions')) < 1) {
+            if (!$request->has('preguntas') || count($request->input('preguntas')) < 1) {
                 throw new \Exception("El examen debe tener al menos una pregunta.");
             }
 
-            if ($request->has('questions')) {
-                foreach ($request->input('questions') as $indiceP => $datosP) {
+            if ($request->has('preguntas')) {
+                foreach ($request->input('preguntas') as $indiceP => $datosP) {
                     $tipo = $datosP['tipo'] ?? 'multiple';
                     
                     // Validar según el tipo de pregunta
                     if ($tipo === 'multiple') {
-                        if (!isset($datosP['options']) || count($datosP['options']) < 2) {
+                        if (!isset($datosP['opciones']) || count($datosP['opciones']) < 2) {
                             throw new \Exception("La pregunta " . ($indiceP + 1) . " debe tener al menos 2 opciones.");
                         }
                         
                         $tieneRespuestaCorrecta = false;
-                        foreach ($datosP['options'] as $datosO) {
-                            if (isset($datosO['is_correct'])) {
+                        foreach ($datosP['opciones'] as $datosO) {
+                            if (isset($datosO['es_correcta'])) {
                                 $tieneRespuestaCorrecta = true;
                                 break;
                             }
@@ -85,18 +85,18 @@ class ExamenController extends Controller
                     // Crear la pregunta
                     $pregunta = pregunta::create([
                         'examen_id' => $examen->id,
-                        'pregunta' => $datosP['text'],
+                        'pregunta' => $datosP['texto'],
                         'tipo' => $tipo,
                         'respuesta_correcta_abierta' => $datosP['respuesta_esperada'] ?? null,
                     ]);
 
                     // Crear opciones según el tipo
-                    if ($tipo === 'multiple' && isset($datosP['options'])) {
-                        foreach ($datosP['options'] as $datosO) {
+                    if ($tipo === 'multiple' && isset($datosP['opciones'])) {
+                        foreach ($datosP['opciones'] as $datosO) {
                             opcion::create([
                                 'pregunta_id' => $pregunta->id,
-                                'opcion' => $datosO['text'],
-                                'es_correcta' => isset($datosO['is_correct']),
+                                'opcion' => $datosO['texto'],
+                                'es_correcta' => isset($datosO['es_correcta']),
                             ]);
                         }
                     } elseif ($tipo === 'verdadero_falso') {
@@ -114,7 +114,7 @@ class ExamenController extends Controller
                     }
                     // Las preguntas abiertas no tienen opciones
                 }
-                $examen->cantidad_preguntas = count($request->input('questions'));
+                $examen->cantidad_preguntas = count($request->input('preguntas'));
                 $examen->save();
             }
         });
@@ -123,7 +123,7 @@ class ExamenController extends Controller
     }
 
     // Añadir pregunta y sus opciones a un examen
-    public function agregarPregunta(StoreQuestionRequest $request, examen $examen)
+    public function agregarPregunta(GuardarPreguntaRequest $request, examen $examen)
     {
         // Obsoleto por formulario dinámico, mantenido por compatibilidad
         return back();
@@ -258,23 +258,23 @@ class ExamenController extends Controller
         if (! $docente || $examen->docente_id !== $docente->id) abort(403);
 
         $request->validate([
-            'title' => 'required|string|max:255',
-            'questions' => 'array',
-            'questions.*.text' => 'required|string',
+            'titulo' => 'required|string|max:255',
+            'preguntas' => 'array',
+            'preguntas.*.texto' => 'required|string',
         ]);
 
         try {
             DB::transaction(function () use ($request, $examen) {
                 // Actualizar título y descripción
                 $examen->update([
-                    'titulo' => $request->input('title'),
-                    'descripcion' => $request->input('description'),
+                    'titulo' => $request->input('titulo'),
+                    'descripcion' => $request->input('descripcion'),
                 ]);
 
                 // Validar que haya al menos una pregunta (existente o nueva)
                 $totalPreguntas = 0;
-                if ($request->has('questions')) {
-                    $totalPreguntas = count($request->input('questions'));
+                if ($request->has('preguntas')) {
+                    $totalPreguntas = count($request->input('preguntas'));
                 }
                 
                 if ($totalPreguntas < 1) {
@@ -283,19 +283,19 @@ class ExamenController extends Controller
 
                 // Sincronizar preguntas
                 $idsPreguntasEntrantes = [];
-                if ($request->has('questions')) {
-                    foreach ($request->input('questions') as $indice => $datosP) {
+                if ($request->has('preguntas')) {
+                    foreach ($request->input('preguntas') as $indice => $datosP) {
                         $tipo = $datosP['tipo'] ?? 'multiple';
                         
                         // Validar según el tipo de pregunta
                         if ($tipo === 'multiple') {
-                            if (!isset($datosP['options']) || count($datosP['options']) < 2) {
+                            if (!isset($datosP['opciones']) || count($datosP['opciones']) < 2) {
                                 throw new \Exception("La pregunta " . ($indice + 1) . " debe tener al menos 2 opciones.");
                             }
                             
                             $tieneRespuestaCorrecta = false;
-                            foreach ($datosP['options'] as $datosO) {
-                                if (isset($datosO['is_correct'])) {
+                            foreach ($datosP['opciones'] as $datosO) {
+                                if (isset($datosO['es_correcta'])) {
                                     $tieneRespuestaCorrecta = true;
                                     break;
                                 }
@@ -317,7 +317,7 @@ class ExamenController extends Controller
                             
                             if ($pregunta && $pregunta->examen_id == $examen->id) {
                                 $pregunta->update([
-                                    'pregunta' => $datosP['text'],
+                                    'pregunta' => $datosP['texto'],
                                     'tipo' => $tipo,
                                     'respuesta_correcta_abierta' => $datosP['respuesta_esperada'] ?? null,
                                 ]);
@@ -325,12 +325,12 @@ class ExamenController extends Controller
                                 // Eliminar opciones antiguas y crear nuevas
                                 $pregunta->opciones()->delete();
                                 
-                                if ($tipo === 'multiple' && isset($datosP['options'])) {
-                                    foreach ($datosP['options'] as $datosO) {
+                                if ($tipo === 'multiple' && isset($datosP['opciones'])) {
+                                    foreach ($datosP['opciones'] as $datosO) {
                                         opcion::create([
                                             'pregunta_id' => $pregunta->id,
-                                            'opcion' => $datosO['text'],
-                                            'es_correcta' => isset($datosO['is_correct']),
+                                            'opcion' => $datosO['texto'],
+                                            'es_correcta' => isset($datosO['es_correcta']),
                                         ]);
                                     }
                                 } elseif ($tipo === 'verdadero_falso') {
@@ -350,18 +350,18 @@ class ExamenController extends Controller
                             // Nueva pregunta
                             $pregunta = pregunta::create([
                                 'examen_id' => $examen->id,
-                                'pregunta' => $datosP['text'],
+                                'pregunta' => $datosP['texto'],
                                 'tipo' => $tipo,
                                 'respuesta_correcta_abierta' => $datosP['respuesta_esperada'] ?? null,
                             ]);
                             $idsPreguntasEntrantes[] = $pregunta->id;
                             
-                            if ($tipo === 'multiple' && isset($datosP['options'])) {
-                                foreach ($datosP['options'] as $datosO) {
+                            if ($tipo === 'multiple' && isset($datosP['opciones'])) {
+                                foreach ($datosP['opciones'] as $datosO) {
                                     opcion::create([
                                         'pregunta_id' => $pregunta->id,
-                                        'opcion' => $datosO['text'],
-                                        'es_correcta' => isset($datosO['is_correct']),
+                                        'opcion' => $datosO['texto'],
+                                        'es_correcta' => isset($datosO['es_correcta']),
                                     ]);
                                 }
                             } elseif ($tipo === 'verdadero_falso') {

@@ -217,6 +217,12 @@ class AlumnoController extends Controller
             return redirect()->route('alumno.index');
         }
 
+        // Eliminar usuario asociado
+        $user = \App\Models\User::where('email', $alumno->email)->first();
+        if ($user) {
+            $user->delete();
+        }
+
         $alumno->delete();
         session()->flash('mensaje', 'Alumno eliminado exitosamente.');
         return redirect()->route('alumno.index');

@@ -184,6 +184,12 @@ class DocenteController extends Controller
 
         $docente->delete();
 
+        // Eliminar usuario asociado
+        $user = User::where('email', $docente->email)->first();
+        if ($user) {
+            $user->delete();
+        }
+
         return redirect()->route('docente.index')->with('mensaje', 'Docente eliminado exitosamente.');
     }
 

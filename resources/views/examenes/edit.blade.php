@@ -30,13 +30,13 @@
             <div class="glass-card p-6 space-y-6">
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                     <div>
-                        <label for="title" class="block text-sm font-medium text-gray-500 dark:text-gray-400">Título</label>
-                        <input id="title" name="title" type="text" required maxlength="255" class="input-modern w-full" value="{{ old('title', $examen->titulo) }}">
+                        <label for="titulo" class="block text-sm font-medium text-gray-500 dark:text-gray-400">Título</label>
+                        <input id="titulo" name="titulo" type="text" required maxlength="255" class="input-modern w-full" value="{{ old('titulo', $examen->titulo) }}">
                     </div>
 
                     <div>
-                        <label for="description" class="block text-sm font-medium text-gray-500 dark:text-gray-400">Descripción</label>
-                        <textarea id="description" name="description" class="input-modern w-full" rows="3">{{ old('description', $examen->descripcion) }}</textarea>
+                        <label for="descripcion" class="block text-sm font-medium text-gray-500 dark:text-gray-400">Descripción</label>
+                        <textarea id="descripcion" name="descripcion" class="input-modern w-full" rows="3">{{ old('descripcion', $examen->descripcion) }}</textarea>
                     </div>
                 </div>
 
@@ -56,10 +56,10 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>
                                 </button>
-                                <input type="hidden" name="questions[{{ $index }}][id]" value="{{ $pregunta->id }}">
+                                <input type="hidden" name="preguntas[{{ $index }}][id]" value="{{ $pregunta->id }}">
                                 <div class="mb-3">
                                     <label class="block font-medium text-sm mb-1">Pregunta <span class="question-number">{{ $index + 1 }}</span></label>
-                                    <textarea name="questions[{{ $index }}][text]" required class="border rounded w-full px-2 py-1">{{ $pregunta->pregunta }}</textarea>
+                                    <textarea name="preguntas[{{ $index }}][texto]" required class="border rounded w-full px-2 py-1">{{ $pregunta->pregunta }}</textarea>
                                 </div>
                                 
                                 <!-- Selector de tipo de pregunta -->
@@ -67,15 +67,15 @@
                                     <label class="block font-medium text-sm mb-2">Tipo de pregunta</label>
                                     <div class="flex gap-4">
                                         <label class="flex items-center cursor-pointer">
-                                            <input type="radio" name="questions[{{ $index }}][tipo]" value="multiple" class="question-type-radio mr-2" {{ $pregunta->tipo === 'multiple' ? 'checked' : '' }}>
+                                            <input type="radio" name="preguntas[{{ $index }}][tipo]" value="multiple" class="question-type-radio mr-2" {{ $pregunta->tipo === 'multiple' ? 'checked' : '' }}>
                                             <span class="text-sm">Opción múltiple</span>
                                         </label>
                                         <label class="flex items-center cursor-pointer">
-                                            <input type="radio" name="questions[{{ $index }}][tipo]" value="verdadero_falso" class="question-type-radio mr-2" {{ $pregunta->tipo === 'verdadero_falso' ? 'checked' : '' }}>
+                                            <input type="radio" name="preguntas[{{ $index }}][tipo]" value="verdadero_falso" class="question-type-radio mr-2" {{ $pregunta->tipo === 'verdadero_falso' ? 'checked' : '' }}>
                                             <span class="text-sm">Verdadero/Falso</span>
                                         </label>
                                         <label class="flex items-center cursor-pointer">
-                                            <input type="radio" name="questions[{{ $index }}][tipo]" value="abierta" class="question-type-radio mr-2" {{ $pregunta->tipo === 'abierta' ? 'checked' : '' }}>
+                                            <input type="radio" name="preguntas[{{ $index }}][tipo]" value="abierta" class="question-type-radio mr-2" {{ $pregunta->tipo === 'abierta' ? 'checked' : '' }}>
                                             <span class="text-sm">Pregunta abierta</span>
                                         </label>
                                     </div>
@@ -92,9 +92,9 @@
                                     <div class="options-list space-y-2 pl-4 border-l-2 border-blue-200/50 dark:border-blue-700/50">
                                         @foreach($pregunta->opciones as $optIndex => $opcion)
                                             <div class="flex items-center gap-2 option-item border border-transparent rounded p-1 transition-colors {{ $opcion->es_correcta ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-700' : '' }}" data-option-index="{{ $optIndex }}">
-                                                <input type="hidden" name="questions[{{ $index }}][options][{{ $optIndex }}][id]" value="{{ $opcion->id }}">
-                                                <input type="checkbox" name="questions[{{ $index }}][options][{{ $optIndex }}][is_correct]" value="1" {{ $opcion->es_correcta ? 'checked' : '' }} class="w-4 h-4 option-checkbox">
-                                                <input type="text" name="questions[{{ $index }}][options][{{ $optIndex }}][text]" value="{{ $opcion->opcion }}" class="border rounded px-2 py-1 flex-1 text-sm">
+                                                <input type="hidden" name="preguntas[{{ $index }}][opciones][{{ $optIndex }}][id]" value="{{ $opcion->id }}">
+                                                <input type="checkbox" name="preguntas[{{ $index }}][opciones][{{ $optIndex }}][es_correcta]" value="1" {{ $opcion->es_correcta ? 'checked' : '' }} class="w-4 h-4 option-checkbox">
+                                                <input type="text" name="preguntas[{{ $index }}][opciones][{{ $optIndex }}][texto]" value="{{ $opcion->opcion }}" class="border rounded px-2 py-1 flex-1 text-sm">
                                                 <button type="button" class="remove-option-btn text-red-400 hover:text-red-600 p-1 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors" data-question-index="{{ $index }}" title="Eliminar opción">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
                                                 </button>
@@ -111,11 +111,11 @@
                                             $vfCorrecta = $pregunta->opciones->firstWhere('opcion', 'Verdadero')?->es_correcta ? 'verdadero' : 'falso';
                                         @endphp
                                         <label class="flex items-center cursor-pointer p-2 border rounded hover:bg-gray-50 dark:hover:bg-zinc-700">
-                                            <input type="radio" name="questions[{{ $index }}][vf_correcta]" value="verdadero" class="mr-2" {{ $vfCorrecta === 'verdadero' ? 'checked' : '' }}>
+                                            <input type="radio" name="preguntas[{{ $index }}][vf_correcta]" value="verdadero" class="mr-2" {{ $vfCorrecta === 'verdadero' ? 'checked' : '' }}>
                                             <span>Verdadero</span>
                                         </label>
                                         <label class="flex items-center cursor-pointer p-2 border rounded hover:bg-gray-50 dark:hover:bg-zinc-700">
-                                            <input type="radio" name="questions[{{ $index }}][vf_correcta]" value="falso" class="mr-2" {{ $vfCorrecta === 'falso' ? 'checked' : '' }}>
+                                            <input type="radio" name="preguntas[{{ $index }}][vf_correcta]" value="falso" class="mr-2" {{ $vfCorrecta === 'falso' ? 'checked' : '' }}>
                                             <span>Falso</span>
                                         </label>
                                     </div>
@@ -124,7 +124,7 @@
                                 <!-- Contenedor para pregunta abierta -->
                                 <div class="tipo-abierta-content" style="display: {{ $pregunta->tipo === 'abierta' ? 'block' : 'none' }};">
                                     <label class="block font-medium text-sm mb-2">Respuesta esperada / Criterios de evaluación (opcional)</label>
-                                    <textarea name="questions[{{ $index }}][respuesta_esperada]" class="border rounded w-full px-2 py-1 text-sm" rows="3" placeholder="Describe la respuesta esperada o los criterios para calificar esta pregunta...">{{ $pregunta->respuesta_correcta_abierta }}</textarea>
+                                    <textarea name="preguntas[{{ $index }}][respuesta_esperada]" class="border rounded w-full px-2 py-1 text-sm" rows="3" placeholder="Describe la respuesta esperada o los criterios para calificar esta pregunta...">{{ $pregunta->respuesta_correcta_abierta }}</textarea>
                                     <p class="text-xs text-gray-500 mt-1">Esta información te ayudará al momento de revisar las respuestas de los estudiantes.</p>
                                 </div>
                             </div>
@@ -158,7 +158,7 @@
                 </button>
                 <div class="mb-3">
                     <label class="block font-medium text-sm mb-1">Pregunta <span class="question-number"></span></label>
-                    <textarea name="questions[INDEX][text]" required class="border rounded w-full px-2 py-1" placeholder="Escribe la pregunta aquí..."></textarea>
+                    <textarea name="preguntas[INDEX][texto]" required class="border rounded w-full px-2 py-1" placeholder="Escribe la pregunta aquí..."></textarea>
                 </div>
                 
                 <!-- Selector de tipo de pregunta -->
@@ -166,15 +166,15 @@
                     <label class="block font-medium text-sm mb-2">Tipo de pregunta</label>
                     <div class="flex gap-4">
                         <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="questions[INDEX][tipo]" value="multiple" class="question-type-radio mr-2" checked>
+                            <input type="radio" name="preguntas[INDEX][tipo]" value="multiple" class="question-type-radio mr-2" checked>
                             <span class="text-sm">Opción múltiple</span>
                         </label>
                         <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="questions[INDEX][tipo]" value="verdadero_falso" class="question-type-radio mr-2">
+                            <input type="radio" name="preguntas[INDEX][tipo]" value="verdadero_falso" class="question-type-radio mr-2">
                             <span class="text-sm">Verdadero/Falso</span>
                         </label>
                         <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="questions[INDEX][tipo]" value="abierta" class="question-type-radio mr-2">
+                            <input type="radio" name="preguntas[INDEX][tipo]" value="abierta" class="question-type-radio mr-2">
                             <span class="text-sm">Pregunta abierta</span>
                         </label>
                     </div>
@@ -198,11 +198,11 @@
                     <label class="block font-medium text-sm mb-2">Respuesta correcta</label>
                     <div class="space-y-2">
                         <label class="flex items-center cursor-pointer p-2 border rounded hover:bg-gray-50 dark:hover:bg-zinc-700">
-                            <input type="radio" name="questions[INDEX][vf_correcta]" value="verdadero" class="mr-2">
+                            <input type="radio" name="preguntas[INDEX][vf_correcta]" value="verdadero" class="mr-2">
                             <span>Verdadero</span>
                         </label>
                         <label class="flex items-center cursor-pointer p-2 border rounded hover:bg-gray-50 dark:hover:bg-zinc-700">
-                            <input type="radio" name="questions[INDEX][vf_correcta]" value="falso" class="mr-2">
+                            <input type="radio" name="preguntas[INDEX][vf_correcta]" value="falso" class="mr-2">
                             <span>Falso</span>
                         </label>
                     </div>
@@ -211,7 +211,7 @@
                 <!-- Contenedor para pregunta abierta -->
                 <div class="tipo-abierta-content" style="display: none;">
                     <label class="block font-medium text-sm mb-2">Respuesta esperada / Criterios de evaluación (opcional)</label>
-                    <textarea name="questions[INDEX][respuesta_esperada]" class="border rounded w-full px-2 py-1 text-sm" rows="3" placeholder="Describe la respuesta esperada o los criterios para calificar esta pregunta..."></textarea>
+                    <textarea name="preguntas[INDEX][respuesta_esperada]" class="border rounded w-full px-2 py-1 text-sm" rows="3" placeholder="Describe la respuesta esperada o los criterios para calificar esta pregunta..."></textarea>
                     <p class="text-xs text-gray-500 mt-1">Esta información te ayudará al momento de revisar las respuestas de los estudiantes.</p>
                 </div>
             </div>
@@ -234,13 +234,13 @@
                     
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
-                    checkbox.name = `questions[${questionIdx}][options][${optionIdx}][is_correct]`;
+                    checkbox.name = `preguntas[${questionIdx}][opciones][${optionIdx}][es_correcta]`;
                     checkbox.value = '1';
                     checkbox.className = 'w-4 h-4';
                     
                     const text = document.createElement('input');
                     text.type = 'text';
-                    text.name = `questions[${questionIdx}][options][${optionIdx}][text]`;
+                    text.name = `preguntas[${questionIdx}][opciones][${optionIdx}][texto]`;
                     text.className = 'border rounded px-2 py-1 flex-1 text-sm';
                     text.placeholder = `Opción ${optionIdx + 1}`;
 
@@ -288,12 +288,12 @@
                         const textInput = opt.querySelector('input[type="text"]');
                         const hiddenId = opt.querySelector('input[type="hidden"]');
                         
-                        checkbox.name = `questions[${questionIdx}][options][${idx}][is_correct]`;
-                        textInput.name = `questions[${questionIdx}][options][${idx}][text]`;
+                        checkbox.name = `preguntas[${questionIdx}][opciones][${idx}][es_correcta]`;
+                        textInput.name = `preguntas[${questionIdx}][opciones][${idx}][texto]`;
                         textInput.placeholder = `Opción ${idx + 1}`;
                         
                         if (hiddenId) {
-                            hiddenId.name = `questions[${questionIdx}][options][${idx}][id]`;
+                            hiddenId.name = `preguntas[${questionIdx}][opciones][${idx}][id]`;
                         }
                     });
                 }
