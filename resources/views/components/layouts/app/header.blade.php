@@ -22,7 +22,7 @@
                 @endif
 
                 @if(auth()->user()->hasRole('estudiante'))
-                    <flux:navbar.item icon="clipboard-document-list" :href="route('examenes.pending')" :current="request()->routeIs('examenes.pending')" wire:navigate>
+                    <flux:navbar.item icon="clipboard-document-list" :href="route('examenes.pendiente')" :current="request()->routeIs('examenes.pendiente')" wire:navigate>
                         {{ __('Mis Exámenes') }}
                     </flux:navbar.item>
                 @endif
@@ -89,7 +89,7 @@
                     @endif
 
                     @if(auth()->user()->hasRole('estudiante'))
-                        <flux:navlist.item icon="clipboard-document-list" :href="route('examenes.pending')" :current="request()->routeIs('examenes.pending')" wire:navigate>
+                        <flux:navlist.item icon="clipboard-document-list" :href="route('examenes.pendiente')" :current="request()->routeIs('examenes.pendiente')" wire:navigate>
                         {{ __('Mis Exámenes') }}
                         </flux:navlist.item>
                     @endif

@@ -81,7 +81,7 @@ Route::middleware(['auth', 'role:estudiante'])->group(function () {
 
     // Gestión de Exámenes (Intentar, Índice, Índice por Materia)
     Route::post('/examen/{examen}/intentar', [App\Http\Controllers\ExamenController::class, 'intentar'])->name('examenes.intentar');
-    Route::get('/estudiante/examenes', [App\Http\Controllers\ExamenController::class, 'alumnoIndex'])->name('examenes.pending');
+    Route::get('/estudiante/examenes', [App\Http\Controllers\ExamenController::class, 'alumnoIndex'])->name('examenes.pendiente');
     Route::get('/alumno/materia/{materia}/examenes', [App\Http\Controllers\ExamenController::class, 'indiceParaMateriaAlumno'])->name('examenes.materia.alumno');
 });
 
