@@ -54,7 +54,6 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
 Route::middleware(['auth', 'verified', 'role:docente'])->group(function () {
     // Vistas de Docente
     Route::get('/docente/materias', [DocenteController::class, 'materias'])->name('docente.materias');
-
     Route::get('/docente/alumno/{alumno}/{materia?}', [DocenteController::class, 'showAlumno'])->name('docente.alumno.show');
     Route::get('/materia/{materia}/alumnos', [DocenteController::class, 'alumnosMateria'])->name('docente.alumnos.materia');
 
@@ -82,7 +81,7 @@ Route::middleware(['auth', 'role:estudiante'])->group(function () {
 
     // Gestión de Exámenes (Intentar, Índice, Índice por Materia)
     Route::post('/examen/{examen}/intentar', [App\Http\Controllers\ExamenController::class, 'intentar'])->name('examenes.intentar');
-    Route::get('/alumno/examenes', [App\Http\Controllers\ExamenController::class, 'alumnoIndex'])->name('examenes.pending');
+    Route::get('/estudiante/examenes', [App\Http\Controllers\ExamenController::class, 'alumnoIndex'])->name('examenes.pending');
     Route::get('/alumno/materia/{materia}/examenes', [App\Http\Controllers\ExamenController::class, 'indiceParaMateriaAlumno'])->name('examenes.materia.alumno');
 });
 

@@ -20,6 +20,12 @@
                         {{ __('Mis Materias') }}
                     </flux:navbar.item>
                 @endif
+
+                @if(auth()->user()->hasRole('estudiante'))
+                    <flux:navbar.item icon="clipboard-document-list" :href="route('examenes.pending')" :current="request()->routeIs('examenes.pending')" wire:navigate>
+                        {{ __('Mis Exámenes') }}
+                    </flux:navbar.item>
+                @endif
             </flux:navbar>
 
             <flux:spacer />
@@ -79,6 +85,12 @@
                     @if(auth()->user()->hasRole('estudiante') || auth()->user()->hasRole('docente'))
                         <flux:navlist.item icon="academic-cap" :href="route('mis.materias')" :current="request()->routeIs('mis.materias')" wire:navigate>
                         {{ __('Mis Materias') }}
+                        </flux:navlist.item>
+                    @endif
+
+                    @if(auth()->user()->hasRole('estudiante'))
+                        <flux:navlist.item icon="clipboard-document-list" :href="route('examenes.pending')" :current="request()->routeIs('examenes.pending')" wire:navigate>
+                        {{ __('Mis Exámenes') }}
                         </flux:navlist.item>
                     @endif
                 </flux:navlist.group>
