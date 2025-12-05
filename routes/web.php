@@ -54,7 +54,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
 Route::middleware(['auth', 'verified', 'role:docente'])->group(function () {
     // Vistas de Docente
     Route::get('/docente/materias', [DocenteController::class, 'materias'])->name('docente.materias');
-    Route::get('/docente/alumnos', [DocenteController::class, 'alumnos'])->name('docente.alumnos');
+
     Route::get('/docente/alumno/{alumno}/{materia?}', [DocenteController::class, 'showAlumno'])->name('docente.alumno.show');
     Route::get('/materia/{materia}/alumnos', [DocenteController::class, 'alumnosMateria'])->name('docente.alumnos.materia');
 

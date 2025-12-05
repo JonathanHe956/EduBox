@@ -282,41 +282,7 @@ class DocenteController extends Controller
         return view('docente.materias', compact('materias'));
     }
 
-    /**
-     * Muestra todos los alumnos inscritos en las materias del docente.
-     */
-    public function alumnos(): \Illuminate\View\View
-    {
-        $user = Auth::user();
-        $docente = docente::where('email', $user->email)->first();
 
-        if (!$docente) {
-            abort(403, 'No se encontró el registro de docente');
-        }
-
-        // Obtener IDs de materias del docente
-        $materiaIds = $docente->materias()->pluck('id');
-
-        // Obtener alumnos únicos inscritos en esas materias
-        $alumnos = \App\Models\alumno::whereHas('materias', function($query) use ($materiaIds) {
-            $query->whereIn('materias.id', $materiaIds);
-        })
-        ->with(['carrera', 'materias' => function($query) use ($materiaIds) {
-            $query->whereIn('materias.id', $materiaIds)->withPivot('calificacion');
-        }])
-        ->get()
-        ->map(function($alumno) {
-            // Calcular promedio general de las materias en común
-            $calificaciones = $alumno->materias->pluck('pivot.calificacion')->filter();
-            $alumno->promedio_general = $calificaciones->isNotEmpty() 
-                ? round($calificaciones->avg(), 2) 
-                : null;
-            $alumno->materias_count = $alumno->materias->count();
-            return $alumno;
-        });
-
-        return view('docente.alumnos', compact('alumnos'));
-    }
 
     /**
      * Muestra el detalle de un alumno específico.
