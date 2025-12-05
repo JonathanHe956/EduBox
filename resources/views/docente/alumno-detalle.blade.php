@@ -1,5 +1,5 @@
 <x-layouts.app :title="__('Detalle del Alumno')">
-    <div class="flex h-full w-full flex-1 flex-col gap-6 p-6">
+    <div class="flex h-full w-full flex-1 flex-col gap-6 p-8">
 
         {{-- Encabezado --}}
         <div>
@@ -19,7 +19,7 @@
         </div>
 
         {{-- Información Personal --}}
-        <div class="glass-card">
+        <div class="glass-card p-6">
             <h2 class="text-lg font-semibold text-blue-900 dark:text-white mb-4">Información Personal</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -41,58 +41,52 @@
             </div>
         </div>
 
-        {{-- Materias en Común --}}
-        <div class="glass-card">
+        {{-- Desempeño Académico --}}
+        <div class="glass-card p-6">
             <h2 class="text-lg font-semibold text-blue-900 dark:text-white mb-4">
-                @if($materia)
-                    Calificación en {{ $materia->nombre }}
-                @else
-                    Materias en Común
-                @endif
+                Desempeño en {{ $materia->nombre }}
             </h2>
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                    <thead class="bg-gradient-to-r from-blue-700 to-blue-800 text-xs font-medium uppercase text-white">
-                        <tr>
-                            <th scope="col" class="px-6 py-3">Materia</th>
-                            <th scope="col" class="px-6 py-3">Carrera</th>
-                            <th scope="col" class="px-6 py-3">Créditos</th>
-                            <th scope="col" class="px-6 py-3">Calificación</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($materiasComunes as $materia)
-                            <tr class="border-b border-blue-200/50 dark:border-blue-700/50 hover:bg-blue-50/50 dark:hover:bg-blue-900/30 transition-colors duration-150">
-                                <td class="px-6 py-4 font-medium text-blue-900 dark:text-white">
-                                    {{ $materia->nombre }}
-                                </td>
-                                <td class="px-6 py-4 text-blue-900 dark:text-white">
-                                    {{ $materia->carrera->nombre ?? 'N/A' }}
-                                </td>
-                                <td class="px-6 py-4 text-blue-900 dark:text-white">
-                                    {{ $materia->creditos }}
-                                </td>
-                                <td class="px-6 py-4 text-blue-900 dark:text-white">
-                                    @if($materia->pivot->calificacion)
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
-                                            @if($materia->pivot->calificacion >= 70) bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
-                                            @else bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400
-                                            @endif">
-                                            {{ $materia->pivot->calificacion }}
-                                        </span>
-                                    @else
-                                        <span class="text-gray-500 dark:text-gray-400">Sin calificación</span>
-                                    @endif
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            
+            @php
+                $calificacion = $materiasComunes->first()->pivot->calificacion;
+            @endphp
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {{-- Calificación --}}
+                <div class="flex flex-col">
+                    <span class="text-sm text-gray-600 dark:text-gray-400 mb-1">Calificación Actual</span>
+                    <div class="flex items-center gap-3">
+                        @if($calificacion)
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                {{ $calificacion >= 70 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
+                                {{ $calificacion }}
+                            </span>
+                        @else
+                            <span class="text-gray-500 dark:text-gray-400">Sin calificación</span>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Créditos --}}
+                <div class="flex flex-col">
+                    <span class="text-sm text-gray-600 dark:text-gray-400 mb-1">Créditos de la Materia</span>
+                    <span class="text-xl font-medium text-blue-900 dark:text-white">
+                        {{ $materia->creditos }}
+                    </span>
+                </div>
+
+                {{-- Carrera --}}
+                <div class="flex flex-col">
+                    <span class="text-sm text-gray-600 dark:text-gray-400 mb-1">Carrera</span>
+                    <span class="text-base font-medium text-blue-900 dark:text-white">
+                        {{ $materia->carrera->nombre ?? 'N/A' }}
+                    </span>
+                </div>
             </div>
         </div>
 
         {{-- Historial de Exámenes --}}
-        <div class="glass-card">
+        <div class="glass-card p-6">
             <h2 class="text-lg font-semibold text-blue-900 dark:text-white mb-4">
                 @if($materia)
                     Historial de Exámenes en {{ $materia->nombre }}

@@ -1,5 +1,5 @@
 <x-layouts.app :title="__('Alumnos de la Materia')">
-    <div class="flex h-full w-full flex-1 flex-col gap-6 p-6">
+    <div class="flex h-full w-full flex-1 flex-col gap-6 p-8">
 
         {{-- Encabezado --}}
         <div>
@@ -8,7 +8,7 @@
         </div>
 
         {{-- Información de la Materia --}}
-        <div class="glass-card">
+        <div class="glass-card p-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <p class="text-sm text-gray-600 dark:text-gray-400">Materia</p>
@@ -26,7 +26,7 @@
         </div>
 
         {{-- Lista de Alumnos --}}
-        <div class="glass-card">
+        <div class="glass-card p-6">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                     <thead class="bg-gradient-to-r from-blue-700 to-blue-800 text-xs font-medium uppercase text-white">
