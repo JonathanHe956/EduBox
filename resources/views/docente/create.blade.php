@@ -49,14 +49,14 @@
                     const fechaNacimiento = document.getElementById('fecha_nacimiento').value;
                     
                     if (nombre) {
-                        // Use only the first name
+                        // Usa solo el nombre
                         nombre = nombre.split(' ')[0];
 
                         let suffix = apaterno ? apaterno.toLowerCase() : (fechaNacimiento ? new Date(fechaNacimiento).getFullYear() : '');
                         if (suffix) {
                             let email = nombre.toLowerCase() + '.' + suffix + '@example.com';
                             let contador = 1;
-                            // Simulate checking for duplicates (in real implementation, this would be done server-side)
+                            // Simula la verificación de correo electrónico (en una implementación real, esto se haría del lado del servidor)
                             while (document.getElementById('email').dataset.usedEmails && document.getElementById('email').dataset.usedEmails.includes(email)) {
                                 email = nombre.toLowerCase() + '.' + suffix + contador + '@example.com';
                                 contador++;

@@ -17,8 +17,8 @@ class GuardarExamenRequest extends FormRequest
         return [
             'titulo' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
-            'opciones_por_pregunta' => 'nullable|integer|min:2|max:8',
-            'respuestas_correctas' => 'nullable|integer|min:1|max:8',
+            'opciones_por_pregunta' => 'nullable|integer|min:2|max:4',
+            'respuestas_correctas' => 'nullable|integer|min:1|max:4',
             'preguntas' => 'nullable|array',
             'preguntas.*.texto' => 'nullable|string',
             'preguntas.*.opciones' => 'nullable|array',
