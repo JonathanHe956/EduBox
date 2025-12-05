@@ -8,7 +8,7 @@
         </div>
 
         {{-- Lista de Exámenes --}}
-        <div class="glass-card p-6">
+        <div class="glass-card">
             @if($examenes->isEmpty())
                 <div class="text-center py-8">
                     <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/30 mb-4">
