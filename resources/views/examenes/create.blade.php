@@ -23,7 +23,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('examenes.store', $materia) }}" id="exam-form">
+        <form method="POST" action="{{ route('examenes.store', $materia) }}" id="formulario-examen">
             @csrf
             
             <div class="glass-card p-6 space-y-6">
@@ -46,12 +46,12 @@
                         <h2 class="text-xl font-semibold text-blue-900 dark:text-white">Preguntas</h2>
                     </div>
 
-                    <div id="questions-container" class="space-y-6">
+                    <div id="contenedor-preguntas" class="space-y-6">
                         {{-- Preguntas agregadas dinámicamente --}}
                     </div>
 
                     <div class="mt-4">
-                        <button type="button" id="add-question-btn" class="w-full py-2 border-2 border-dashed border-blue-300/50 text-blue-900 dark:text-white rounded hover:border-gold-500 hover:text-gold-400 font-medium transition-colors">
+                        <button type="button" id="btn-agregar-pregunta" class="w-full py-2 border-2 border-dashed border-blue-300/50 text-blue-900 dark:text-white rounded hover:border-gold-500 hover:text-gold-400 font-medium transition-colors">
                             + Agregar Pregunta
                         </button>
                     </div>
@@ -68,15 +68,15 @@
             </div>
         </form>
 
-        <template id="question-template">
-            <div class="question-block glass-card p-4 relative">
-                <button type="button" class="remove-question-btn absolute top-2 right-2 text-red-400 hover:text-red-600 p-1 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors" title="Eliminar pregunta">
+        <template id="plantilla-pregunta">
+            <div class="bloque-pregunta glass-card p-4 relative">
+                <button type="button" class="btn-eliminar-pregunta absolute top-2 right-2 text-red-400 hover:text-red-600 p-1 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors" title="Eliminar pregunta">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                 </button>
                 <div class="mb-3">
-                    <label class="block font-medium text-sm mb-1">Pregunta <span class="question-number"></span></label>
+                    <label class="block font-medium text-sm mb-1">Pregunta <span class="numero-pregunta"></span></label>
                     <textarea name="preguntas[INDEX][texto]" required class="border rounded w-full px-2 py-1" placeholder="Escribe la pregunta aquí..."></textarea>
                 </div>
                 
@@ -85,35 +85,35 @@
                     <label class="block font-medium text-sm mb-2">Tipo de pregunta</label>
                     <div class="flex gap-4">
                         <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="preguntas[INDEX][tipo]" value="multiple" class="question-type-radio mr-2" checked>
+                            <input type="radio" name="preguntas[INDEX][tipo]" value="multiple" class="radio-tipo-pregunta mr-2" checked>
                             <span class="text-sm">Opción múltiple</span>
                         </label>
                         <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="preguntas[INDEX][tipo]" value="verdadero_falso" class="question-type-radio mr-2">
+                            <input type="radio" name="preguntas[INDEX][tipo]" value="verdadero_falso" class="radio-tipo-pregunta mr-2">
                             <span class="text-sm">Verdadero/Falso</span>
                         </label>
                         <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="preguntas[INDEX][tipo]" value="abierta" class="question-type-radio mr-2">
+                            <input type="radio" name="preguntas[INDEX][tipo]" value="abierta" class="radio-tipo-pregunta mr-2">
                             <span class="text-sm">Pregunta abierta</span>
                         </label>
                     </div>
                 </div>
 
                 <!-- Contenedor para opción múltiple -->
-                <div class="options-container tipo-multiple-content">
+                <div class="contenedor-opciones contenido-tipo-multiple">
                     <div class="flex items-center justify-between mb-2">
                         <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Opciones</label>
-                        <button type="button" class="add-option-btn text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+                        <button type="button" class="btn-agregar-opcion text-sm text-indigo-600 hover:text-indigo-800 font-medium">
                             + Agregar opción
                         </button>
                     </div>
-                    <div class="options-list space-y-2 pl-4 border-l-2 border-blue-200/50 dark:border-blue-700/50">
+                    <div class="lista-opciones space-y-2 pl-4 border-l-2 border-blue-200/50 dark:border-blue-700/50">
                         {{-- Opciones agregadas dinámicamente --}}
                     </div>
                 </div>
 
                 <!-- Contenedor para verdadero/falso -->
-                <div class="tipo-verdadero-falso-content" style="display: none;">
+                <div class="contenido-tipo-verdadero-falso" style="display: none;">
                     <label class="block font-medium text-sm mb-2">Respuesta correcta</label>
                     <div class="space-y-2">
                         <label class="flex items-center cursor-pointer p-2 border rounded hover:bg-gray-50 dark:hover:bg-zinc-700">
@@ -128,7 +128,7 @@
                 </div>
 
                 <!-- Contenedor para pregunta abierta -->
-                <div class="tipo-abierta-content" style="display: none;">
+                <div class="contenido-tipo-abierta" style="display: none;">
                     <label class="block font-medium text-sm mb-2">Respuesta esperada / Criterios de evaluación (opcional)</label>
                     <textarea name="preguntas[INDEX][respuesta_esperada]" class="border rounded w-full px-2 py-1 text-sm" rows="3" placeholder="Describe la respuesta esperada o los criterios para calificar esta pregunta..."></textarea>
                     <p class="text-xs text-gray-500 mt-1">Esta información te ayudará al momento de revisar las respuestas de los estudiantes.</p>
@@ -138,235 +138,233 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                const container = document.getElementById('questions-container');
-                const addQuestionBtn = document.getElementById('add-question-btn');
-                const template = document.getElementById('question-template');
+                const contenedor = document.getElementById('contenedor-preguntas');
+                const btnAgregarPregunta = document.getElementById('btn-agregar-pregunta');
+                const plantilla = document.getElementById('plantilla-pregunta');
                 
                 let indicePregunta = 0;
 
-                function agregarOpcion(questionBlock, questionIdx, optionIdx) {
-                    const optionsList = questionBlock.querySelector('.options-list');
-                    const optDiv = document.createElement('div');
-                    optDiv.className = 'flex items-center gap-2 option-item';
-                    optDiv.dataset.optionIndex = optionIdx;
+                function agregarOpcion(bloquePregunta, indicePregunta, indiceOpcion) {
+                    const listaOpciones = bloquePregunta.querySelector('.lista-opciones');
+                    const divOpcion = document.createElement('div');
+                    divOpcion.className = 'flex items-center gap-2 item-opcion';
+                    divOpcion.dataset.indiceOpcion = indiceOpcion;
                     
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
-                    checkbox.name = `preguntas[${questionIdx}][opciones][${optionIdx}][es_correcta]`;
+                    checkbox.name = `preguntas[${indicePregunta}][opciones][${indiceOpcion}][es_correcta]`;
                     checkbox.value = '1';
-                    checkbox.className = 'w-4 h-4';
+                    checkbox.className = 'w-4 h-4 checkbox-opcion';
                     
                     const text = document.createElement('input');
                     text.type = 'text';
-                    text.name = `preguntas[${questionIdx}][opciones][${optionIdx}][texto]`;
+                    text.name = `preguntas[${indicePregunta}][opciones][${indiceOpcion}][texto]`;
                     text.className = 'border rounded px-2 py-1 flex-1 text-sm';
-                    text.placeholder = `Opción ${optionIdx + 1}`;
+                    text.placeholder = `Opción ${indiceOpcion + 1}`;
 
                     // Resaltar contenedor si es correcta
                     checkbox.addEventListener('change', function() {
                         if (this.checked) {
-                            optDiv.classList.add('bg-green-50', 'border-green-200', 'dark:bg-green-900/20', 'dark:border-green-700');
-                            optDiv.classList.remove('border-transparent');
-                            optDiv.classList.add('border');
+                            divOpcion.classList.add('bg-green-50', 'border-green-200', 'dark:bg-green-900/20', 'dark:border-green-700');
+                            divOpcion.classList.remove('border-transparent');
+                            divOpcion.classList.add('border');
                         } else {
-                            optDiv.classList.remove('bg-green-50', 'border-green-200', 'dark:bg-green-900/20', 'dark:border-green-700');
-                            optDiv.classList.remove('border');
-                            optDiv.classList.add('border-transparent');
+                            divOpcion.classList.remove('bg-green-50', 'border-green-200', 'dark:bg-green-900/20', 'dark:border-green-700');
+                            divOpcion.classList.remove('border');
+                            divOpcion.classList.add('border-transparent');
                         }
                     });
 
                     // Estado inicial
-                    optDiv.classList.add('border', 'border-transparent', 'rounded', 'p-1', 'transition-colors');
+                    divOpcion.classList.add('border', 'border-transparent', 'rounded', 'p-1', 'transition-colors');
 
-                    const removeBtn = document.createElement('button');
-                    removeBtn.type = 'button';
-                    removeBtn.className = 'text-red-400 hover:text-red-600 p-1 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors';
-                    removeBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>';
-                    removeBtn.title = "Eliminar opción";
-                    removeBtn.addEventListener('click', function() {
-                        const optionItems = questionBlock.querySelectorAll('.option-item');
-                        if (optionItems.length <= 2) {
+                    const btnEliminar = document.createElement('button');
+                    btnEliminar.type = 'button';
+                    btnEliminar.className = 'text-red-400 hover:text-red-600 p-1 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors';
+                    btnEliminar.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>';
+                    btnEliminar.title = "Eliminar opción";
+                    btnEliminar.addEventListener('click', function() {
+                        const itemsOpcion = bloquePregunta.querySelectorAll('.item-opcion');
+                        if (itemsOpcion.length <= 2) {
                             alert('Cada pregunta debe tener al menos 2 opciones.');
                             return;
                         }
-                        optDiv.remove();
-                        actualizarNumerosOpciones(questionBlock, questionIdx);
+                        divOpcion.remove();
+                        actualizarNumerosOpciones(bloquePregunta, indicePregunta);
                     });
 
-                    optDiv.appendChild(checkbox);
-                    optDiv.appendChild(text);
-                    optDiv.appendChild(removeBtn);
-                    optionsList.appendChild(optDiv);
+                    divOpcion.appendChild(checkbox);
+                    divOpcion.appendChild(text);
+                    divOpcion.appendChild(btnEliminar);
+                    listaOpciones.appendChild(divOpcion);
                 }
 
-                function actualizarNumerosOpciones(questionBlock, questionIdx) {
-                    const options = questionBlock.querySelectorAll('.option-item');
-                    options.forEach((opt, idx) => {
-                        opt.dataset.optionIndex = idx;
-                        const checkbox = opt.querySelector('input[type="checkbox"]');
-                        const textInput = opt.querySelector('input[type="text"]');
+                function actualizarNumerosOpciones(bloquePregunta, indicePregunta) {
+                    const opciones = bloquePregunta.querySelectorAll('.item-opcion');
+                    opciones.forEach((opcion, idx) => {
+                        opcion.dataset.indiceOpcion = idx;
+                        const checkbox = opcion.querySelector('input[type="checkbox"]');
+                        const entradaTexto = opcion.querySelector('input[type="text"]');
                         
-                        checkbox.name = `preguntas[${questionIdx}][opciones][${idx}][es_correcta]`;
-                        textInput.name = `preguntas[${questionIdx}][opciones][${idx}][texto]`;
-                        textInput.placeholder = `Opción ${idx + 1}`;
+                        checkbox.name = `preguntas[${indicePregunta}][opciones][${idx}][es_correcta]`;
+                        entradaTexto.name = `preguntas[${indicePregunta}][opciones][${idx}][texto]`;
+                        entradaTexto.placeholder = `Opción ${idx + 1}`;
                     });
                 }
 
-                function manejarCambioTipoPregunta(questionBlock, questionIdx) {
-                    const typeRadios = questionBlock.querySelectorAll('.question-type-radio');
-                    const multipleContent = questionBlock.querySelector('.tipo-multiple-content');
-                    const vfContent = questionBlock.querySelector('.tipo-verdadero-falso-content');
-                    const abiertaContent = questionBlock.querySelector('.tipo-abierta-content');
+                function manejarCambioTipoPregunta(bloquePregunta, indicePregunta) {
+                    const radiosTipo = bloquePregunta.querySelectorAll('.radio-tipo-pregunta');
+                    const contenidoMultiple = bloquePregunta.querySelector('.contenido-tipo-multiple');
+                    const contenidoVF = bloquePregunta.querySelector('.contenido-tipo-verdadero-falso');
+                    const contenidoAbierta = bloquePregunta.querySelector('.contenido-tipo-abierta');
                     
-                    typeRadios.forEach(radio => {
+                    radiosTipo.forEach(radio => {
                         radio.addEventListener('change', function() {
                             // Oculta todos los tipos de contenido
-                            multipleContent.style.display = 'none';
-                            vfContent.style.display = 'none';
-                            abiertaContent.style.display = 'none';
+                            contenidoMultiple.style.display = 'none';
+                            contenidoVF.style.display = 'none';
+                            contenidoAbierta.style.display = 'none';
                             
                             // Muestra el tipo seleccionado
                             if (this.value === 'multiple') {
-                                multipleContent.style.display = 'block';
+                                contenidoMultiple.style.display = 'block';
                             } else if (this.value === 'verdadero_falso') {
-                                vfContent.style.display = 'block';
+                                contenidoVF.style.display = 'block';
                             } else if (this.value === 'abierta') {
-                                abiertaContent.style.display = 'block';
+                                contenidoAbierta.style.display = 'block';
                             }
                         });
                     });
                 }
 
                 function agregarPregunta() {
-                    const clone = template.content.cloneNode(true);
-                    const block = clone.querySelector('.question-block');
-                    const numberSpan = clone.querySelector('.question-number');
-                    const removeQuestionBtn = clone.querySelector('.remove-question-btn');
-                    const addOptionBtn = clone.querySelector('.add-option-btn');
+                    const clon = plantilla.content.cloneNode(true);
+                    const bloque = clon.querySelector('.bloque-pregunta');
+                    const spanNumero = clon.querySelector('.numero-pregunta');
+                    const btnEliminarPregunta = clon.querySelector('.btn-eliminar-pregunta');
+                    const btnAgregarOpcion = clon.querySelector('.btn-agregar-opcion');
 
-                    block.dataset.index = indicePregunta;
-                    numberSpan.textContent = indicePregunta + 1;
+                    bloque.dataset.index = indicePregunta;
+                    spanNumero.textContent = indicePregunta + 1;
 
                     // Actualiza los atributos name para todos los inputs
-                    const textInput = clone.querySelector('textarea');
-                    textInput.name = textInput.name.replace(/INDEX/g, indicePregunta);
+                    const entradaTexto = clon.querySelector('textarea');
+                    entradaTexto.name = entradaTexto.name.replace(/INDEX/g, indicePregunta);
                     
                     // Actualiza los nombres de los radio buttons de tipo
-                    const typeRadios = clone.querySelectorAll('.question-type-radio');
-                    typeRadios.forEach(radio => {
+                    const radiosTipo = clon.querySelectorAll('.radio-tipo-pregunta');
+                    radiosTipo.forEach(radio => {
                         radio.name = radio.name.replace(/INDEX/g, indicePregunta);
                     });
                     
                     // Actualiza el nombre de los radio buttons de verdadero/falso
-                    const vfRadios = clone.querySelectorAll('input[name*="vf_correcta"]');
-                    vfRadios.forEach(radio => {
+                    const radiosVF = clon.querySelectorAll('input[name*="vf_correcta"]');
+                    radiosVF.forEach(radio => {
                         radio.name = radio.name.replace(/INDEX/g, indicePregunta);
                     });
                     
                     // Actualiza el nombre del textarea de respuesta esperada
-                    const respuestaEsperada = clone.querySelector('textarea[name*="respuesta_esperada"]');
+                    const respuestaEsperada = clon.querySelector('textarea[name*="respuesta_esperada"]');
                     if (respuestaEsperada) {
                         respuestaEsperada.name = respuestaEsperada.name.replace(/INDEX/g, indicePregunta);
                     }
 
                     // Agrega 2 opciones (minimum required) para el tipo multiple choice
                     for (let i = 0; i < 2; i++) {
-                        agregarOpcion(block, indicePregunta, i);
+                        agregarOpcion(bloque, indicePregunta, i);
                     }
 
                     // Agrega un manejador de clic al botón de agregar opción
-                    addOptionBtn.addEventListener('click', function() {
-                        const currentOptions = block.querySelectorAll('.option-item');
-                        if (currentOptions.length >= 4) {
+                    btnAgregarOpcion.addEventListener('click', function() {
+                        const opcionesActuales = bloque.querySelectorAll('.item-opcion');
+                        if (opcionesActuales.length >= 4) {
                             alert('Cada pregunta puede tener un máximo de 4 opciones.');
                             return;
                         }
-                        agregarOpcion(block, indicePregunta, currentOptions.length);
+                        agregarOpcion(bloque, indicePregunta, opcionesActuales.length);
                     });
 
-                    removeQuestionBtn.addEventListener('click', function() {
-                        block.remove();
+                    btnEliminarPregunta.addEventListener('click', function() {
+                        bloque.remove();
                         actualizarNumerosPregunta();
                     });
                     
                     // Asigna el manejador de cambio de tipo de pregunta
-                    manejarCambioTipoPregunta(block, indicePregunta);
+                    manejarCambioTipoPregunta(bloque, indicePregunta);
 
-                    container.appendChild(block);
+                    contenedor.appendChild(bloque);
                     indicePregunta++;
                     actualizarNumerosPregunta();
                 }
 
                 function actualizarNumerosPregunta() {
-                    const blocks = container.querySelectorAll('.question-block');
-                    blocks.forEach((block, idx) => {
-                        block.querySelector('.question-number').textContent = idx + 1;
+                    const bloques = contenedor.querySelectorAll('.bloque-pregunta');
+                    bloques.forEach((bloque, idx) => {
+                        bloque.querySelector('.numero-pregunta').textContent = idx + 1;
                     });
                 }
 
-                addQuestionBtn.addEventListener('click', agregarPregunta);
+                btnAgregarPregunta.addEventListener('click', agregarPregunta);
 
                 // Agrega una pregunta inicial
                 agregarPregunta();
 
                 // Validación del formulario al enviar
-                document.getElementById('exam-form').addEventListener('submit', function(e) {
-                    const questions = container.querySelectorAll('.question-block');
-                    let tieneError = false;
-                    let mensajeError = '';
+                document.getElementById('formulario-examen').addEventListener('submit', function(e) {
+                const preguntas = contenedor.querySelectorAll('.bloque-pregunta');
+                let tieneError = false;
+                let mensajeError = '';
 
+                if (preguntas.length === 0) {
+                    alert('El examen debe tener al menos una pregunta.');
+                    e.preventDefault();
+                    return false;
+                }
 
-
-                    if (questions.length === 0) {
-                        alert('El examen debe tener al menos una pregunta.');
-                        e.preventDefault();
-                        return false;
+                preguntas.forEach((pregunta, idx) => {
+                    // Obtiene el tipo de pregunta seleccionado
+                    const tipoSeleccionado = pregunta.querySelector('.radio-tipo-pregunta:checked');
+                    if (!tipoSeleccionado) {
+                        tieneError = true;
+                        mensajeError = `La pregunta ${idx + 1} debe tener un tipo seleccionado.`;
+                        return;
                     }
 
-                    questions.forEach((question, idx) => {
-                        // Obtiene el tipo de pregunta seleccionado
-                        const tipoSeleccionado = question.querySelector('.question-type-radio:checked');
-                        if (!tipoSeleccionado) {
-                            tieneError = true;
-                            mensajeError = `La pregunta ${idx + 1} debe tener un tipo seleccionado.`;
-                            return;
-                        }
+                    const tipoPregunta = tipoSeleccionado.value;
 
-                        const tipoPregunta = tipoSeleccionado.value;
-
-                        // Validación basada en el tipo de pregunta
-                        if (tipoPregunta === 'multiple') {
-                            // Solo verifica las opciones si se selecciona el tipo multiple choice
-                            const multipleContent = question.querySelector('.tipo-multiple-content');
-                            if (multipleContent && multipleContent.style.display !== 'none') {
-                                const options = question.querySelectorAll('.option-item');
-                                if (options.length < 2) {
-                                    tieneError = true;
-                                    mensajeError = `La pregunta ${idx + 1} debe tener al menos 2 opciones.`;
-                                    return;
-                                }
-
-                                const checkedOptions = question.querySelectorAll('.tipo-multiple-content input[type="checkbox"]:checked');
-                                if (checkedOptions.length === 0) {
-                                    tieneError = true;
-                                    mensajeError = `La pregunta ${idx + 1} debe tener al menos una respuesta correcta marcada.`;
-                                    return;
-                                }
+                    // Validación basada en el tipo de pregunta
+                    if (tipoPregunta === 'multiple') {
+                        // Solo verifica las opciones si se selecciona el tipo multiple choice
+                        const contenidoMultiple = pregunta.querySelector('.contenido-tipo-multiple');
+                        if (contenidoMultiple && contenidoMultiple.style.display !== 'none') {
+                            const opciones = pregunta.querySelectorAll('.item-opcion');
+                            if (opciones.length < 2) {
+                                tieneError = true;
+                                mensajeError = `La pregunta ${idx + 1} debe tener al menos 2 opciones.`;
+                                return;
                             }
-                        } else if (tipoPregunta === 'verdadero_falso') {
-                            // Solo verifica V/F si se selecciona el tipo verdadero/falso
-                            const vfContent = question.querySelector('.tipo-verdadero-falso-content');
-                            if (vfContent && vfContent.style.display !== 'none') {
-                                const vfChecked = question.querySelector('.tipo-verdadero-falso-content input[name*="vf_correcta"]:checked');
-                                if (!vfChecked) {
-                                    tieneError = true;
-                                    mensajeError = `La pregunta ${idx + 1} debe tener una respuesta correcta seleccionada (Verdadero o Falso).`;
-                                    return;
-                                }
+
+                            const opcionesMarcadas = pregunta.querySelectorAll('.contenido-tipo-multiple input[type="checkbox"]:checked');
+                            if (opcionesMarcadas.length === 0) {
+                                tieneError = true;
+                                mensajeError = `La pregunta ${idx + 1} debe tener al menos una respuesta correcta marcada.`;
+                                return;
                             }
                         }
-                        // Abierta no requiere validación especial
-                    });
+                    } else if (tipoPregunta === 'verdadero_falso') {
+                        // Solo verifica V/F si se selecciona el tipo verdadero/falso
+                        const contenidoVF = pregunta.querySelector('.contenido-tipo-verdadero-falso');
+                        if (contenidoVF && contenidoVF.style.display !== 'none') {
+                            const vfMarcado = pregunta.querySelector('.contenido-tipo-verdadero-falso input[name*="vf_correcta"]:checked');
+                            if (!vfMarcado) {
+                                tieneError = true;
+                                mensajeError = `La pregunta ${idx + 1} debe tener una respuesta correcta seleccionada (Verdadero o Falso).`;
+                                return;
+                            }
+                        }
+                    }
+                    // Abierta no requiere validación especial
+                });
 
                     if (tieneError) {
                         e.preventDefault();

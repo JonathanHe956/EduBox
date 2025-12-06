@@ -739,7 +739,7 @@ class ExamenController extends Controller
         return redirect()->route('examenes.show', $intento->examen_id)->with('success', 'Respuestas guardadas correctamente.');
     }
 
-    // Calificar una respuesta abierta (Obsoleto pero mantenido por compatibilidad)
+    // Calificar una respuesta abierta
     public function calificarRespuesta(Request $request, respuesta $respuesta)
     {
         $request->validate([
@@ -809,7 +809,7 @@ class ExamenController extends Controller
     // Publicar calificación final
     public function publicarCalificacion(intentoExamen $intento)
     {
-        // Calcular puntuación total - contar por PREGUNTA, no por respuesta
+        // Calcular puntuación total
         $puntuacion = 0;
         $total = 0;
 
