@@ -40,84 +40,94 @@ class ExamenController extends Controller
         }
         $docenteId = $docente?->id;
 
-        DB::transaction(function () use ($request, $materia, $docenteId) {
-            $examen = examen::create([
-                'materia_id' => $materia->id,
-                'docente_id' => $docenteId,
-                'titulo' => $request->input('titulo'),
-                'descripcion' => $request->input('descripcion'),
-                'cantidad_preguntas' => 0,
-                'opciones_por_pregunta' => 4,
-                'respuestas_correctas' => 1,
-            ]);
+        try {
+            DB::transaction(function () use ($request, $materia, $docenteId) {
+                $examen = examen::create([
+                    'materia_id' => $materia->id,
+                    'docente_id' => $docenteId,
+                    'titulo' => $request->input('titulo'),
+                    'descripcion' => $request->input('descripcion'),
+                    'cantidad_preguntas' => 0,
+                    'opciones_por_pregunta' => 4,
+                    'respuestas_correctas' => 1,
+                ]);
 
-            if (!$request->has('preguntas') || count($request->input('preguntas')) < 1) {
-                throw new \Exception("El examen debe tener al menos una pregunta.");
-            }
+                if (!$request->has('preguntas') || count($request->input('preguntas')) < 1) {
+                    throw new \Exception("El examen debe tener al menos una pregunta.");
+                }
 
-            if ($request->has('preguntas')) {
-                foreach ($request->input('preguntas') as $indiceP => $datosP) {
-                    $tipo = $datosP['tipo'] ?? 'multiple';
-                    
-                    // Validar según el tipo de pregunta
-                    if ($tipo === 'multiple') {
-                        if (!isset($datosP['opciones']) || count($datosP['opciones']) < 2) {
-                            throw new \Exception("La pregunta " . ($indiceP + 1) . " debe tener al menos 2 opciones.");
-                        }
+                if ($request->has('preguntas')) {
+                    foreach ($request->input('preguntas') as $indiceP => $datosP) {
+                        $tipo = $datosP['tipo'] ?? 'multiple';
                         
-                        $tieneRespuestaCorrecta = false;
-                        foreach ($datosP['opciones'] as $datosO) {
-                            if (isset($datosO['es_correcta'])) {
-                                $tieneRespuestaCorrecta = true;
-                                break;
+                        // Validar según el tipo de pregunta
+                        if ($tipo === 'multiple') {
+                            if (!isset($datosP['opciones']) || count($datosP['opciones']) < 2) {
+                                throw new \Exception("La pregunta " . ($indiceP + 1) . " debe tener al menos 2 opciones.");
+                            }
+                            
+                            $tieneRespuestaCorrecta = false;
+                            foreach ($datosP['opciones'] as $datosO) {
+                                if (isset($datosO['es_correcta'])) {
+                                    $tieneRespuestaCorrecta = true;
+                                    break;
+                                }
+                            }
+                            
+                            if (!$tieneRespuestaCorrecta) {
+                                throw new \Exception("La pregunta " . ($indiceP + 1) . " debe tener al menos una respuesta correcta.");
+                            }
+                        } elseif ($tipo === 'verdadero_falso') {
+                            if (!isset($datosP['vf_correcta'])) {
+                                throw new \Exception("La pregunta " . ($indiceP + 1) . " debe tener una respuesta correcta seleccionada.");
                             }
                         }
-                        
-                        if (!$tieneRespuestaCorrecta) {
-                            throw new \Exception("La pregunta " . ($indiceP + 1) . " debe tener al menos una respuesta correcta.");
-                        }
-                    } elseif ($tipo === 'verdadero_falso') {
-                        if (!isset($datosP['vf_correcta'])) {
-                            throw new \Exception("La pregunta " . ($indiceP + 1) . " debe tener una respuesta correcta seleccionada.");
-                        }
-                    }
 
-                    // Crear la pregunta
-                    $pregunta = pregunta::create([
-                        'examen_id' => $examen->id,
-                        'pregunta' => $datosP['texto'],
-                        'tipo' => $tipo,
-                        'respuesta_correcta_abierta' => $datosP['respuesta_esperada'] ?? null,
-                    ]);
+                        // Crear la pregunta
+                        $pregunta = pregunta::create([
+                            'examen_id' => $examen->id,
+                            'pregunta' => $datosP['texto'],
+                            'tipo' => $tipo,
+                            'respuesta_correcta_abierta' => $datosP['respuesta_esperada'] ?? null,
+                        ]);
 
-                    // Crear opciones según el tipo
-                    if ($tipo === 'multiple' && isset($datosP['opciones'])) {
-                        foreach ($datosP['opciones'] as $datosO) {
+                        // Crear opciones según el tipo
+                        if ($tipo === 'multiple' && isset($datosP['opciones'])) {
+                            foreach ($datosP['opciones'] as $indiceO => $datosO) {
+                                if (!isset($datosO['texto']) || trim($datosO['texto']) === '') {
+                                    throw new \Exception("La opción " . ($indiceO + 1) . " de la pregunta " . ($indiceP + 1) . " no puede estar vacía.");
+                                }
+                                opcion::create([
+                                    'pregunta_id' => $pregunta->id,
+                                    'opcion' => $datosO['texto'],
+                                    'es_correcta' => isset($datosO['es_correcta']),
+                                ]);
+                            }
+                        } elseif ($tipo === 'verdadero_falso') {
+                            // Crear automáticamente las opciones Verdadero/Falso
                             opcion::create([
                                 'pregunta_id' => $pregunta->id,
-                                'opcion' => $datosO['texto'],
-                                'es_correcta' => isset($datosO['es_correcta']),
+                                'opcion' => 'Verdadero',
+                                'es_correcta' => $datosP['vf_correcta'] === 'verdadero',
                             ]);
+                            opcion::create([
+                                'pregunta_id' => $pregunta->id,
+                                'opcion' => 'Falso',
+                                'es_correcta' => $datosP['vf_correcta'] === 'falso',
+                            ]);
+                        } elseif ($tipo === 'abierta') {
+                             if (!isset($datosP['respuesta_esperada']) || trim($datosP['respuesta_esperada']) === '') {
+                                throw new \Exception("La pregunta " . ($indiceP + 1) . " debe tener una respuesta esperada.");
+                            }
                         }
-                    } elseif ($tipo === 'verdadero_falso') {
-                        // Crear automáticamente las opciones Verdadero/Falso
-                        opcion::create([
-                            'pregunta_id' => $pregunta->id,
-                            'opcion' => 'Verdadero',
-                            'es_correcta' => $datosP['vf_correcta'] === 'verdadero',
-                        ]);
-                        opcion::create([
-                            'pregunta_id' => $pregunta->id,
-                            'opcion' => 'Falso',
-                            'es_correcta' => $datosP['vf_correcta'] === 'falso',
-                        ]);
                     }
-                    // Las preguntas abiertas no tienen opciones
+                    $examen->cantidad_preguntas = count($request->input('preguntas'));
+                    $examen->save();
                 }
-                $examen->cantidad_preguntas = count($request->input('preguntas'));
-                $examen->save();
-            }
-        });
+            });
+        } catch (\Exception $e) {
+            return back()->withInput()->withErrors(['error' => 'Error al crear el examen: ' . $e->getMessage()]);
+        }
 
         return redirect()->route('examenes.materia', $materia)->with('success', 'Examen creado exitosamente.');
     }
@@ -326,7 +336,10 @@ class ExamenController extends Controller
                                 $pregunta->opciones()->delete();
                                 
                                 if ($tipo === 'multiple' && isset($datosP['opciones'])) {
-                                    foreach ($datosP['opciones'] as $datosO) {
+                                    foreach ($datosP['opciones'] as $indiceO => $datosO) {
+                                        if (!isset($datosO['texto']) || trim($datosO['texto']) === '') {
+                                            throw new \Exception("La opción " . ($indiceO + 1) . " de la pregunta " . ($indice + 1) . " no puede estar vacía.");
+                                        }
                                         opcion::create([
                                             'pregunta_id' => $pregunta->id,
                                             'opcion' => $datosO['texto'],
@@ -344,6 +357,10 @@ class ExamenController extends Controller
                                         'opcion' => 'Falso',
                                         'es_correcta' => $datosP['vf_correcta'] === 'falso',
                                     ]);
+                                } elseif ($tipo === 'abierta') {
+                                    if (!isset($datosP['respuesta_esperada']) || trim($datosP['respuesta_esperada']) === '') {
+                                        throw new \Exception("La pregunta " . ($indice + 1) . " debe tener una respuesta esperada.");
+                                    }
                                 }
                             }
                         } else {
@@ -356,8 +373,13 @@ class ExamenController extends Controller
                             ]);
                             $idsPreguntasEntrantes[] = $pregunta->id;
                             
+                            $idsPreguntasEntrantes[] = $pregunta->id;
+                            
                             if ($tipo === 'multiple' && isset($datosP['opciones'])) {
-                                foreach ($datosP['opciones'] as $datosO) {
+                                foreach ($datosP['opciones'] as $indiceO => $datosO) {
+                                    if (!isset($datosO['texto']) || trim($datosO['texto']) === '') {
+                                        throw new \Exception("La opción " . ($indiceO + 1) . " de la pregunta " . ($indice + 1) . " no puede estar vacía.");
+                                    }
                                     opcion::create([
                                         'pregunta_id' => $pregunta->id,
                                         'opcion' => $datosO['texto'],
@@ -375,6 +397,10 @@ class ExamenController extends Controller
                                     'opcion' => 'Falso',
                                     'es_correcta' => $datosP['vf_correcta'] === 'falso',
                                 ]);
+                            } elseif ($tipo === 'abierta') {
+                                if (!isset($datosP['respuesta_esperada']) || trim($datosP['respuesta_esperada']) === '') {
+                                    throw new \Exception("La pregunta " . ($indice + 1) . " debe tener una respuesta esperada.");
+                                }
                             }
                         }
                     }

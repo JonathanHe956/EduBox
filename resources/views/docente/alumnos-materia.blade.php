@@ -31,7 +31,6 @@
                 <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                     <thead class="bg-gradient-to-r from-blue-700 to-blue-800 text-xs font-medium uppercase text-white">
                         <tr>
-                            <th scope="col" class="px-6 py-3">ID</th>
                             <th scope="col" class="px-6 py-3">Nombre Completo</th>
                             <th scope="col" class="px-6 py-3">Email</th>
                             <th scope="col" class="px-6 py-3">Carrera</th>
@@ -42,9 +41,6 @@
                     <tbody>
                         @forelse ($alumnos as $alumno)
                             <tr class="border-b border-blue-200/50 dark:border-blue-700/50 hover:bg-blue-50/50 dark:hover:bg-blue-900/30 transition-colors duration-150">
-                                <td class="px-6 py-4 font-medium text-blue-900 dark:text-white">
-                                    {{ $alumno->id }}
-                                </td>
                                 <td class="px-6 py-4 text-blue-900 dark:text-white">
                                     {{ $alumno->nombre_completo }}
                                 </td>

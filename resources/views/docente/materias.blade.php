@@ -12,7 +12,6 @@
                 <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                     <thead>
                         <tr>
-                            <th scope="col" class="px-6 py-3">ID</th>
                             <th scope="col" class="px-6 py-3">Nombre de la Materia</th>
                             <th scope="col" class="px-6 py-3">Créditos</th>
                             <th scope="col" class="px-6 py-3">Carrera</th>
@@ -22,7 +21,6 @@
                     <tbody>
                         @forelse ($materias as $materia)
                         <tr>
-                            <td class="px-6 py-4 font-medium text-blue-900 dark:text-white">{{ $materia->id }}</td>
                             <td class="px-6 py-4 text-blue-900 dark:text-white">{{ $materia->nombre }}</td>
                             <td class="px-6 py-4 text-blue-900 dark:text-white">{{ $materia->creditos }}</td>
                             <td class="px-6 py-4 text-blue-900 dark:text-white">{{ $materia->carrera->nombre }}</td>

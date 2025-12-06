@@ -24,7 +24,7 @@
                     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead class="bg-gradient-to-r from-blue-700 to-blue-800 text-xs font-medium uppercase text-white">
                             <tr>
-                                <th scope="col" class="px-6 py-3">Examen</th>
+                                <th scope="col" class="px-6 py-3">Título</th>
                                 <th scope="col" class="px-6 py-3">Materia</th>
                                 <th scope="col" class="px-6 py-3">Estado</th>
                                 <th scope="col" class="px-6 py-3 text-right">Acción</th>

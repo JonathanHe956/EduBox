@@ -310,6 +310,9 @@
                                                                     {{ $respuesta->respuesta_abierta ?? 'No respondida' }}
                                                                 </div>
                                                             </div>
+                                                            <div class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                                                <strong>Respuesta esperada:</strong> {{ $pregunta->respuesta_correcta_abierta ?? 'No especificada' }}
+                                                            </div>
                                                             
                                                             @if($respuesta && $puedeCalificar)
                                                                 <div class="mt-3">
@@ -356,6 +359,7 @@
                                                                             ✗ Incorrecta
                                                                         </span>
                                                                     @endif
+                                                                    
                                                                 </div>
                                                             @endif
                                                         @else

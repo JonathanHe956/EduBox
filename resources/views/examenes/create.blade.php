@@ -132,7 +132,7 @@
 
                 <!-- Contenedor para pregunta abierta -->
                 <div class="contenido-tipo-abierta" style="display: none;">
-                    <label class="block font-medium text-sm mb-2">Respuesta esperada / Criterios de evaluación (opcional)</label>
+                    <label class="block font-medium text-sm mb-2">Respuesta esperada / Criterios de evaluación</label>
                     <textarea name="preguntas[INDEX][respuesta_esperada]" class="border rounded w-full px-2 py-1 text-sm" rows="3" placeholder="Describe la respuesta esperada o los criterios para calificar esta pregunta..."></textarea>
                     <p class="text-xs text-gray-500 mt-1">Esta información te ayudará al momento de revisar las respuestas de los estudiantes.</p>
                 </div>
@@ -347,6 +347,16 @@
                                 return;
                             }
 
+                            // Validar que los textos de las opciones no estén vacíos
+                            const inputsTexto = pregunta.querySelectorAll('.contenido-tipo-multiple input[type="text"]');
+                            for (let i = 0; i < inputsTexto.length; i++) {
+                                if (inputsTexto[i].value.trim() === '') {
+                                    tieneError = true;
+                                    mensajeError = `La opción ${i + 1} de la pregunta ${idx + 1} no puede estar vacía.`;
+                                    return;
+                                }
+                            }
+
                             const opcionesMarcadas = pregunta.querySelectorAll('.contenido-tipo-multiple input[type="checkbox"]:checked');
                             if (opcionesMarcadas.length === 0) {
                                 tieneError = true;
@@ -365,8 +375,17 @@
                                 return;
                             }
                         }
+                    } else if (tipoPregunta === 'abierta') {
+                         const contenidoAbierta = pregunta.querySelector('.contenido-tipo-abierta');
+                         if (contenidoAbierta && contenidoAbierta.style.display !== 'none') {
+                             const respuestaEsperada = pregunta.querySelector('.contenido-tipo-abierta textarea[name*="respuesta_esperada"]');
+                             if (!respuestaEsperada || respuestaEsperada.value.trim() === '') {
+                                 tieneError = true;
+                                 mensajeError = `La pregunta ${idx + 1} debe tener una respuesta esperada.`;
+                                 return;
+                             }
+                         }
                     }
-                    // Abierta no requiere validación especial
                 });
 
                     if (tieneError) {
