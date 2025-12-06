@@ -40,7 +40,7 @@ class pregunta extends Model
         return $this->tipo === self::TIPO_VERDADERO_FALSO;
     }
 
-    public function isAbierta(): bool
+    public function esAbierta(): bool
     {
         return $this->tipo === self::TIPO_ABIERTA;
     }

@@ -53,7 +53,7 @@
                                     {{ $index + 1 }}. {{ $pregunta->pregunta }}
                                 </h3>
                                 
-                                @if($pregunta->isAbierta())
+                                @if($pregunta->esAbierta())
                                     {{-- Pregunta abierta --}}
                                     <div>
                                         <label for="answer-{{ $pregunta->id }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -61,7 +61,7 @@
                                         </label>
                                         <textarea 
                                             id="answer-{{ $pregunta->id }}"
-                                            name="answers[{{ $pregunta->id }}]" 
+                                            name="respuestas[{{ $pregunta->id }}]" 
                                             rows="5" 
                                             required
                                             class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-zinc-800 dark:text-white"
@@ -77,7 +77,7 @@
                                                 <label class="flex items-center gap-3 rounded-lg border border-gray-200 p-3 cursor-pointer hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-zinc-800">
                                                     <input 
                                                         type="radio" 
-                                                        name="answers[{{ $pregunta->id }}]" 
+                                                        name="respuestas[{{ $pregunta->id }}]" 
                                                         value="{{ $opcion->id }}" 
                                                         class="w-4 h-4 text-indigo-600 dark:bg-zinc-700 dark:border-gray-600 focus:ring-indigo-500" 
                                                         required
@@ -91,7 +91,7 @@
                                                 <label class="flex items-center gap-3 rounded-lg border border-gray-200 p-3 cursor-pointer hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-zinc-800">
                                                     <input 
                                                         type="checkbox" 
-                                                        name="answers[{{ $pregunta->id }}][]" 
+                                                        name="respuestas[{{ $pregunta->id }}][]" 
                                                         value="{{ $opcion->id }}" 
                                                         class="w-4 h-4 text-indigo-600 dark:bg-zinc-700 dark:border-gray-600 focus:ring-indigo-500 respuesta-casilla-{{ $pregunta->id }}" 
                                                         onchange="limitarCasillas({{ $pregunta->id }})"
@@ -132,11 +132,11 @@
                                 const gruposPreguntas = {};
                                 
                                 // Seleccionar todos los inputs de respuesta (radio y checkbox)
-                                const entradas = document.querySelectorAll('input[name^="answers"]');
+                                const entradas = document.querySelectorAll('input[name^="respuestas"]');
                                 
                                 entradas.forEach(entrada => {
                                     // Extraer el ID de la pregunta del nombre: answers[123] o answers[123][]
-                                    const coincidencia = entrada.name.match(/answers\[(\d+)\]/);
+                                    const coincidencia = entrada.name.match(/respuestas\[(\d+)\]/);
                                     if (coincidencia) {
                                         const idPregunta = coincidencia[1];
                                         if (!gruposPreguntas[idPregunta]) {
@@ -184,7 +184,7 @@
                                         </span>
                                     </h3>
                                     
-                                    @if($pregunta->isAbierta())
+                                    @if($pregunta->esAbierta())
                                         <div class="mt-2 text-sm text-gray-600 dark:text-gray-400">
                                             <strong>Respuesta esperada:</strong> {{ $pregunta->respuesta_correcta_abierta ?? 'No especificada' }}
                                         </div>
@@ -289,7 +289,7 @@
                                                             {{ $pregunta->pregunta }}
                                                         </h4>
                                                         
-                                                        @if($pregunta->isAbierta())
+                                                        @if($pregunta->esAbierta())
                                                             {{-- Open-ended question --}}
                                                             <div class="mb-3">
                                                                 <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Respuesta del estudiante:</p>

@@ -51,7 +51,7 @@
                     @foreach($intento->examen->preguntas as $index => $pregunta)
                         @php
                             $respuestas = $intento->respuestas->where('pregunta_id', $pregunta->id);
-                            $esAbierta = $pregunta->isAbierta();
+                            $esAbierta = $pregunta->esAbierta();
                             $esCorrecta = false;
                             
                             if ($esAbierta) {

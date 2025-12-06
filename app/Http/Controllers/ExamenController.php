@@ -460,7 +460,7 @@ class ExamenController extends Controller
     public function intentar(Request $request, examen $examen)
     {
         $request->validate([
-            'answers' => 'required|array',
+            'respuestas' => 'required|array',
         ]);
 
         /** @var User $user */
@@ -482,7 +482,7 @@ class ExamenController extends Controller
             return redirect()->route('examenes.show', $examen)->withErrors(['ya_realizado' => 'Ya has realizado este examen. Solo se permite un intento.']);
         }
 
-        $respuestas = $request->input('answers', []);
+        $respuestas = $request->input('respuestas', []);
         if (count($respuestas) !== $examen->preguntas->count()) {
             return redirect()->route('examenes.show', $examen)->withErrors(['incompleto' => 'Debes responder todas las preguntas antes de enviar el examen.']);
         }
@@ -509,7 +509,7 @@ class ExamenController extends Controller
             $respuesta = $respuestas[$preg->id] ?? null;
             
             // Manejar según el tipo de pregunta
-            if ($preg->isAbierta()) {
+            if ($preg->esAbierta()) {
                 // Pregunta abierta - guardar texto de respuesta
                 respuesta::create([
                     'intento_id' => $intento->id,
@@ -679,7 +679,7 @@ class ExamenController extends Controller
 
         // Verificar si todas las preguntas abiertas ya están calificadas
         $preguntasAbiertas = $intento->respuestas->filter(function($r) {
-            return $r->pregunta->isAbierta();
+            return $r->pregunta->esAbierta();
         });
 
         $todasCalificadas = $preguntasAbiertas->every(function($r) {
@@ -708,7 +708,7 @@ class ExamenController extends Controller
                     continue;
                 }
 
-                if ($primeraRespuesta->pregunta->isAbierta()) {
+                if ($primeraRespuesta->pregunta->esAbierta()) {
                     // Para preguntas abiertas, usar puntos_obtenidos
                     $puntuacion += $primeraRespuesta->puntos_obtenidos ?? 0;
                 } else {
@@ -754,7 +754,7 @@ class ExamenController extends Controller
         // Verificar si todas las preguntas abiertas ya están calificadas
         $intento = $respuesta->intento;
         $preguntasAbiertas = $intento->respuestas->filter(function($r) {
-            return $r->pregunta->isAbierta();
+            return $r->pregunta->esAbierta();
         });
 
         $todasCalificadas = $preguntasAbiertas->every(function($r) {
@@ -774,7 +774,7 @@ class ExamenController extends Controller
                 $total++;
                 $primeraRespuesta = $respuestas->first();
                 
-                if ($primeraRespuesta->pregunta->isAbierta()) {
+                if ($primeraRespuesta->pregunta->esAbierta()) {
                     // Para preguntas abiertas, usar puntos_obtenidos
                     $puntuacion += $primeraRespuesta->puntos_obtenidos ?? 0;
                 } else {
@@ -820,7 +820,7 @@ class ExamenController extends Controller
             $total++;
             $primeraRespuesta = $respuestas->first();
             
-            if ($primeraRespuesta->pregunta->isAbierta()) {
+            if ($primeraRespuesta->pregunta->esAbierta()) {
                 // Para preguntas abiertas, usar puntos_obtenidos
                 $puntuacion += $primeraRespuesta->puntos_obtenidos ?? 0;
             } else {
