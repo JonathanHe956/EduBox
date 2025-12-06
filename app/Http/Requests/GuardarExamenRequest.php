@@ -4,12 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+use Illuminate\Support\Facades\Auth;
+
 class GuardarExamenRequest extends FormRequest
 {
     public function authorize(): bool
     {
         // Por defecto permitir y dejar control de permisos al middleware/Controller
-        return auth()->check();
+        return Auth::check();
     }
 
     public function rules(): array

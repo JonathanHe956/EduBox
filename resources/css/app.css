@@ -11,7 +11,7 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
-    /* Blue Color Palette - Primary Colors (Based on #002349) */
+    /* Paleta de Colores Azul - Colores Primarios (Basado en #002349) */
     --color-blue-50: #f0f4f8;
     --color-blue-100: #d9e2ec;
     --color-blue-200: #bcccdc;
@@ -22,30 +22,30 @@
     --color-blue-700: #334e68;
     --color-blue-800: #243b53;
     --color-blue-900: #002349;
-    /* User specified Blue */
+    /* Azul especificado por el usuario */
     --color-blue-950: #001225;
 
-    /* Gold Accent Color (Based on #957C3D) */
+    /* Color de Acento Dorado (Basado en #957C3D) */
     --color-gold-50: #fbf7ef;
     --color-gold-100: #f5ecd6;
     --color-gold-200: #ebdcb0;
     --color-gold-300: #dec683;
     --color-gold-400: #d0b05e;
     --color-gold-500: #957C3D;
-    /* User specified Gold */
+    /* Dorado especificado por el usuario */
     --color-gold-600: #7a6532;
     --color-gold-700: #615028;
     --color-gold-800: #4a3d1f;
     --color-gold-900: #362c17;
     --color-gold-950: #1f190d;
 
-    /* Bronze Accent Color */
+    /* Color de Acento Bronce */
     --color-bronze-400: #e89b6c;
     --color-bronze-500: #cd7f32;
     --color-bronze-600: #b36b28;
     --color-bronze-700: #99581e;
 
-    /* Zinc colors for neutral elements */
+    /* Colores Zinc para elementos neutrales */
     --color-zinc-50: #fafafa;
     --color-zinc-100: #f5f5f5;
     --color-zinc-200: #e5e5e5;
@@ -58,7 +58,7 @@
     --color-zinc-900: #171717;
     --color-zinc-950: #0a0a0a;
 
-    /* Theme accent colors - using blue as primary */
+    /* Colores de acento del tema - usando azul como primario */
     --color-accent: var(--color-blue-900);
     --color-accent-content: var(--color-gold-500);
     --color-accent-foreground: var(--color-white);
@@ -82,7 +82,7 @@
         border-color: var(--color-blue-200, currentColor);
     }
 
-    /* Background image for authenticated pages */
+    /* Imagen de fondo para páginas autenticadas */
     body.authenticated {
         background-image: url('/images/background.jpg');
         background-size: cover;
@@ -106,12 +106,12 @@
 
 @layer components {
 
-    /* Card styles with glassmorphism */
+    /* Estilos de tarjeta con glassmorphism */
     .glass-card {
         @apply bg-white/90 dark:bg-blue-950/80 backdrop-blur-md border border-blue-200/50 dark:border-blue-700/50 rounded-lg shadow-xl;
     }
 
-    /* Button styles with gold accent */
+    /* Estilos de botón con acento dorado */
     .btn-primary {
         @apply bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-white font-semibold px-4 py-2 rounded-md transition-all duration-300 shadow-lg hover:shadow-xl;
     }
@@ -124,12 +124,12 @@
         @apply bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-4 py-2 rounded-md transition-all duration-300 shadow-lg hover:shadow-xl;
     }
 
-    /* Input styles */
+    /* Estilos de entrada (inputs) */
     .input-modern {
         @apply bg-white/80 dark:bg-blue-950/60 border-2 border-blue-300 dark:border-blue-600 rounded-md px-4 py-2 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/50 transition-all duration-200;
     }
 
-    /* Table styles */
+    /* Estilos de tabla */
     .table-modern {
         @apply w-full bg-white/90 dark:bg-blue-950/80 backdrop-blur-md rounded-lg overflow-hidden shadow-xl;
     }
