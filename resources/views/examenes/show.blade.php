@@ -1,21 +1,34 @@
 <x-layouts.app :title="$examen->titulo">
-    <div class="px-4 py-6 max-w-4xl mx-auto">
-        <div class="mb-6">
-            <h1 class="text-2xl font-semibold text-blue-900 dark:text-white">{{ $examen->titulo }}</h1>
-            @if($examen->descripcion)
-                <p class="mt-1 text-sm text-blue-700 dark:text-blue-200">{{ $examen->descripcion }}</p>
-            @endif
+    <div class="flex h-full w-full flex-1 flex-col gap-6 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-blue-900 dark:text-white">{{ $examen->titulo }}</h1>
+                @if($examen->descripcion)
+                    <p class="mt-1 text-blue-700 dark:text-blue-200">{{ $examen->descripcion }}</p>
+                @endif
+            </div>
+            @auth
+                @if(auth()->user()->hasRole('docente'))
+                    <a href="{{ route('examenes.materia', $examen->materia_id) }}" class="btn-secondary" wire:navigate>
+                        Volver
+                    </a>
+                @else
+                    <a href="{{ route('examenes.materia.alumno', $examen->materia_id) }}" class="btn-secondary" wire:navigate>
+                        Volver
+                    </a>
+                @endif
+            @endauth
         </div>
 
         @if(session('success'))
-            <div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                {{ session('success') }}
+            <div class="glass-card p-4 bg-green-50 border-green-200 dark:bg-green-900/20">
+                <p class="text-green-600 dark:text-green-400">{{ session('success') }}</p>
             </div>
         @endif
 
         @if($errors->any())
-            <div class="mb-4 rounded-md bg-red-50 p-4 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-400">
-                <ul class="list-disc list-inside">
+            <div class="glass-card p-4 bg-red-50 border-red-200 dark:bg-red-900/20">
+                <ul class="list-disc list-inside text-red-600 dark:text-red-400">
                     @foreach($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -24,13 +37,13 @@
         @endif
 
         @if($examen->preguntas->isEmpty())
-            <div class="rounded-lg border border-gray-200 bg-white p-8 text-center dark:border-gray-700 dark:bg-zinc-900">
+            <div class="glass-card p-8 text-center">
                 <p class="text-gray-500 dark:text-gray-400">Este examen aún no tiene preguntas.</p>
             </div>
         @else
             @auth
                 @php
-                    $esEstudiante = auth()->user()->hasRole('estudiante');
+                    $esEstudiante = auth()->user()->hasRole('estudiante') || auth()->user()->hasRole('student');
                     $esDocente = auth()->user()->hasRole('docente');
                     $haIntentado = false;
                     
@@ -48,7 +61,7 @@
                     <form method="POST" action="{{ route('examenes.intentar', $examen) }}" class="space-y-6">
                         @csrf
                         @foreach($examen->preguntas as $index => $pregunta)
-                            <div class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-zinc-900">
+                            <div class="glass-card p-6">
                                 <h3 class="mb-4 text-lg font-medium text-blue-900 dark:text-white">
                                     {{ $index + 1 }}. {{ $pregunta->pregunta }}
                                 </h3>
@@ -162,7 +175,7 @@
                     </form>
                 @elseif($esEstudiante && $haIntentado)
                     {{-- Student has already attempted --}}
-                    <div class="rounded-lg border border-yellow-200 bg-yellow-50 p-6 dark:border-yellow-900/30 dark:bg-yellow-900/20">
+                    <div class="glass-card p-6 bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20">
                         <p class="text-yellow-800 dark:text-yellow-400">Ya has completado este examen. Puedes ver tu resultado en la lista de exámenes.</p>
                         <a href="{{ route('examenes.materia.alumno', $examen->materia_id) }}" class="mt-4 inline-block text-sm font-medium text-yellow-900 hover:text-yellow-700 dark:text-yellow-300">
                             Volver a exámenes →
@@ -176,7 +189,7 @@
                         <h2 class="text-xl font-semibold text-blue-900 dark:text-white mb-4">Preguntas del Examen</h2>
                         <div class="space-y-4">
                             @foreach($examen->preguntas as $index => $pregunta)
-                                <div class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-zinc-900">
+                                <div class="glass-card p-6">
                                     <h3 class="mb-3 text-lg font-medium text-blue-900 dark:text-white">
                                         {{ $index + 1 }}. {{ $pregunta->pregunta }}
                                         <span class="ml-2 text-sm font-normal text-gray-500">
@@ -224,13 +237,13 @@
                         <h2 class="text-xl font-semibold text-blue-900 dark:text-white mb-4">Intentos de Estudiantes</h2>
                         
                         @if($intentos->isEmpty())
-                            <div class="rounded-lg border border-gray-200 bg-white p-8 text-center dark:border-gray-700 dark:bg-zinc-900">
+                            <div class="glass-card p-8 text-center">
                                 <p class="text-gray-500 dark:text-gray-400">Aún no hay estudiantes que hayan intentado este examen.</p>
                             </div>
                         @else
                             <div class="space-y-4">
                                 @foreach($intentos as $intento)
-                                    <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-zinc-900">
+                                    <div class="glass-card">
                                         <div class="p-4 border-b border-gray-200 dark:border-gray-700">
                                             <div class="flex items-center justify-between">
                                                 <div>
@@ -409,23 +422,6 @@
                         }
                     </script>
                 @endif
-                <div class="mt-6">
-                    @if(auth()->user()->hasRole('docente'))
-                        <a href="{{ route('examenes.materia', $examen->materia_id) }}" class="inline-flex items-center gap-2 btn-secondary px-4 py-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                            </svg>
-                            Volver a Exámenes
-                        </a>
-                    @else
-                        <a href="{{ route('examenes.materia.alumno', $examen->materia_id) }}" class="inline-flex items-center gap-2 btn-secondary px-4 py-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                            </svg>
-                            Volver a Exámenes
-                        </a>
-                    @endif
-                </div>
             @endauth
         @endif
         </div>

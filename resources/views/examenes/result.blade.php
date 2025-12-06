@@ -1,15 +1,20 @@
 <x-layouts.app :title="'Resultado: ' . $intento->examen->titulo">
-    <div class="px-4 py-6 max-w-4xl mx-auto">
-        <div class="mb-6 text-center">
-            <h1 class="text-2xl font-semibold text-blue-900 dark:text-white">Resultado: {{ $intento->examen->titulo }}</h1>
-            <p class="mt-1 text-sm text-blue-700 dark:text-blue-200">
-                Realizado el {{ $intento->created_at->format('d/m/Y H:i') }}
-            </p>
+    <div class="flex h-full w-full flex-1 flex-col gap-6 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-blue-900 dark:text-white">Resultado: {{ $intento->examen->titulo }}</h1>
+                <p class="mt-1 text-blue-700 dark:text-blue-200">
+                    Realizado el {{ $intento->created_at->format('d/m/Y H:i') }}
+                </p>
+            </div>
+            <a href="{{ route('examenes.materia.alumno', $intento->examen->materia_id) }}" class="btn-secondary" wire:navigate>
+                Volver
+            </a>
         </div>
 
-        <div class="mb-8 text-center">
+        <div class="text-center space-y-6">
             @if($intento->isEnRevision())
-                <div class="rounded-lg border border-yellow-200 bg-yellow-50 p-6 dark:border-yellow-900/30 dark:bg-yellow-900/20">
+                <div class="glass-card p-6 bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20">
                     <div class="flex items-center justify-center gap-4">
                         <div class="rounded-full bg-yellow-100 p-2 text-yellow-600 dark:bg-yellow-900/50 dark:text-yellow-400">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -17,14 +22,14 @@
                             </svg>
                         </div>
                         <div>
-                            <p class="text-lg font-semibold">Examen en Revisión</p>
-                            <p class="mt-1 text-sm">Tu examen está siendo revisado por el docente. La calificación final estará disponible pronto.</p>
+                            <p class="text-lg font-semibold text-yellow-800 dark:text-yellow-300">Examen en Revisión</p>
+                            <p class="mt-1 text-sm text-yellow-700 dark:text-yellow-400">Tu examen está siendo revisado por el docente. La calificación final estará disponible pronto.</p>
                         </div>
                     </div>
                 </div>
             @else
                 {{-- Calificación --}}
-                <div class="mt-6 inline-block rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 p-8 shadow-lg">
+                <div class="inline-block rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 p-8 shadow-lg">
                     <div class="text-white">
                         <p class="text-sm font-medium uppercase tracking-wide">Tu calificación</p>
                         <p class="mt-2 text-6xl font-bold">{{ $intento->puntuacion == floor($intento->puntuacion) ? number_format($intento->puntuacion, 0) : number_format($intento->puntuacion, 1) }}/{{ $intento->total }}</p>
@@ -45,8 +50,8 @@
 
         {{-- Revisión de respuestas --}}
         @if(!$intento->isEnRevision())
-            <div class="mt-8">
-                <h2 class="text-xl font-semibold text-blue-900 dark:text-white mb-4">Revisión de Respuestas</h2>
+            <div class="space-y-6">
+                <h2 class="text-xl font-bold text-blue-900 dark:text-white">Revisión de Respuestas</h2>
                 <div class="space-y-4">
                     @foreach($intento->examen->preguntas as $index => $pregunta)
                         @php
@@ -67,7 +72,7 @@
                             }
                         @endphp
                         
-                        <div class="rounded-lg border {{ $esCorrecta ? 'border-green-200 bg-green-50 dark:border-green-900/30 dark:bg-green-900/10' : ($esAbierta && (!$respuestas->first() || $respuestas->first()->puntos_obtenidos === null) ? 'border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-zinc-900' : 'border-red-200 bg-red-50 dark:border-red-900/30 dark:bg-red-900/10') }} p-6">
+                        <div class="glass-card p-6 {{ $esCorrecta ? '!border-green-200 !bg-green-50 dark:!border-green-900/30 dark:!bg-green-900/10' : ($esAbierta && (!$respuestas->first() || $respuestas->first()->puntos_obtenidos === null) ? '' : '!border-red-200 !bg-red-50 dark:!border-red-900/30 dark:!bg-red-900/10') }}">
                             <div class="flex items-start gap-3">
                                 @if($esAbierta)
                                     <svg class="h-6 w-6 flex-shrink-0 text-gray-600 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -132,14 +137,6 @@
                 </div>
             </div>
         @endif
-
-        <div class="mt-8 flex justify-center">
-            <a href="{{ route('examenes.materia.alumno', $intento->examen->materia_id) }}" class="inline-flex items-center gap-2 btn-secondary px-6 py-3">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                </svg>
-                Volver a Exámenes
-            </a>
-        </div>
     </div>
 </x-layouts.app>
+

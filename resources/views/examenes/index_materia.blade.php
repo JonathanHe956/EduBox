@@ -6,9 +6,6 @@
                 <h1 class="text-2xl font-bold text-blue-900 dark:text-white">Exámenes de {{ $materia->nombre }}</h1>
                 <p class="mt-1 text-blue-700 dark:text-blue-200">Gestiona los exámenes para esta materia.</p>
             </div>
-            <a href="{{ route('examenes.create', $materia) }}" class="btn-primary">
-                + Crear Examen
-            </a>
         </div>
 
         @if(session('success'))
@@ -34,7 +31,7 @@
                             <tr>
                                 <th scope="col" class="px-6 py-3">Título</th>
                                 <th scope="col" class="px-6 py-3">Preguntas</th>
-                                <th scope="col" class="px-6 py-3">Configuración</th>
+                                <th scope="col" class="px-6 py-3">Fecha de creación</th>
                                 <th scope="col" class="px-6 py-3 text-right">Acciones</th>
                             </tr>
                         </thead>
@@ -50,10 +47,8 @@
                                     <td class="px-6 py-4 text-blue-900 dark:text-white">
                                         {{ $ex->preguntas_count }} preguntas
                                     </td>
-                                    <td class="px-6 py-4">
-                                        <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
-                                            {{ $ex->opciones_por_pregunta ?? 4 }} opciones
-                                        </span>
+                                    <td class="px-6 py-4 text-blue-900 dark:text-white">
+                                        {{ $ex->created_at->format('d/m/Y') }}
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center justify-end gap-2">
@@ -81,12 +76,16 @@
         </div>
 
         {{-- Botón de regreso --}}
-        <div class="mt-4">
+        <div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <a href="{{ route('mis.materias') }}" class="inline-flex items-center gap-2 btn-secondary px-4 py-2">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                 </svg>
                 Volver a Mis Materias
+            </a>
+
+            <a href="{{ route('examenes.create', $materia) }}" class="btn-primary px-4 py-2">
+                + Crear Examen
             </a>
         </div>
     </div>

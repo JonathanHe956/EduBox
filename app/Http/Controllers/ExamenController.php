@@ -167,7 +167,7 @@ class ExamenController extends Controller
         }
         if (! $docente) abort(403);
 
-        $examenes = examen::where('docente_id', $docente->id)->withCount('preguntas')->get();
+        $examenes = examen::where('docente_id', $docente->id)->with('materia')->withCount('preguntas')->get();
         return view('examenes.index_docente', compact('examenes'));
     }
 
@@ -392,16 +392,12 @@ class ExamenController extends Controller
         }
 
         // Marcar intentos anteriores como versión anterior
-        $intentosAnteriores = intentoExamen::where('examen_id', $examen->id)
+        // Marcar intentos anteriores como versión anterior
+        $afectados = intentoExamen::where('examen_id', $examen->id)
             ->where('version_anterior', false)
-            ->get();
+            ->update(['version_anterior' => true]);
 
-        if ($intentosAnteriores->isNotEmpty()) {
-            // Marcar todos los intentos existentes como versión anterior
-            intentoExamen::where('examen_id', $examen->id)
-                ->where('version_anterior', false)
-                ->update(['version_anterior' => true]);
-            
+        if ($afectados > 0) {
             return redirect()->route('examenes.materia', $examen->materia_id)
                 ->with('success', 'Examen actualizado. Los alumnos que ya lo realizaron tendrán un nuevo intento disponible.');
         }

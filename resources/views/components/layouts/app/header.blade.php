@@ -26,6 +26,12 @@
                         {{ __('Mis Exámenes') }}
                     </flux:navbar.item>
                 @endif
+
+                @if(auth()->user()->hasRole('docente'))
+                    <flux:navbar.item icon="clipboard-document-list" :href="route('examenes.asignados')" :current="request()->routeIs('examenes.asignados')" wire:navigate>
+                        {{ __('Mis Exámenes') }}
+                    </flux:navbar.item>
+                @endif
             </flux:navbar>
 
             <flux:spacer />
@@ -90,6 +96,12 @@
 
                     @if(auth()->user()->hasRole('estudiante'))
                         <flux:navlist.item icon="clipboard-document-list" :href="route('examenes.pendiente')" :current="request()->routeIs('examenes.pendiente')" wire:navigate>
+                        {{ __('Mis Exámenes') }}
+                        </flux:navlist.item>
+                    @endif
+
+                    @if(auth()->user()->hasRole('docente'))
+                        <flux:navlist.item icon="clipboard-document-list" :href="route('examenes.asignados')" :current="request()->routeIs('examenes.asignados')" wire:navigate>
                         {{ __('Mis Exámenes') }}
                         </flux:navlist.item>
                     @endif

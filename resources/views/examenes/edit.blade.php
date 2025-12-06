@@ -5,6 +5,9 @@
                 <h1 class="text-2xl font-bold text-blue-900 dark:text-white">Editar examen: {{ $examen->titulo }}</h1>
                 <p class="mt-1 text-blue-700 dark:text-blue-200">Actualiza la información del examen</p>
             </div>
+            <a href="{{ route('examenes.materia', $examen->materia) }}" class="btn-secondary" wire:navigate>
+                Volver
+            </a>
         </div>
 
         @if(session('success'))

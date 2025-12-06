@@ -62,7 +62,7 @@ Route::middleware(['auth', 'verified', 'role:docente'])->group(function () {
     Route::post('/materia/{materia}/examen', [App\Http\Controllers\ExamenController::class, 'store'])->name('examenes.store');
     Route::post('/examen/{examen}/pregunta', [App\Http\Controllers\ExamenController::class, 'agregarPregunta'])->name('examenes.addQuestion');
     Route::get('/materia/{materia}/examenes', [App\Http\Controllers\ExamenController::class, 'indiceParaMateria'])->name('examenes.materia');
-    Route::get('/docente/examenes', [App\Http\Controllers\ExamenController::class, 'docenteIndex'])->name('examenes.mine');
+    Route::get('/mis-examenes', [App\Http\Controllers\ExamenController::class, 'docenteIndex'])->name('examenes.asignados');
     Route::get('/examen/{examen}/editar', [App\Http\Controllers\ExamenController::class, 'edit'])->name('examenes.edit');
     Route::put('/examen/{examen}', [App\Http\Controllers\ExamenController::class, 'update'])->name('examenes.update');
     Route::delete('/examen/{examen}', [App\Http\Controllers\ExamenController::class, 'destroy'])->name('examenes.destroy');
