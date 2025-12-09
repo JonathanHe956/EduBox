@@ -47,15 +47,15 @@
                 </div>
 
                 <div class="glass-card p-6 transform transition-all duration-300 hover:scale-105">
-                    <h3 class="text-lg font-semibold text-blue-900 dark:text-white">Alumnos</h3>
-                    <p class="mt-2 text-blue-700 dark:text-blue-200">Supervisar registros de estudiantes.</p>
-                    <a href="{{ route('alumno.index') }}" class="mt-4 inline-block btn-primary" wire:navigate>Ver Alumnos</a>
-                </div>
-
-                <div class="glass-card p-6 transform transition-all duration-300 hover:scale-105">
                     <h3 class="text-lg font-semibold text-blue-900 dark:text-white">Docentes</h3>
                     <p class="mt-2 text-blue-700 dark:text-blue-200">Gestionar el personal docente.</p>
                     <a href="{{ route('docente.index') }}" class="mt-4 inline-block btn-primary" wire:navigate>Ver Docentes</a>
+                </div>
+
+                <div class="glass-card p-6 transform transition-all duration-300 hover:scale-105">
+                    <h3 class="text-lg font-semibold text-blue-900 dark:text-white">Alumnos</h3>
+                    <p class="mt-2 text-blue-700 dark:text-blue-200">Supervisar registros de estudiantes.</p>
+                    <a href="{{ route('alumno.index') }}" class="mt-4 inline-block btn-primary" wire:navigate>Ver Alumnos</a>
                 </div>
             </div>
         @endif

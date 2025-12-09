@@ -418,7 +418,6 @@ class ExamenController extends Controller
         }
 
         // Marcar intentos anteriores como versión anterior
-        // Marcar intentos anteriores como versión anterior
         $afectados = intentoExamen::where('examen_id', $examen->id)
             ->where('version_anterior', false)
             ->update(['version_anterior' => true]);

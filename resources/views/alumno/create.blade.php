@@ -13,7 +13,7 @@
         <div class="glass-card p-6 max-w-4xl mx-auto w-full">
             <script>
                 function validarTexto(input) {
-                    input.value = input.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+                    input.value = input.value.replace(/[^a-zA-Z\s]/g, '');
                 }
 
                 function calcularEdad() {
@@ -38,6 +38,10 @@
                     }
                     if (edad < 17) {
                         alert('La edad no puede ser menor a 17 años.');
+                        return false;
+                    }
+                    if (edad < -0) {
+                        alert('La edad no puede ser negativa.');
                         return false;
                     }
                     return true;

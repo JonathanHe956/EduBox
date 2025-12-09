@@ -13,7 +13,7 @@
         <div class="glass-card p-6 max-w-4xl mx-auto w-full">
             <script>
                 function validarTexto(input) {
-                    input.value = input.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+                    input.value = input.value.replace(/[^a-zA-Z\s]/g, '');
                 }
 
                 function calcularEdad() {
